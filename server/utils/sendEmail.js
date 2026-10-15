@@ -17,6 +17,9 @@ const sendEmail = async (options) => {
     host: process.env.BREVO_SMTP_HOST,
     port: Number(process.env.BREVO_SMTP_PORT) || 587,
     secure: Number(process.env.BREVO_SMTP_PORT) === 465,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
     auth: {
       user: process.env.BREVO_SMTP_USER,
       pass: process.env.BREVO_SMTP_PASS,

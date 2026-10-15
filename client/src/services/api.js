@@ -7,6 +7,7 @@ const defaultApiUrl = import.meta.env.DEV
 
 const API = axios.create({
   baseURL: configuredApiUrl || defaultApiUrl,
+  timeout: 20000,
   headers: {
     'Content-Type': 'application/json',
   },

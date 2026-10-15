@@ -53,15 +53,15 @@ exports.register = async (req, res, next) => {
       <a href="${verificationUrl}">Verify Email Address</a>
     `;
 
-    try {
-      await sendEmail({ email: user.email, subject: 'CelestiCare Verification', html: htmlMessage });
-      res.status(201).json({ success: true, message: 'Verification link sent via Brevo.' });
-    } catch (emailError) {
-      user.verificationToken = undefined;
-      user.verificationTokenExpires = undefined;
-      await user.save({ validateBeforeSave: false });
-      return res.status(500).json({ success: false, message: 'Email dispatch failed.' });
-    }
+    // Do not make registration wait for a slow SMTP handshake. The token remains
+    // valid for 24 hours, so a temporary email outage does not invalidate the account.
+    void sendEmail({ email: user.email, subject: 'CelestiCare Verification', html: htmlMessage })
+      .catch((emailError) => console.error(`[Email Error] Verification email failed: ${emailError.message}`));
+
+    return res.status(201).json({
+      success: true,
+      message: 'Account created. Your verification email is being sent.',
+    });
   } catch (error) {
     next(error);
   }
