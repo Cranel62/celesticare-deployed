@@ -1,0 +1,99 @@
+/* =================================================
+   CELESTICARE - ZODIAC RESULT STYLESHEET (SCOPED)
+   ================================================= */
+
+.zodiacresult-body {
+  min-height: 100vh;
+  background: linear-gradient(
+    to bottom, 
+    #090614 0%,     
+    #1e173d 35%,    
+    #422d6b 70%,    
+    #765a96 100%    
+  );
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center;
+  padding: calc(80px + 20px) 20px 20px 20px;
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.zodiacresult-box {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #ffffff; 
+  padding: 50px 40px;
+  border-radius: 24px; 
+  max-width: 480px; 
+  width: 100%; 
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(193, 155, 250, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  animation: zodiacresultFadeIn 0.8s ease;
+  position: relative;
+  z-index: 10;
+}
+
+@keyframes zodiacresultFadeIn { 
+  from { opacity: 0; transform: translateY(10px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
+
+.zodiacresult-box .zodiacresult-brand-title { 
+  font-weight: 800; 
+  font-size: 1.5rem; 
+  letter-spacing: 2px; 
+  margin-bottom: 20px; 
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(193, 155, 250, 0.5);
+}
+
+.zodiacresult-box h2 { 
+  font-size: 1.2rem; 
+  font-weight: 600; 
+  color: #d0cce6; 
+  margin-bottom: 8px; 
+}
+
+.zodiacresult-box h1 { 
+  font-size: 3rem; 
+  font-weight: 800; 
+  color: #c19bfa; 
+  text-transform: uppercase; 
+  letter-spacing: 2px; 
+  margin-bottom: 12px; 
+  margin-top: 0;
+  text-shadow: 0 0 20px rgba(193, 155, 250, 0.4);
+}
+
+.zodiacresult-box p { 
+  font-size: 1.15rem; 
+  color: #f0ecfc; 
+  margin-bottom: 30px; 
+  font-weight: 500;
+}
+
+.zodiacresult-btn {
+  background: linear-gradient(135deg, #c19bfa, #a628c5) !important; 
+  color: #ffffff !important; 
+  border: none !important; 
+  border-radius: 30px !important;
+  padding: 14px 35px !important; 
+  font-weight: 600 !important; 
+  font-size: 1.05rem !important;
+  text-decoration: none !important; 
+  display: inline-block !important; 
+  transition: all 0.3s ease !important;
+  box-shadow: 0 6px 20px rgba(166, 40, 197, 0.4) !important;
+}
+
+.zodiacresult-btn:hover { 
+  transform: translateY(-2px) !important; 
+  box-shadow: 0 10px 25px rgba(166, 40, 197, 0.6) !important; 
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #d4c5e3, #c19bfa) !important;
+}

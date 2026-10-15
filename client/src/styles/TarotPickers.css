@@ -1,0 +1,31 @@
+/* Single Card Picker Styles */
+.scp-card-container { position: relative; width: 100%; height: 350px; display: flex; justify-content: center; align-items: center; margin: 2rem 0 1rem 0; }
+.scp-single-card { width: 200px; height: 290px; background: linear-gradient(135deg, #3a2a3a 0%, #1a0f1a 100%); border: 3px solid #8a6a9a; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(180,130,200,0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; margin: 0 auto; z-index: 10; }
+.scp-single-card:hover { box-shadow: 0 30px 60px rgba(180,130,200,0.6), 0 0 50px rgba(200,150,220,0.4); border-color: #c0a0c0; transform: scale(1.05); }
+.scp-single-card.fade-out { animation: scpMysticalDissolve 0.7s forwards; }
+@keyframes scpMysticalDissolve { 0% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); } 50% { opacity: 0.7; transform: scale(1.2) rotate(5deg); filter: blur(2px); } 100% { opacity: 0; transform: scale(1.5) rotate(10deg); filter: blur(5px); } }
+.scp-deck-container { width: 100%; height: 350px; display: none; position: relative; }
+.scp-deck-container.active { display: block; }
+.scp-deck-card { position: absolute; width: 200px; height: 290px; background: linear-gradient(135deg, #3a2a3a 0%, #1a0f1a 100%); border: 3px solid #8a6a9a; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.2s ease; transform-origin: center center; will-change: transform; left: 50%; transform: translateX(-50%); }
+.scp-message-area { text-align: center; margin: 1rem 0 0.5rem 0; min-height: 40px; font-size: 1.1rem; color: #d0b0d0; }
+.scp-instruction-text { animation: scpTextGlow 2s infinite; }
+.scp-shuffle-text { display: none; color: #c0a0c0; font-style: italic; animation: scpTextPulse 0.8s infinite alternate; }
+.scp-shuffle-text.active { display: block; }
+@keyframes scpTextPulse { 0% { opacity: 0.5; text-shadow: 0 0 10px #c0a0c0; transform: scale(1); } 100% { opacity: 1; text-shadow: 0 0 30px #c0a0c0, 0 0 60px #a080c0; transform: scale(1.05); } }
+@keyframes scpTextGlow { 0%, 100% { text-shadow: 0 0 10px #c0a0c0; } 50% { text-shadow: 0 0 20px #c0a0c0; } }
+
+/* Four Card Picker Styles */
+.fcp-spread-row { display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap; margin: 2rem 0 3rem 0; width: 100%; }
+.fcp-position-card { width: 170px; height: 270px; background: rgba(30, 20, 30, 0.7); backdrop-filter: blur(5px); border: 2px solid #8a6a9a; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); cursor: pointer; flex-shrink: 0; overflow: hidden; }
+.fcp-position-card.filled { border-color: #c0a0c0; box-shadow: 0 0 30px rgba(180,130,200,0.5); }
+.fcp-position-card.active { border-color: #c0a0c0; box-shadow: 0 0 40px rgba(200,150,220,0.8); transform: scale(1.05); animation: fcpGlowPulse 2s infinite; }
+.fcp-position-card.active:hover { transform: scale(1.1); border-color: #e0c9d5; }
+.fcp-position-icon { font-size: 2.5rem; margin-bottom: 1rem; filter: drop-shadow(0 0 15px currentColor); }
+.fcp-position-title { font-family: 'Cinzel', serif; font-size: 1.3rem; margin-bottom: 0.5rem; color: #c0a0c0; }
+@keyframes fcpGlowPulse { 0%, 100% { box-shadow: 0 0 30px rgba(180,130,200,0.5); } 50% { box-shadow: 0 0 50px rgba(200,150,220,0.8); } }
+.fcp-fan-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 5, 10, 0.95); backdrop-filter: blur(15px); z-index: 100; display: none; justify-content: center; align-items: center; flex-direction: column; animation: fcpFadeIn 0.3s ease; padding: 2rem; overflow-y: auto; }
+.fcp-fan-overlay.active { display: flex; }
+.fcp-fan-cards-container { position: relative; width: 100%; height: 350px; display: flex; justify-content: center; align-items: center; margin-bottom: 2rem; }
+.fcp-fan-card { position: absolute; width: 140px; height: 220px; background: linear-gradient(135deg, #2a1a2a 0%, #1a0f1a 100%); border: 2px solid #8a6a9a; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1); cursor: pointer; transform-origin: bottom center; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.fcp-fan-card:hover { transform: scale(1.15) translateY(-40px) rotate(0deg) !important; border-color: #c0a0c0; box-shadow: 0 30px 50px rgba(180,130,200,0.6); z-index: 1000 !important; }
+@keyframes fcpFadeIn { from { opacity: 0; } to { opacity: 1; } }

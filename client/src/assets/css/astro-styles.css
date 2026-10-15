@@ -1,0 +1,293 @@
+/* Cosmic Background */
+body {
+    background: linear-gradient(135deg, #0f0719 0%, #1a0b2e 100%);
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(192, 132, 252, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.1) 0%, transparent 30%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Form Styles */
+.astro-form-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 40px;
+    background: rgba(26, 17, 40, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    border: 1px solid rgba(192, 132, 252, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.glowing-title {
+    font-size: 2.5rem;
+    background: linear-gradient(45deg, #fff, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.form-subtitle {
+    text-align: center;
+    color: #a78bfa;
+    margin-bottom: 30px;
+}
+
+.astro-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 1.1rem;
+    color: #e9d5ff;
+    font-weight: 500;
+}
+
+.form-group input {
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(192, 132, 252, 0.3);
+    border-radius: 15px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #c084fc;
+    box-shadow: 0 0 20px rgba(192, 132, 252, 0.3);
+}
+
+.form-group small {
+    color: #9ca3af;
+    font-size: 0.85rem;
+}
+
+.submit-btn {
+    padding: 18px 30px;
+    background: linear-gradient(45deg, #c084fc, #a855f7);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 20px;
+    box-shadow: 0 0 30px rgba(192, 132, 252, 0.3);
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 40px rgba(192, 132, 252, 0.5);
+}
+
+/* Loading Animation */
+.cosmic-loader {
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(192, 132, 252, 0.1);
+    border-top-color: #c084fc;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Chart Sections */
+.chart-section {
+    background: rgba(26, 17, 40, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(192, 132, 252, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.chart-section h2 {
+    font-size: 2rem;
+    margin-bottom: 25px;
+    background: linear-gradient(45deg, #fff, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* Traits Grid */
+.traits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.trait-card {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid rgba(192, 132, 252, 0.2);
+    transition: 0.3s;
+}
+
+.trait-card:hover {
+    transform: translateY(-5px);
+    border-color: #c084fc;
+    box-shadow: 0 10px 30px rgba(192, 132, 252, 0.2);
+}
+
+.trait-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.trait-card h3 {
+    color: #c084fc;
+    margin-bottom: 15px;
+}
+
+.trait-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.trait-card li {
+    margin: 10px 0;
+    color: #d1d5db;
+    position: relative;
+    padding-left: 20px;
+}
+
+.trait-card li::before {
+    content: '✨';
+    position: absolute;
+    left: 0;
+    color: #c084fc;
+}
+
+/* Houses Grid */
+.houses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.house-card {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(192, 132, 252, 0.2);
+}
+
+.house-card h4 {
+    color: #c084fc;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.house-card p {
+    color: #fff;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Planets Grid */
+.planets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.planet-card {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    border: 1px solid rgba(192, 132, 252, 0.2);
+}
+
+.planet-symbol {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.planet-card h3 {
+    color: #c084fc;
+    margin-bottom: 10px;
+}
+
+.planet-card p {
+    color: #d1d5db;
+    font-size: 0.9rem;
+}
+
+/* Footer */
+.chart-footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+}
+
+.ai-badge {
+    display: inline-block;
+    padding: 8px 20px;
+    background: rgba(192, 132, 252, 0.1);
+    border-radius: 50px;
+    color: #c084fc;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.save-btn {
+    padding: 12px 30px;
+    background: transparent;
+    border: 2px solid #c084fc;
+    color: white;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.save-btn:hover {
+    background: #c084fc;
+    color: #0f0719;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .traits-grid, .planets-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .houses-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}

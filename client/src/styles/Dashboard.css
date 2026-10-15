@@ -1,0 +1,201 @@
+/* =================================================
+   CELESTICARE - DASHBOARD STYLESHEET (SCOPED WITH .dashboard-)
+   ================================================= */
+
+.dashboard-body {
+  min-height: 100vh;
+  margin: 0;
+  background: linear-gradient(
+    to bottom, 
+    #090614 0%,     
+    #1e173d 25%,    
+    #422d6b 55%,    
+    #765a96 80%,    
+    #d4c5e3 100%    
+  );
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+  padding-top: calc(80px + 30px);
+  padding-bottom: 60px;
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: transparent;
+  padding: 0 20px;
+}
+
+.dashboard-card {
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(193, 155, 250, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 2.5rem;
+  color: #ffffff;
+}
+
+.dashboard-card h2 { 
+  color: #ffffff; 
+  font-weight: 700; 
+  text-shadow: 0 0 15px rgba(193, 155, 250, 0.5);
+}
+
+.dashboard-card .text-muted {
+  color: #d0cce6 !important;
+}
+
+.dashboard-section-title { 
+  font-size: 1.25rem; 
+  font-weight: 700; 
+  color: #c19bfa; 
+  margin-bottom: 20px; 
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(193, 155, 250, 0.4);
+}
+
+.dashboard-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.dashboard-profile-section, .dashboard-astro-section, .dashboard-color-section, .dashboard-aesthetic-section, .dashboard-outfit-section, .dashboard-moodboard-section {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 25px;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.35s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-profile-section:hover, .dashboard-astro-section:hover, .dashboard-color-section:hover, .dashboard-aesthetic-section:hover, .dashboard-outfit-section:hover, .dashboard-moodboard-section:hover {
+  transform: translateY(-5px);
+  border-color: rgba(193, 155, 250, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25), 0 0 20px rgba(193, 155, 250, 0.2);
+}
+
+/* Profile Layout */
+.dashboard-profile-info { margin-top: 0; flex: 1; display: flex; flex-direction: column; justify-content: flex-start; }
+.dashboard-profile-item { margin-bottom: 10px; display: flex; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+.dashboard-profile-label { font-weight: 700; color: #c19bfa; min-width: 110px; font-size: 0.9rem; }
+.dashboard-profile-value { color: #f0ecfc; flex: 1; font-size: 0.9rem; font-weight: 500; text-align: left; }
+
+/* Astro Layout */
+.dashboard-zodiac-header { text-align: center; margin-bottom: 15px; }
+.dashboard-zodiac-name { font-size: 1.3rem; font-weight: 700; color: #f0ecfc; margin-bottom: 10px; }
+.dashboard-zodiac-details { font-size: 0.9rem; font-weight: 500; line-height: 1.5; }
+.dashboard-zodiac-detail-item { margin-bottom: 8px; display: flex; }
+.dashboard-zodiac-label { font-weight: 700; color: #c19bfa; min-width: 110px; }
+.dashboard-zodiac-value { color: #d0cce6; flex: 1; text-align: left; }
+
+.dashboard-astro-glow-btn {
+  display: inline-block; padding: 12px 30px; 
+  background: linear-gradient(135deg, #c19bfa, #a628c5); 
+  color: white; text-decoration: none;
+  border-radius: 30px; font-weight: 700; letter-spacing: 1px; font-size: 0.9rem; border: none;
+  cursor: pointer; transition: all 0.3s ease; 
+  box-shadow: 0 0 20px rgba(193, 155, 250, 0.4);
+  min-width: 200px; text-align: center;
+}
+
+.dashboard-astro-glow-btn:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 0 30px rgba(193, 155, 250, 0.7); 
+  color: white; 
+  background: linear-gradient(135deg, #d4c5e3, #c19bfa);
+}
+
+/* Color Analysis */
+.dashboard-color-wheel {
+  max-width: 180px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  object-fit: cover;
+}
+
+.dashboard-color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  display: inline-block;
+  margin: 0 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Buttons */
+.dashboard-btn-style {
+  display: block;
+  margin: 15px auto 0 auto;
+  background: linear-gradient(135deg, #c19bfa, #a628c5);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: fit-content;
+  min-width: 170px;
+  text-decoration: none !important;
+  box-shadow: 0 4px 15px rgba(166, 40, 197, 0.4);
+}
+
+.dashboard-btn-style:hover { 
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(166, 40, 197, 0.6); 
+  color: white; 
+}
+
+/* Badges & Aesthetics */
+.dashboard-enhanced-badge {
+  display: inline-block; padding: 0.5rem 1.2rem; border-radius: 25px; font-size: 0.85rem; font-weight: 700;
+  margin: 10px 0; text-transform: uppercase; letter-spacing: 0.5px; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.dashboard-enhanced-aesthetic-image { width: 100%; height: 160px; object-fit: cover; border-radius: 14px; margin: 12px 0; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
+
+/* Moodboard */
+.dashboard-moodboard-complete { 
+  background: linear-gradient(135deg, #c19bfa, #a628c5); 
+  color: white; text-align: center; border-radius: 16px; padding: 30px 20px; 
+  flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+  transition: all 0.35s ease; 
+  box-shadow: 0 8px 25px rgba(166, 40, 197, 0.4);
+}
+.dashboard-moodboard-complete:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(166, 40, 197, 0.6); }
+.dashboard-moodboard-icon { font-size: 3rem; margin-bottom: 12px; }
+.dashboard-moodboard-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
+.dashboard-moodboard-subtitle { font-size: 0.9rem; opacity: 0.9; margin-bottom: 15px; }
+
+.dashboard-moodboard-incomplete { 
+  background: rgba(255, 255, 255, 0.03); 
+  text-align: center; border-radius: 16px; padding: 30px 20px; 
+  flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+  border: 2px dashed rgba(255, 255, 255, 0.2); 
+}
+.dashboard-moodboard-incomplete-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
+.dashboard-moodboard-incomplete-title { font-size: 1.2rem; font-weight: 700; color: #f0ecfc; margin-bottom: 6px; }
+.dashboard-moodboard-incomplete-subtitle { font-size: 0.88px; color: #d0cce6; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-zodiac-detail-item, .dashboard-profile-item { flex-direction: column; align-items: flex-start;}
+  .dashboard-zodiac-label, .dashboard-profile-label { min-width: auto; margin-bottom: 2px; }
+  .dashboard-card { padding: 1.2rem; }
+}

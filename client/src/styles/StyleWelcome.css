@@ -1,0 +1,85 @@
+.stylewelcome-body {
+  min-height: calc(100vh - 80px);
+  background: linear-gradient(135deg, #2e2e2e 0%, #3b3b3b 100%);
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  transition: filter 0.6s ease, opacity 0.6s ease;
+}
+.stylewelcome-body.fade-blur-out {
+  opacity: 0;
+  filter: blur(25px);
+}
+.stylewelcome-container {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+}
+.stylewelcome-bg-accent {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.3;
+  z-index: 0;
+  animation: stylewelcomeFloat 10s ease-in-out infinite alternate;
+}
+.stylewelcome-bg-accent.stylewelcome-one { background: #bba6ff; width: 400px; height: 400px; top: -80px; left: -80px; }
+.stylewelcome-bg-accent.stylewelcome-two { background: #d2b0ff; width: 500px; height: 500px; bottom: -100px; right: -100px; }
+@keyframes stylewelcomeFloat {
+  from { transform: translateY(0); }
+  to { transform: translateY(25px); }
+}
+.stylewelcome-box {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(135deg, #e8e4f2 0%, #c6b9e8 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 35px;
+  padding: 80px 60px;
+  text-align: center;
+  max-width: 850px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  color: #2e2e2e;
+}
+.stylewelcome-brand-title {
+  font-weight: 700;
+  font-size: 2.8rem;
+  letter-spacing: 3px;
+  margin-bottom: 25px;
+  color: #4b3f77;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+}
+.stylewelcome-box h2 {
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: #3e3e3e;
+  margin-bottom: 25px;
+}
+.stylewelcome-box p {
+  font-size: 1.15rem;
+  color: #3f3f3f;
+  margin-bottom: 35px;
+  line-height: 1.8;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.stylewelcome-btn-start {
+  background-color: #4b3f77;
+  color: #fff;
+  border: none;
+  border-radius: 40px;
+  padding: 15px 55px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.35s ease;
+}
+.stylewelcome-btn-start:hover {
+  background-color: #6b5b95;
+  transform: scale(1.08);
+}

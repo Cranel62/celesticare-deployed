@@ -1,0 +1,211 @@
+/* ===== Global Background Wrapper ===== */
+.astroview-body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  color: white;
+  overflow-x: hidden;
+  min-height: 100vh;
+  transition: background-image 0.5s ease-in-out;
+}
+
+/* ===== Overlay & Fade Logic ===== */
+.astroview-page-overlay {
+  background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.34));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.4s ease;
+}
+
+.astroview-page-overlay.astroview-fade-out {
+  opacity: 0;
+}
+
+/* ===== Main Content ===== */
+.astroview-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  position: relative;
+  margin-top: 40px;
+}
+
+.astroview-main h2 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 60px;
+  text-align: center;
+  color: white;
+  position: relative;
+  z-index: 5;
+}
+
+/* ===== Diamonds Container & Alignment ===== */
+.astroview-diamond-container {
+  display: flex;
+  gap: 60px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.astroview-diamond-wrapper {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+}
+
+.astroview-diamond-images {
+  position: relative;
+  width: 240px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Zodiac icon taking the exact size of the previous vector frame */
+.astroview-zodiac-icon {
+  position: absolute;
+  width: 200px;
+  height: 400px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  object-fit: contain;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Hover effect - icon fades out to reveal the sign name */
+.astroview-diamond-wrapper:hover .astroview-zodiac-icon {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.astroview-sign-name {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: 700;
+  font-size: 22px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, #fff, #f0e68c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  width: 100%;
+  z-index: 3;
+}
+
+.astroview-diamond-wrapper:hover .astroview-sign-name {
+  opacity: 1;
+}
+
+/* Element Glow Effects */
+.fire .astroview-zodiac-icon:hover { filter: drop-shadow(0 0 15px rgba(255, 87, 34, 0.6)); }
+.water .astroview-zodiac-icon:hover { filter: drop-shadow(0 0 15px rgba(33, 150, 243, 0.6)); }
+.air .astroview-zodiac-icon:hover { filter: drop-shadow(0 0 15px rgba(255, 193, 7, 0.6)); }
+.earth .astroview-zodiac-icon:hover { filter: drop-shadow(0 0 15px rgba(76, 175, 80, 0.6)); }
+
+/* ===== Navigation Arrows ===== */
+.astroview-arrow {
+  position: absolute;
+  top: 50%;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  color: white;
+  transition: transform 0.3s ease, background 0.3s ease;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.astroview-arrow.astroview-left { left: 40px; transform: translateY(-50%); }
+.astroview-arrow.astroview-right { right: 40px; transform: translateY(-50%); }
+.astroview-arrow:hover { transform: translateY(-50%) scale(1.15); background: rgba(255, 255, 255, 0.3); }
+
+/* ===== Sign Detail Page ===== */
+.astroview-sign-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 20px 40px;
+}
+
+.astroview-sign-card {
+  background: rgba(99, 99, 99, 0.36);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 30px;
+  padding: 50px;
+  max-width: 850px;
+  width: 100%;
+  color: #fdfdfd;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.55);
+  text-align: left;
+  position: relative;
+  border: 1.5px solid rgba(99, 99, 99, 0.54);
+}
+
+.astroview-sign-title { font-size: 60px; line-height: 1.1; margin: 0 0 5px; font-weight: 800; }
+.astroview-sign-tagline { font-size: 22px; font-weight: 700; margin: 0 0 8px; color: #f0e68c; }
+.astroview-sign-dates { font-size: 18px; color: rgba(255, 255, 255, 0.8); margin: 0 0 25px; }
+
+.astroview-sign-section { margin: 22px 0; }
+.astroview-sign-section h3 { margin: 0 0 8px; font-size: 26px; font-weight: 700; }
+.astroview-sign-section p { margin: 0; line-height: 1.7; font-size: 17px; color: #f0f0f0; }
+
+.astroview-sign-actions { display: flex; align-items: center; gap: 15px; margin-top: 35px; }
+.astroview-cta {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.astroview-cta:hover { transform: translateY(-1px); opacity: 0.9; color: #fff; }
+
+@media (max-width: 768px) {
+  .astroview-arrow { display: none; }
+  .astroview-main h2 { margin-bottom: 30px; font-size: 2rem; }
+  .astroview-sign-card { padding: 30px; }
+  .astroview-sign-title { font-size: 42px; }
+}

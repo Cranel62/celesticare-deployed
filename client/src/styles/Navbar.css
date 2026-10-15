@@ -1,0 +1,241 @@
+/* client/src/styles/Navbar.css */
+
+/* 1. Base Navbar Container */
+/* 1. Base Navbar Container */
+.navbar {
+  background: #ffffff !important;
+  padding: 0 5% !important;
+  height: 100px !important;
+  font-family: 'Poppins', sans-serif !important;
+  /* Removed the border-bottom to eliminate the redundant line */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  z-index: 1030 !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; /* Smoother, single shadow */
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* 2. Brand Link Wrapper */
+.navbar-brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important; /* Reduced gap since the scaled image covers more horizontal space */
+  text-decoration: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* 3. Independent Logo Styling */
+.brand-logo-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 45px !important; /* Locks the physical space the logo occupies so it doesn't push text */
+}
+
+.custom-c-image {
+  height: 60px !important; 
+  width: auto !important;
+  display: block !important;
+  object-fit: contain !important;
+  margin: 0 !important;
+  /* The scale value acts as a zoom multiplier to bypass the transparent image padding */
+  transform: scale(3.5) translateY(-1px) !important; 
+}
+
+/* 4. Independent Text Styling */
+.brand-text-container {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.brand-text {
+  font-weight: 900 !important;
+  color: #984eb5 !important;
+  font-size: 40px !important; 
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+}
+
+/* 5. Desktop Navigation Menu */
+.navbar-nav {
+  display: flex !important;
+  align-items: center !important;
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 15px !important;
+}
+
+.navbar-nav .nav-item {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.navbar-nav .nav-link {
+  color: #333 !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+button.nav-link {
+  background: transparent !important;
+  border: none !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  cursor: pointer !important;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #984eb5 !important;
+  background-color: rgba(152, 78, 181, 0.05) !important;
+}
+
+.navbar-nav .nav-link.text-danger {
+  color: #d9534f !important;
+}
+
+.navbar-nav .nav-link.text-danger:hover {
+  background-color: rgba(217, 83, 79, 0.05) !important;
+}
+
+/* 6. Navigation Icons */
+.nav-icon {
+  width: 24px !important;
+  height: 24px !important;
+  margin-bottom: 5px !important;
+  transition: transform 0.3s ease !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+.nav-fa-icon {
+  font-size: 1.3rem !important;
+  margin-bottom: 5px !important;
+  transition: transform 0.3s ease !important;
+  display: block !important;
+}
+
+.nav-link:hover .nav-icon,
+.nav-link:hover .nav-fa-icon {
+  transform: translateY(-3px) !important;
+}
+
+/* 7. Mystic Arcana Custom Icon */
+.mystic-icon {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spirit-ball {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: radial-gradient(circle at 35% 35%, #a88beb, #7c5ac2);
+  border-radius: 50%;
+  box-shadow: 0 3px 6px rgba(124, 90, 194, 0.3), inset -2px -2px 4px rgba(0,0,0,0.1), inset 2px 2px 4px rgba(255,255,255,0.5);
+  border: 1px solid #9b7bda;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.spirit-ball::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+}
+
+.tarot-card {
+  position: absolute;
+  width: 12px;
+  height: 16px;
+  background: #ffb6c1;
+  border: 1px solid #ff9aac;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(255, 154, 172, 0.3);
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.card-top { top: -4px; right: 2px; transform: rotate(10deg); }
+.card-right { bottom: 0px; right: -6px; transform: rotate(75deg); background: #b0e0e6; border-color: #7fcdd9; }
+.card-bottom { bottom: -6px; left: 4px; transform: rotate(-10deg); background: #c1e1c1; border-color: #9fc99f; }
+.card-left { top: 2px; left: -6px; transform: rotate(-65deg); background: #fdd0f2; border-color: #fba9e7; }
+
+.nav-link:hover .spirit-ball { background: radial-gradient(circle at 35% 35%, #b69cf0, #8e6ad6); }
+.nav-link:hover .tarot-card { transform: translateY(-1px); filter: brightness(1.05); }
+
+/* 8. Mobile Responsiveness */
+@media (max-width: 991.98px) {
+  .navbar { 
+    height: 70px !important; 
+    padding: 0 20px !important; 
+  }
+  
+  .navbar-brand {
+    gap: 0px !important;
+  }
+  
+  .brand-logo-container {
+    width: 35px !important; 
+  }
+
+  .custom-c-image {
+    height: 40px !important; 
+    transform: scale(3.5) translateY(-1px) !important;
+  }
+  
+  .brand-text {
+    font-size: 20px !important; 
+  }
+  
+  .navbar-collapse {
+    background: #ffffff !important; 
+    position: absolute !important; 
+    top: 70px !important; 
+    left: 0 !important; 
+    right: 0 !important; 
+    padding: 15px !important;
+    border-bottom-left-radius: 12px !important;
+    border-bottom-right-radius: 12px !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; 
+    z-index: 1000 !important;
+  }
+  
+  .navbar-nav { 
+    flex-direction: column !important; 
+    align-items: flex-start !important; 
+  }
+  
+  .navbar-nav .nav-link { 
+    flex-direction: row !important; 
+    width: 100% !important; 
+    padding: 12px 15px !important; 
+  }
+  
+  .nav-icon, .nav-fa-icon, .mystic-icon { 
+    margin-bottom: 0 !important; 
+    margin-right: 15px !important; 
+  }
+}

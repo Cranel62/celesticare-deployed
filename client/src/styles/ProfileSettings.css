@@ -1,0 +1,152 @@
+/* =================================================
+   CELESTICARE - PROFILE SETTINGS STYLESHEET (SCOPED WITH .profilesettings-)
+   ================================================= */
+
+.profilesettings-body {
+  min-height: 100vh;
+  margin: 0;
+  background: linear-gradient(
+    to bottom, 
+    #090614 0%,     
+    #1e173d 25%,    
+    #422d6b 55%,    
+    #765a96 80%,    
+    #d4c5e3 100%    
+  );
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+  padding-top: calc(80px + 30px);
+  padding-bottom: 60px;
+}
+
+.profilesettings-container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: transparent;
+  padding: 0 20px;
+}
+
+.profilesettings-card {
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(193, 155, 250, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 3rem;
+  color: #ffffff;
+}
+
+.profilesettings-title { 
+  color: #ffffff; 
+  font-weight: 700; 
+  font-size: 1.8rem;
+  text-shadow: 0 0 15px rgba(193, 155, 250, 0.5);
+}
+
+.profilesettings-subtitle {
+  color: #d0cce6 !important;
+  font-size: 0.95rem;
+}
+
+.profilesettings-back-btn {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #c19bfa;
+  padding: 10px 20px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.profilesettings-back-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-color: #c19bfa;
+}
+
+.profilesettings-label {
+  font-weight: 600;
+  color: #c19bfa;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  display: block;
+  text-align: left;
+}
+
+.profilesettings-input {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border-radius: 30px !important;
+  padding: 12px 20px !important;
+  font-size: 0.95rem !important;
+  transition: all 0.3s ease !important;
+  color-scheme: dark;
+}
+
+.profilesettings-input::placeholder {
+  color: #b5adc9 !important;
+}
+
+.profilesettings-input:focus {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: #c19bfa !important;
+  box-shadow: 0 0 15px rgba(193, 155, 250, 0.4) !important;
+  outline: none !important;
+  color: #ffffff !important;
+}
+
+select.profilesettings-input option {
+  background-color: #1e173d !important;
+  color: #ffffff !important;
+}
+
+.profilesettings-save-btn {
+  background: linear-gradient(135deg, #c19bfa, #a628c5);
+  border: none;
+  border-radius: 30px;
+  padding: 14px 40px;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(166, 40, 197, 0.4);
+}
+
+.profilesettings-save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(166, 40, 197, 0.6);
+  background: linear-gradient(135deg, #d4c5e3, #c19bfa);
+}
+
+.profilesettings-alert {
+  border-radius: 14px;
+  padding: 12px 20px;
+  margin-bottom: 25px;
+  border: none;
+  font-weight: 500;
+}
+
+.alert-success.profilesettings-alert {
+  background: rgba(40, 167, 69, 0.2);
+  color: #d4edda;
+  border: 1px solid rgba(40, 167, 69, 0.4);
+}
+
+.alert-danger.profilesettings-alert {
+  background: rgba(220, 53, 69, 0.2);
+  color: #f8d7da;
+  border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+@media (max-width: 768px) {
+  .profilesettings-card {
+    padding: 1.5rem;
+  }
+}
