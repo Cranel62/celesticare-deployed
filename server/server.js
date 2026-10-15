@@ -19,13 +19,21 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
 ].filter(Boolean);
 
+const isAllowedOrigin = (origin) => {
+  if (!origin || allowedOrigins.includes(origin)) return true;
+
+  // Allow Vercel preview deployments for this frontend only.
+  return /^https:\/\/celesticare-deployed-client(?:-[a-z0-9-]+)?\.vercel\.app$/i.test(origin)
+    || /^https:\/\/celesticare-deployed-client-[a-z0-9-]+-cranel62s-projects\.vercel\.app$/i.test(origin);
+};
+
 app.set('trust proxy', 1);
 
 // Database & Security Config
 app.use(helmet()); 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       callback(null, true);
       return;
     }
