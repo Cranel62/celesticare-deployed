@@ -53,11 +53,7 @@ const sendEmail = async (options) => {
   }
 
   const brevoApiKey = String(process.env.BREVO_API_KEY || '').trim();
-  if (brevoApiKey) {
-    if (brevoApiKey.startsWith('xsmtpsib-')) {
-      throw new Error('BREVO_API_KEY contains an SMTP password. Create a separate Brevo API key starting with xkeysib-.');
-    }
-
+  if (brevoApiKey && !brevoApiKey.startsWith('xsmtpsib-')) {
     return sendViaBrevoApi({
       email: String(options.email).trim().toLowerCase(),
       subject: options.subject,
@@ -66,23 +62,26 @@ const sendEmail = async (options) => {
     });
   }
 
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('BREVO_API_KEY is required in production because Render Free blocks outbound SMTP ports.');
-  }
-
   const smtpConfig = ['BREVO_SMTP_HOST', 'BREVO_SMTP_USER', 'BREVO_SMTP_PASS'];
   const missingSmtpConfig = smtpConfig.filter((key) => !String(process.env[key] || '').trim());
   if (missingSmtpConfig.length > 0) {
-    throw new Error(`BREVO_API_KEY is required on Render. Missing SMTP fallback values: ${missingSmtpConfig.join(', ')}`);
+    throw new Error(`SMTP configuration is incomplete: ${missingSmtpConfig.join(', ')}`);
+  }
+
+  const configuredPort = Number(process.env.BREVO_SMTP_PORT) || 2525;
+  const port = process.env.NODE_ENV === 'production' && [25, 465, 587].includes(configuredPort)
+    ? 2525
+    : configuredPort;
+  if (port !== configuredPort) {
+    console.warn(`[Email] SMTP port ${configuredPort} is blocked on Render Free; using Brevo port 2525.`);
   }
 
   if (!transporter) {
-    const port = Number(process.env.BREVO_SMTP_PORT) || 587;
     transporter = nodemailer.createTransport({
       host: String(process.env.BREVO_SMTP_HOST).trim(),
       port,
       secure: port === 465,
-      requireTLS: port === 587,
+      requireTLS: port === 587 || port === 2525,
       connectionTimeout: 10000,
       greetingTimeout: 10000,
       socketTimeout: 15000,
