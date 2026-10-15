@@ -140,3 +140,9 @@
   text-decoration: underline;
   color: #d4c5e3;
 }
+
+.login-password-control { position: relative; }
+.login-password-control .login-form-control { padding-right: 52px; }
+.login-password-toggle { align-items: center; background: transparent; border: 0; color: #b5adc9; cursor: pointer; display: flex; height: 44px; justify-content: center; padding: 0; position: absolute; right: 7px; top: 1px; width: 42px; }
+.login-password-toggle:hover { color: #d8c7ff; }
+.login-password-toggle svg { fill: none; height: 19px; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; width: 19px; }
