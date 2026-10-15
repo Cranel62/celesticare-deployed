@@ -161,6 +161,8 @@
 .register-body::after { width: 300px; height: 300px; bottom: -160px; left: -100px; background: rgba(192, 132, 252, .1); }
 .register-box { background: rgba(17, 24, 39, .72); border: 1px solid rgba(148, 163, 184, .2); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .3), 0 0 55px rgba(99, 102, 241, .12); padding: 40px; }
 .register-brand { color: #f8fafc; text-shadow: 0 0 18px rgba(129, 140, 248, .45); }
+.security-badge { align-items: center; background: rgba(74, 222, 128, .08); border: 1px solid rgba(74, 222, 128, .22); border-radius: 999px; color: #86efac; display: flex; font-size: .7rem; gap: 7px; justify-content: center; margin: 14px auto 0; max-width: max-content; padding: 6px 12px; }
+.security-badge span { align-items: center; background: #4ade80; border-radius: 50%; color: #052e16; display: inline-flex; font-size: .62rem; font-weight: 800; height: 15px; justify-content: center; width: 15px; }
 .eyebrow { color: #a5b4fc; font-size: .72rem; font-weight: 700; letter-spacing: .14em; margin: 22px 0 8px; text-align: center; text-transform: uppercase; }
 .register-box h2 { color: #f8fafc; margin: 0 0 8px; }
 .register-subtitle { color: #94a3b8; font-size: .88rem; text-align: center; margin: 0 0 28px; }

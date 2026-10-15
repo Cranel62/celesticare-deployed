@@ -66,6 +66,7 @@ export default function Register() {
       <div className="register-body">
         <div className="register-box register-success">
           <div className="register-brand">CELESTICARE</div>
+          <div className="security-badge" role="status"><span aria-hidden="true">✓</span> Protected registration</div>
           <div className="success-icon" aria-hidden="true">✓</div>
           <p className="eyebrow">One last step</p>
           <h2>Verify your email</h2>
@@ -84,6 +85,7 @@ export default function Register() {
     <div className="register-body">
       <div className="register-box">
         <div className="register-brand">CELESTICARE</div>
+        <div className="security-badge" role="status"><span aria-hidden="true">✓</span> Protected registration</div>
         <p className="eyebrow">Secure access starts here</p>
         <h2>Create your account</h2>
         <p className="register-subtitle">Join CelestiCare with a protected account.</p>
