@@ -115,6 +115,8 @@ export default function Register() {
             <input
               id="reg-name"
               type="text"
+              pattern="[A-Za-z]+(?:[ '\u2019-][A-Za-z]+)*"
+              title="Use letters, spaces, hyphens, or apostrophes only."
               placeholder="Enter your full name"
               className={`register-form-control ${touched.name && errors.name ? 'has-error' : ''}`}
               required
@@ -122,7 +124,7 @@ export default function Register() {
               autoComplete="name"
               aria-invalid={Boolean(touched.name && errors.name)}
               aria-describedby="name-hint"
-              onChange={(e) => updateField('name', e.target.value)}
+              onChange={(e) => updateField('name', e.target.value.replace(/[^A-Za-z '\u2019-]/g, ''))}
             />
             <p id="name-hint" className={`field-hint ${touched.name && errors.name ? 'field-error' : ''}`}>{touched.name && errors.name ? errors.name : 'Use your real name'}</p>
           </div>
