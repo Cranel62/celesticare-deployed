@@ -4,6 +4,16 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
 
+const logEmailError = (context, error) => {
+  console.error(`[Email Error] ${context}`, {
+    message: error.message,
+    code: error.code,
+    responseCode: error.responseCode,
+    command: error.command,
+    response: error.response,
+  });
+};
+
 const getClientUrl = () => (process.env.CLIENT_URL || 'https://celesticare-deployed-client.vercel.app').replace(/\/$/, '');
 
 const sendVerificationEmail = async (user, rawToken) => {
@@ -48,7 +58,7 @@ exports.register = async (req, res, next) => {
           console.log(`[Email] Verification resend accepted by SMTP: ${emailInfo.messageId}`);
           return res.status(201).json({ success: true, message: 'Verification email resent. Please check your inbox.' });
         } catch (emailError) {
-          console.error(`[Email Error] Verification resend failed: ${emailError.message}`);
+          logEmailError('Verification resend failed', emailError);
           return res.status(502).json({ success: false, message: 'Account found, but Brevo could not send the verification email. Please try again.' });
         }
       }
@@ -72,7 +82,7 @@ exports.register = async (req, res, next) => {
       console.log(`[Email] Verification accepted by SMTP: ${emailInfo.messageId}`);
       return res.status(201).json({ success: true, message: 'Verification email sent. Please check your inbox.' });
     } catch (emailError) {
-      console.error(`[Email Error] Verification email failed: ${emailError.message}`);
+      logEmailError('Verification email failed', emailError);
       return res.status(502).json({
         success: false,
         message: 'Account created, but Brevo could not send the verification email. Please try registering again to resend it.',
