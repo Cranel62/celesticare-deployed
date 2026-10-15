@@ -14,12 +14,14 @@ const { apiLimiter } = require('./middleware/rateLimiter');
 const app = express();
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  'https://celesticare-deployed-client.vercel.app',
   'http://localhost:5173',
   'http://127.0.0.1:5173',
 ].filter(Boolean);
 
+app.set('trust proxy', 1);
+
 // Database & Security Config
-connectDB();
 app.use(helmet()); 
 app.use(cors({
   origin: (origin, callback) => {
@@ -46,4 +48,13 @@ app.use('/api/tarot', tarotRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+const startServer = async () => {
+  await connectDB();
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+};
+
+startServer().catch((error) => {
+  console.error(`[Startup Error] ${error.message}`);
+  process.exit(1);
+});

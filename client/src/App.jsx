@@ -99,6 +99,7 @@ export default function App() {
 
           {/* Auth, Dashboard & Security Settings */}
           <Route path="/register" element={<Register />} />
+          <Route path="/verify" element={<VerifyEmail />} />
           <Route path="/verify-email/:token" element={<VerifyEmail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

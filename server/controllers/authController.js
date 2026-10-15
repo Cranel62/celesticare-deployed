@@ -10,10 +10,21 @@ const generateToken = (id) => {
 
 exports.register = async (req, res, next) => {
   try {
-    const { username, name, email, password } = req.body;
+    const username = String(req.body.username || '').trim();
+    const name = String(req.body.name || '').trim();
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
 
     if (!username || !email || !password) {
       return res.status(400).json({ success: false, message: 'Please provide all required fields.' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
+    }
+
+    if (!process.env.CLIENT_URL) {
+      return res.status(500).json({ success: false, message: 'Client URL is not configured.' });
     }
 
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
@@ -33,8 +44,9 @@ exports.register = async (req, res, next) => {
     const rawToken = user.createEmailVerificationToken();
     await user.save();
 
-    // Updated to match router.get('/verify/:token', verifyEmail)
-    const verificationUrl = `${process.env.CLIENT_URL}/verify/${rawToken}`;
+    // The client route is intentionally a query-string URL so it works across devices and browsers.
+    const clientUrl = process.env.CLIENT_URL.replace(/\/$/, '');
+    const verificationUrl = `${clientUrl}/verify?token=${encodeURIComponent(rawToken)}`;
     const htmlMessage = `
       <h3>Welcome to CelestiCare, ${user.username}</h3>
       <p>Please confirm your email address to activate your account.</p>
@@ -57,7 +69,12 @@ exports.register = async (req, res, next) => {
 
 exports.verifyEmail = async (req, res, next) => {
   try {
-    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+    const rawToken = req.params.token || req.query.token;
+    if (!rawToken) {
+      return res.status(400).json({ success: false, message: 'Verification token is required.' });
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
     const user = await User.findOne({
       verificationToken: hashedToken,
       verificationTokenExpires: { $gt: Date.now() },
@@ -80,7 +97,8 @@ exports.verifyEmail = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
     const user = await User.findOne({ email }).select('+password');
 
     if (!user || !(await user.matchPassword(password))) {

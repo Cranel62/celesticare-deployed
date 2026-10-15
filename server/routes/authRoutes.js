@@ -5,6 +5,7 @@ const { protect } = require('../middleware/authMiddleware'); // <-- This is the 
 const { authLimiter } = require('../middleware/rateLimiter');
 
 router.post('/register', authLimiter, register);
+router.get('/verify', verifyEmail);
 router.get('/verify/:token', verifyEmail);
 router.post('/login', authLimiter, login); 
 router.get('/me', protect, getCurrentUser);

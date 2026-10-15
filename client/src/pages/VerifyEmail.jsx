@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
 import '../styles/VerifyEmail.css';
 
 export default function VerifyEmail() {
   const { token } = useParams();
+  const [searchParams] = useSearchParams();
+  const verificationToken = token || searchParams.get('token');
   const navigate = useNavigate();
   const [status, setStatus] = useState('verifying');
   const [message, setMessage] = useState('');
@@ -18,7 +20,11 @@ export default function VerifyEmail() {
 
     const triggerVerification = async () => {
       try {
-        const res = await API.get(`/auth/verify/${token}`);
+        if (!verificationToken) {
+          throw new Error('Verification token is missing.');
+        }
+
+        const res = await API.get('/auth/verify', { params: { token: verificationToken } });
         setStatus('success');
         setMessage(res.data.message || 'Your account has been successfully verified!');
       } catch (err) {
@@ -28,7 +34,7 @@ export default function VerifyEmail() {
     };
 
     triggerVerification();
-  }, [token]);
+  }, [verificationToken]);
 
   useEffect(() => {
     if (status === 'success') {

@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema(
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   // Guard against double-hashing legacy passwords
-  if (this.password.startsWith('$2y$') || this.password.startsWith('$2a$')) return;
+  if (this.password.startsWith('$2y$') || this.password.startsWith('$2a$') || this.password.startsWith('$2b$')) return;
   
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
