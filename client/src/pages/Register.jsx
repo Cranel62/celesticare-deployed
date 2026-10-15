@@ -4,12 +4,14 @@ import API from '../services/api';
 import '../styles/Register.css';
 
 const INITIAL_FORM = { username: '', name: '', email: '', password: '' };
+
 const validationRules = {
   username: (value) => /^[A-Za-z0-9_]{3,}$/.test(value),
   name: (value) => /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '\u2019-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/.test(value.trim()) && value.trim().length >= 2,
   email: (value) => /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(value),
   password: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(value),
 };
+
 const validationMessages = {
   username: 'Use 3+ characters with only letters, numbers, or underscores.',
   name: 'Enter a name with at least 2 letters.',
@@ -18,7 +20,11 @@ const validationMessages = {
 };
 
 function EyeIcon({ hidden }) {
-  return hidden ? <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8M9.9 5.1A10.7 10.7 0 0112 4.9c5.1 0 8.5 4.3 9.6 6.1a1.8 1.8 0 010 2c-.4.7-1.2 1.7-2.2 2.7M6.2 6.2c-1.8 1.2-3.1 2.8-3.8 4a1.8 1.8 0 000 2C3.5 14 6.9 18.3 12 18.3c.8 0 1.6-.1 2.3-.3" /></svg> : <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.4 12s3.4-6.2 9.6-6.2 9.6 6.2 9.6 6.2-3.4 6.2-9.6 6.2S2.4 12 2.4 12z" /><circle cx="12" cy="12" r="2.5" /></svg>;
+  return hidden ? (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8M9.9 5.1A10.7 10.7 0 0112 4.9c5.1 0 8.5 4.3 9.6 6.1a1.8 1.8 0 010 2c-.4.7-1.2 1.7-2.2 2.7M6.2 6.2c-1.8 1.2-3.1 2.8-3.8 4a1.8 1.8 0 000 2C3.5 14 6.9 18.3 12 18.3c.8 0 1.6-.1 2.3-.3" /></svg>
+  ) : (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.4 12s3.4-6.2 9.6-6.2 9.6 6.2 9.6 6.2-3.4 6.2-9.6 6.2S2.4 12 2.4 12z" /><circle cx="12" cy="12" r="2.5" /></svg>
+  );
 }
 
 export default function Register() {
@@ -30,9 +36,22 @@ export default function Register() {
   const [error, setError] = useState('');
 
   const errors = useMemo(() => Object.fromEntries(
-    Object.entries(validationRules).filter(([field, rule]) => formData[field] && !rule(formData[field])).map(([field]) => [field, validationMessages[field]])
+    Object.entries(validationRules)
+      .filter(([field, rule]) => formData[field] && !rule(formData[field]))
+      .map(([field]) => [field, validationMessages[field]])
   ), [formData]);
-  const passwordScore = useMemo(() => formData.password ? [formData.password.length >= 8, /[a-z]/.test(formData.password), /[A-Z]/.test(formData.password), /\d/.test(formData.password), /[^A-Za-z\d]/.test(formData.password)].filter(Boolean).length : 0, [formData.password]);
+
+  const passwordScore = useMemo(() => {
+    if (!formData.password) return 0;
+    return [
+      formData.password.length >= 8,
+      /[a-z]/.test(formData.password),
+      /[A-Z]/.test(formData.password),
+      /\d/.test(formData.password),
+      /[^A-Za-z\d]/.test(formData.password)
+    ].filter(Boolean).length;
+  }, [formData.password]);
+
   const strength = ['Weak', 'Weak', 'Fair', 'Good', 'Strong', 'Strong'][passwordScore];
 
   const updateField = (field, value) => {
@@ -43,7 +62,9 @@ export default function Register() {
 
   const validateForm = () => {
     setTouched(Object.fromEntries(Object.keys(INITIAL_FORM).map((field) => [field, true])));
-    return Object.keys(validationRules).every((field) => validationRules[field](formData[field].trim ? formData[field].trim() : formData[field]));
+    return Object.keys(validationRules).every((field) => 
+      validationRules[field](formData[field].trim ? formData[field].trim() : formData[field])
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -71,7 +92,7 @@ export default function Register() {
           <p className="eyebrow">One last step</p>
           <h2>Verify your email</h2>
           <div className="verify-notice">
-            <p>We sent a verification link to<br/><strong>{formData.email}</strong>.</p>
+            <p>We sent a verification link to<br/><strong>{formData.email}</strong> via Brevo.</p>
             <Link to="/login" className="btn-register verify-button">
               Go to Login
             </Link>
@@ -92,7 +113,7 @@ export default function Register() {
         
         {error && <div className="register-error" role="alert">{error}</div>}
         
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="register-field-group">
             <label htmlFor="reg-username">Username</label>
             <input
@@ -107,7 +128,9 @@ export default function Register() {
               aria-describedby="username-hint"
               onChange={(e) => updateField('username', e.target.value)}
             />
-            <p id="username-hint" className={`field-hint ${touched.username && errors.username ? 'field-error' : ''}`}>{touched.username && errors.username ? errors.username : '3+ characters · letters, numbers, and underscores'}</p>
+            <p id="username-hint" className={`field-hint ${touched.username && errors.username ? 'field-error' : ''}`}>
+              {touched.username && errors.username ? errors.username : '3+ characters · letters, numbers, and underscores'}
+            </p>
           </div>
 
           <div className="register-field-group">
@@ -115,8 +138,6 @@ export default function Register() {
             <input
               id="reg-name"
               type="text"
-              pattern="[A-Za-z]+(?:[ '\u2019-][A-Za-z]+)*"
-              title="Use letters, spaces, hyphens, or apostrophes only."
               placeholder="Enter your full name"
               className={`register-form-control ${touched.name && errors.name ? 'has-error' : ''}`}
               required
@@ -124,9 +145,11 @@ export default function Register() {
               autoComplete="name"
               aria-invalid={Boolean(touched.name && errors.name)}
               aria-describedby="name-hint"
-              onChange={(e) => updateField('name', e.target.value.replace(/[^A-Za-z '\u2019-]/g, ''))}
+              onChange={(e) => updateField('name', e.target.value)}
             />
-            <p id="name-hint" className={`field-hint ${touched.name && errors.name ? 'field-error' : ''}`}>{touched.name && errors.name ? errors.name : 'Use your real name'}</p>
+            <p id="name-hint" className={`field-hint ${touched.name && errors.name ? 'field-error' : ''}`}>
+              {touched.name && errors.name ? errors.name : 'Use your real name'}
+            </p>
           </div>
 
           <div className="register-field-group">
@@ -143,30 +166,60 @@ export default function Register() {
               aria-describedby="email-hint"
               onChange={(e) => updateField('email', e.target.value)}
             />
-            <p id="email-hint" className={`field-hint ${touched.email && errors.email ? 'field-error' : ''}`}>{touched.email && errors.email ? errors.email : 'We will send your verification link here'}</p>
+            <p id="email-hint" className={`field-hint ${touched.email && errors.email ? 'field-error' : ''}`}>
+              {touched.email && errors.email ? errors.email : 'We will send your verification link here'}
+            </p>
           </div>
 
           <div className="register-field-group">
             <label htmlFor="reg-password">Password</label>
-            <div className="password-control"><input
-              id="reg-password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="At least 8 characters"
-              className={`register-form-control ${touched.password && errors.password ? 'has-error' : ''}`}
-              required
-              minLength={8}
-              value={formData.password}
-              autoComplete="new-password"
-              aria-invalid={Boolean(touched.password && errors.password)}
-              aria-describedby="password-hint password-strength"
-              onChange={(e) => updateField('password', e.target.value)}
-            /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'}><EyeIcon hidden={showPassword} /></button></div>
-            {formData.password && <div id="password-strength" className={`password-strength strength-${strength.toLowerCase()}`} aria-live="polite"><div className="strength-header"><span>Password strength</span><strong>{strength}</strong></div><div className="strength-bar" aria-hidden="true">{[1, 2, 3, 4].map((segment) => <span key={segment} className={passwordScore >= segment + 1 ? 'active' : ''} />)}</div></div>}
-            <p id="password-hint" className={`field-hint ${touched.password && errors.password ? 'field-error' : ''}`}>{touched.password && errors.password ? errors.password : '8+ characters with upper, lower, number, and symbol'}</p>
+            <div className="password-control">
+              <input
+                id="reg-password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="At least 8 characters"
+                className={`register-form-control ${touched.password && errors.password ? 'has-error' : ''}`}
+                required
+                minLength={8}
+                value={formData.password}
+                autoComplete="new-password"
+                aria-invalid={Boolean(touched.password && errors.password)}
+                aria-describedby="password-hint password-strength"
+                onChange={(e) => updateField('password', e.target.value)}
+              />
+              <button 
+                type="button" 
+                className="password-toggle" 
+                onClick={() => setShowPassword((visible) => !visible)} 
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                <EyeIcon hidden={showPassword} />
+              </button>
+            </div>
+            {formData.password && (
+              <div id="password-strength" className={`password-strength strength-${strength.toLowerCase()}`} aria-live="polite">
+                <div className="strength-header">
+                  <span>Password strength</span>
+                  <strong>{strength}</strong>
+                </div>
+                <div className="strength-bar" aria-hidden="true">
+                  {[1, 2, 3, 4].map((segment) => (
+                    <span key={segment} className={passwordScore >= segment ? 'active' : ''} />
+                  ))}
+                </div>
+              </div>
+            )}
+            <p id="password-hint" className={`field-hint ${touched.password && errors.password ? 'field-error' : ''}`}>
+              {touched.password && errors.password ? errors.password : '8+ characters with upper, lower, number, and symbol'}
+            </p>
           </div>
 
           <button type="submit" className="btn-register" disabled={loading}>
-            {loading ? <><span className="loading-spinner" aria-hidden="true" /> Creating account...</> : 'Create account'}
+            {loading ? (
+              <><span className="loading-spinner" aria-hidden="true" /> Creating account...</>
+            ) : (
+              'Create account'
+            )}
           </button>
         </form>
         
