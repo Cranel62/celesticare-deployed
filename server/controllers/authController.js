@@ -26,7 +26,12 @@ const sendVerificationEmail = async (user, rawToken) => {
     <p>${verificationUrl}</p>
   `;
 
-  return sendEmail({ email: user.email, subject: 'CelestiCare Verification', html: htmlMessage });
+  return sendEmail({
+    email: user.email,
+    subject: 'CelestiCare Verification',
+    html: htmlMessage,
+    text: `Verify your CelestiCare account: ${verificationUrl}`,
+  });
 };
 
 const generateToken = (id) => {
