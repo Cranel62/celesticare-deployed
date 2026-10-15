@@ -4,6 +4,21 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
 
+const getClientUrl = () => (process.env.CLIENT_URL || 'https://celesticare-deployed-client.vercel.app').replace(/\/$/, '');
+
+const sendVerificationEmail = async (user, rawToken) => {
+  const verificationUrl = `${getClientUrl()}/verify?token=${encodeURIComponent(rawToken)}`;
+  const htmlMessage = `
+    <h3>Welcome to CelestiCare, ${user.username}</h3>
+    <p>Please confirm your email address to activate your account.</p>
+    <p><a href="${verificationUrl}">Verify Email Address</a></p>
+    <p>If the button does not work, copy and paste this link into your browser:</p>
+    <p>${verificationUrl}</p>
+  `;
+
+  return sendEmail({ email: user.email, subject: 'CelestiCare Verification', html: htmlMessage });
+};
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE || '1d' });
 };
@@ -23,12 +38,20 @@ exports.register = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
     }
 
-    if (!process.env.CLIENT_URL) {
-      return res.status(500).json({ success: false, message: 'Client URL is not configured.' });
-    }
-
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
+      if (existingUser.email === email && !existingUser.isVerified) {
+        const rawToken = existingUser.createEmailVerificationToken();
+        await existingUser.save();
+        try {
+          const emailInfo = await sendVerificationEmail(existingUser, rawToken);
+          console.log(`[Email] Verification resend accepted by SMTP: ${emailInfo.messageId}`);
+          return res.status(201).json({ success: true, message: 'Verification email resent. Please check your inbox.' });
+        } catch (emailError) {
+          console.error(`[Email Error] Verification resend failed: ${emailError.message}`);
+          return res.status(502).json({ success: false, message: 'Account found, but Brevo could not send the verification email. Please try again.' });
+        }
+      }
       return res.status(400).json({ success: false, message: 'Email or Username is already registered.' });
     }
 
@@ -44,24 +67,17 @@ exports.register = async (req, res, next) => {
     const rawToken = user.createEmailVerificationToken();
     await user.save();
 
-    // The client route is intentionally a query-string URL so it works across devices and browsers.
-    const clientUrl = process.env.CLIENT_URL.replace(/\/$/, '');
-    const verificationUrl = `${clientUrl}/verify?token=${encodeURIComponent(rawToken)}`;
-    const htmlMessage = `
-      <h3>Welcome to CelestiCare, ${user.username}</h3>
-      <p>Please confirm your email address to activate your account.</p>
-      <a href="${verificationUrl}">Verify Email Address</a>
-    `;
-
-    // Do not make registration wait for a slow SMTP handshake. The token remains
-    // valid for 24 hours, so a temporary email outage does not invalidate the account.
-    void sendEmail({ email: user.email, subject: 'CelestiCare Verification', html: htmlMessage })
-      .catch((emailError) => console.error(`[Email Error] Verification email failed: ${emailError.message}`));
-
-    return res.status(201).json({
-      success: true,
-      message: 'Account created. Your verification email is being sent.',
-    });
+    try {
+      const emailInfo = await sendVerificationEmail(user, rawToken);
+      console.log(`[Email] Verification accepted by SMTP: ${emailInfo.messageId}`);
+      return res.status(201).json({ success: true, message: 'Verification email sent. Please check your inbox.' });
+    } catch (emailError) {
+      console.error(`[Email Error] Verification email failed: ${emailError.message}`);
+      return res.status(502).json({
+        success: false,
+        message: 'Account created, but Brevo could not send the verification email. Please try registering again to resend it.',
+      });
+    }
   } catch (error) {
     next(error);
   }

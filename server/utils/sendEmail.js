@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer');
 
+let transporter;
+
 const sendEmail = async (options) => {
   const requiredEmailConfig = [
     'BREVO_SMTP_HOST',
@@ -8,26 +10,30 @@ const sendEmail = async (options) => {
     'FROM_NAME',
     'FROM_EMAIL',
   ];
-  const missingConfig = requiredEmailConfig.filter((key) => !process.env[key]);
+  const missingConfig = requiredEmailConfig.filter((key) => !String(process.env[key] || '').trim());
   if (missingConfig.length > 0) {
     throw new Error(`Email configuration is incomplete: ${missingConfig.join(', ')}`);
   }
 
-  const transporter = nodemailer.createTransport({
-    host: process.env.BREVO_SMTP_HOST,
-    port: Number(process.env.BREVO_SMTP_PORT) || 587,
-    secure: Number(process.env.BREVO_SMTP_PORT) === 465,
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
-    auth: {
-      user: process.env.BREVO_SMTP_USER,
-      pass: process.env.BREVO_SMTP_PASS,
-    },
-  });
+  if (!transporter) {
+    const port = Number(process.env.BREVO_SMTP_PORT) || 587;
+    transporter = nodemailer.createTransport({
+      host: String(process.env.BREVO_SMTP_HOST).trim(),
+      port,
+      secure: port === 465,
+      requireTLS: port === 587,
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
+      auth: {
+        user: String(process.env.BREVO_SMTP_USER).trim(),
+        pass: String(process.env.BREVO_SMTP_PASS).trim(),
+      },
+    });
+  }
 
   const mailOptions = {
-    from: `"${process.env.FROM_NAME}" <${process.env.FROM_EMAIL}>`,
+    from: `"${String(process.env.FROM_NAME).trim()}" <${String(process.env.FROM_EMAIL).trim()}>`,
     to: options.email,
     subject: options.subject,
     html: options.html,
