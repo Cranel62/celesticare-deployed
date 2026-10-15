@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import zodiacWheel from '../assets/images/zodiac_circle.png';
+import astralMusic from '../music/Astral.mp3';
 import '../styles/Landing.css';
 
 export default function Landing() {
@@ -61,7 +63,7 @@ export default function Landing() {
   return (
     <div className="landing-body">
       <audio ref={audioRef} autoPlay loop>
-        <source src="/assets/music/Astral.mp3" type="audio/mpeg" />
+        <source src={astralMusic} type="audio/mpeg" />
       </audio>
 
       <div className={`landing-music-control ${isMuted ? 'muted' : ''}`} onClick={toggleMusic} title="Toggle Ambient Audio">
@@ -83,7 +85,7 @@ export default function Landing() {
             <Link to="/get-to-know" className="landing-hero-btn">Get Started</Link>
           </div>
           <div className="landing-hero-image">
-            <img ref={wheelRef} src="/src/assets/images/zodiac_circle.png" alt="Zodiac Wheel" className="landing-wheel" draggable="false" />
+            <img ref={wheelRef} src={zodiacWheel} alt="Zodiac Wheel" className="landing-wheel" draggable="false" />
           </div>
         </section>
 

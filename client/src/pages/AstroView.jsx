@@ -6,6 +6,7 @@ import fireBg from './zodiac/fire_bg.jpeg';
 import waterBg from './zodiac/water_bg.jpeg';
 import airBg from './zodiac/air_bg.jpeg';
 import earthBg from './zodiac/earth_bg.jpeg';
+import { assetUrl } from '../utils/assetUrls';
 
 const ELEMENTS = ['fire', 'water', 'air', 'earth'];
 
@@ -111,10 +112,9 @@ export default function AstroView() {
                     <div className="astroview-diamond-images" onClick={() => handleViewSign(slug)}>
                       {/* Zodiac icon replacing the vector frame directly */}
                       <img 
-                        src={`/src/assets/icons/zodiac/${sd.icon}`} 
+                        src={assetUrl(`/src/assets/icons/zodiac/${sd.icon}`)}
                         alt={sd.name} 
                         className="astroview-zodiac-icon"
-                        onError={(e) => { e.target.src = '/src/assets/icons/zodiac/fallback.png'; }}
                       />
                       <span className="astroview-sign-name">{sd.name}</span>
                     </div>

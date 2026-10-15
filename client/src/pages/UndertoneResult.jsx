@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { assetUrl } from '../utils/assetUrls';
 import '../styles/Undertone.css';
 
 const palettes = {
@@ -106,7 +107,7 @@ export default function UndertoneResult() {
   }, [undertone, zodiacSign, navigate]);
 
   const palette = palettes[zodiacSign]?.[undertone] || ["#ccc","#999","#666","#333","#000","#fff"];
-  const wheelImage = `/src/pages/undertone/assets/${undertone || 'neutral'}_wheel.png`;
+  const wheelImage = assetUrl(`/src/pages/undertone/assets/${undertone || 'neutral'}_wheel.png`);
   const season = determineSeason(zodiacSign, undertone);
 
   return (

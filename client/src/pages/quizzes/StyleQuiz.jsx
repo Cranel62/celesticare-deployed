@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import API from '../../services/api';
 import '../../styles/StyleQuiz.css';
 import { CLOTHING_SETS } from '../../data/clothingSets';
+import { assetUrl } from '../../utils/assetUrls';
 
 const LIMITS = { tops: 2, bottoms: 2, shoes: 1, accessories: 4, dresses: 1 };
 
@@ -115,8 +116,8 @@ export default function StyleQuiz() {
   };
 
   const mannequinImgSrc = gender === 'fem' 
-    ? '/src/pages/quizzes/assets/fem_mannequin.png' 
-    : '/src/pages/quizzes/assets/Untitled24_20251020142151.png';
+    ? assetUrl('/src/pages/quizzes/assets/fem_mannequin.png')
+    : assetUrl('/src/pages/quizzes/assets/Untitled24_20251020142151.png');
 
   return (
     <div className="sq-container">

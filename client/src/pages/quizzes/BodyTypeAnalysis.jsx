@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/BodyTypeAnalysis.css';
+import { assetUrl } from '../../utils/assetUrls';
 
 export default function BodyTypeAnalysis() {
   const navigate = useNavigate();
@@ -17,20 +18,20 @@ export default function BodyTypeAnalysis() {
   }, []);
 
   const femCards = [
-    { id: 'hourglass', img: '/src/pages/quizzes/assets/fem_hourglass.png', label: 'Hourglass' },
-    { id: 'inverted', img: '/src/pages/quizzes/assets/fem_inverted.png', label: 'Inverted Triangle' },
-    { id: 'pear', img: '/src/pages/quizzes/assets/fem_pear.png', label: 'Pear' },
-    { id: 'rectangle', img: '/src/pages/quizzes/assets/fem_rectangle.png', label: 'Rectangle' },
-    { id: 'round', img: '/src/pages/quizzes/assets/fem_round.png', label: 'Round' },
-    { id: 'standard', img: '/src/pages/quizzes/assets/fem_standard.png', label: 'Standard' }
+    { id: 'hourglass', img: assetUrl('/src/pages/quizzes/assets/fem_hourglass.png'), label: 'Hourglass' },
+    { id: 'inverted', img: assetUrl('/src/pages/quizzes/assets/fem_inverted.png'), label: 'Inverted Triangle' },
+    { id: 'pear', img: assetUrl('/src/pages/quizzes/assets/fem_pear.png'), label: 'Pear' },
+    { id: 'rectangle', img: assetUrl('/src/pages/quizzes/assets/fem_rectangle.png'), label: 'Rectangle' },
+    { id: 'round', img: assetUrl('/src/pages/quizzes/assets/fem_round.png'), label: 'Round' },
+    { id: 'standard', img: assetUrl('/src/pages/quizzes/assets/fem_standard.png'), label: 'Standard' }
   ];
 
   const mascCards = [
-    { id: 'trapezoid', img: '/src/pages/quizzes/assets/masc_trapezoid.png', label: 'Trapezoid' },
-    { id: 'rectangle', img: '/src/pages/quizzes/assets/masc_rectangle.png', label: 'Rectangle' },
-    { id: 'round', img: '/src/pages/quizzes/assets/masc_round.png', label: 'Round' },
-    { id: 'triangle', img: '/src/pages/quizzes/assets/masc_triangle.png', label: 'Triangle' },
-    { id: 'inverted', img: '/src/pages/quizzes/assets/masc_inverted.png', label: 'Inverted Triangle' }
+    { id: 'trapezoid', img: assetUrl('/src/pages/quizzes/assets/masc_trapezoid.png'), label: 'Trapezoid' },
+    { id: 'rectangle', img: assetUrl('/src/pages/quizzes/assets/masc_rectangle.png'), label: 'Rectangle' },
+    { id: 'round', img: assetUrl('/src/pages/quizzes/assets/masc_round.png'), label: 'Round' },
+    { id: 'triangle', img: assetUrl('/src/pages/quizzes/assets/masc_triangle.png'), label: 'Triangle' },
+    { id: 'inverted', img: assetUrl('/src/pages/quizzes/assets/masc_inverted.png'), label: 'Inverted Triangle' }
   ];
 
   const cards = gender === 'masculine' ? mascCards : femCards;

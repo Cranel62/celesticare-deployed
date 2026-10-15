@@ -11,6 +11,7 @@ import glamImg from './quizzes/assets/glam2.jpg';
 import grungeImg from './quizzes/assets/grunge2.jpg';
 import punkImg from './quizzes/assets/punk1.jpg';
 import y2kImg from './quizzes/assets/y2k1.jpg';
+import { assetUrl } from '../utils/assetUrls';
 
 // --- DATA DICTIONARIES ---
 const zodiacDetails = {
@@ -176,7 +177,7 @@ export default function Dashboard() {
                     <p className="mb-1"><strong>Undertone:</strong> {user.undertone || onboardingStorage.undertone}</p>
                   </div>
                   <div className="dashboard-color-visual mb-3">
-                    <img src={`/src/pages/undertone/assets/${(user.undertone || onboardingStorage.undertone).toLowerCase()}_wheel.png`} alt="Undertone wheel" className="undertoneresult-wheel" />
+                    <img src={assetUrl(`/src/pages/undertone/assets/${(user.undertone || onboardingStorage.undertone).toLowerCase()}_wheel.png`)} alt="Undertone wheel" className="undertoneresult-wheel" />
                   </div>
                   <div className="dashboard-color-palette mb-3">
                     {(palettes[(user.undertone || onboardingStorage.undertone)] || []).map((color, i) => (

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
+import { assetUrl } from '../utils/assetUrls';
 import '../styles/Undertone.css';
 
 export default function UndertoneTest() {
@@ -51,15 +52,15 @@ export default function UndertoneTest() {
 
         <div className="undertonetest-images">
           <div className="undertonetest-image-wrapper" onClick={() => handleSelection('cool')}>
-            <div className="undertonetest-image-option" style={{ backgroundImage: "url('/src/pages/undertone/assets/cool_skin.png')" }}></div>
+            <div className="undertonetest-image-option" style={{ backgroundImage: `url(${assetUrl('/src/pages/undertone/assets/cool_skin.png')})` }}></div>
             <div className="undertonetest-label">Cool</div>
           </div>
           <div className="undertonetest-image-wrapper" onClick={() => handleSelection('neutral')}>
-            <div className="undertonetest-image-option" style={{ backgroundImage: "url('/src/pages/undertone/assets/neutral_skin.png')" }}></div>
+            <div className="undertonetest-image-option" style={{ backgroundImage: `url(${assetUrl('/src/pages/undertone/assets/neutral_skin.png')})` }}></div>
             <div className="undertonetest-label">Neutral</div>
           </div>
           <div className="undertonetest-image-wrapper" onClick={() => handleSelection('warm')}>
-            <div className="undertonetest-image-option" style={{ backgroundImage: "url('/src/pages/undertone/assets/warm_skin.png')" }}></div>
+            <div className="undertonetest-image-option" style={{ backgroundImage: `url(${assetUrl('/src/pages/undertone/assets/warm_skin.png')})` }}></div>
             <div className="undertonetest-label">Warm</div>
           </div>
         </div>

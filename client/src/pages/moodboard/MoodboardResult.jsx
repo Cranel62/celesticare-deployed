@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../../services/api';
+import { assetUrl } from '../../utils/assetUrls';
 import '../../styles/Moodboard.css';
 
 // Importing local quiz asset images for aesthetics
@@ -155,7 +156,7 @@ export default function MoodboardResult() {
               <p><strong>Undertone:</strong> <span style={{ textTransform: 'capitalize' }}>{undertone}</span></p>
               
               <div className="color-wheel-container">
-                <img src={`/src/pages/undertone/assets/${undertone}_wheel.png`} alt="Color Wheel" className="undertoneresult-wheel" />
+                <img src={assetUrl(`/src/pages/undertone/assets/${undertone}_wheel.png`)} alt="Color Wheel" className="undertoneresult-wheel" />
               </div>
               <div className="color-palette">
                 {userPalette.map((color, i) => (
@@ -168,7 +169,7 @@ export default function MoodboardResult() {
               <h2 className="section-title">Celestial Influence</h2>
               <div className="zodiac-display">
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <img src={ZODIAC_CIRCLES[user.zodiac_sign] ? `src/pages/moodboard/assets/${ZODIAC_CIRCLES[user.zodiac_sign]}` : 'src/pages/moodboard/assets/zodiac_circle.png'} alt="Zodiac" className="zodiac-symbol" />
+                  <img src={assetUrl(ZODIAC_CIRCLES[user.zodiac_sign] ? `src/pages/moodboard/assets/${ZODIAC_CIRCLES[user.zodiac_sign]}` : '/src/assets/images/zodiac_circle.png')} alt="Zodiac" className="zodiac-symbol" />
                 </div>
                 <h4>{user.zodiac_sign}</h4>
                 <p style={{ fontStyle: 'italic', color: '#666' }}>{ASTRO_FACTS[user.zodiac_sign]}</p>

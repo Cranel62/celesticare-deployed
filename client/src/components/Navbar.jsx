@@ -5,6 +5,7 @@ import '../styles/Navbar.css';
 
 // Import the logo directly from your src/includes folder
 import logoImage from '../includes/logo1.png';
+import { assetUrl } from '../utils/assetUrls';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -50,13 +51,13 @@ export default function Navbar() {
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/dashboard">
-                    <img src="/src/assets/icons/dashboard.png" alt="Dashboard" className="nav-icon" />
+                    <img src={assetUrl('/src/assets/icons/dashboard.png')} alt="Dashboard" className="nav-icon" />
                     <span>Dashboard</span>
                   </Link>
                 </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/astro-view">
-                    <img src="/src/assets/icons/zodiacs.png" alt="Zodiacs" className="nav-icon" />
+                    <img src={assetUrl('/src/assets/icons/zodiacs.png')} alt="Zodiacs" className="nav-icon" />
                     <span>AstroView</span>
                   </Link>
                 </li>
