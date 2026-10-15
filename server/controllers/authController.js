@@ -14,6 +14,22 @@ const logEmailError = (context, error) => {
   });
 };
 
+const getEmailFailureMessage = (error) => {
+  if (error.message.includes('SMTP password')) {
+    return 'Render has an SMTP password in BREVO_API_KEY. Add a Brevo API key starting with xkeysib-.';
+  }
+
+  if (error.code === 'BREVO_API_ERROR' && error.responseCode === 401) {
+    return 'Brevo rejected the API key. Create a new Brevo API key and update BREVO_API_KEY in Render.';
+  }
+
+  if (error.code === 'BREVO_API_ERROR' && error.responseCode === 400) {
+    return 'Brevo rejected the sender or recipient. Verify FROM_EMAIL as an authorized sender in Brevo.';
+  }
+
+  return 'Brevo could not send the verification email. Check the Render logs for the email error details.';
+};
+
 const getClientUrl = () => (process.env.CLIENT_URL || 'https://celesticare-deployed-client.vercel.app').replace(/\/$/, '');
 
 const sendVerificationEmail = async (user, rawToken) => {
@@ -64,7 +80,7 @@ exports.register = async (req, res, next) => {
           return res.status(201).json({ success: true, message: 'Verification email resent. Please check your inbox.' });
         } catch (emailError) {
           logEmailError('Verification resend failed', emailError);
-          return res.status(502).json({ success: false, message: 'Account found, but Brevo could not send the verification email. Please try again.' });
+          return res.status(502).json({ success: false, message: `Account found, but ${getEmailFailureMessage(emailError)}` });
         }
       }
       return res.status(400).json({ success: false, message: 'Email or Username is already registered.' });
@@ -90,7 +106,7 @@ exports.register = async (req, res, next) => {
       logEmailError('Verification email failed', emailError);
       return res.status(502).json({
         success: false,
-        message: 'Account created, but Brevo could not send the verification email. Please try registering again to resend it.',
+        message: `Account created, but ${getEmailFailureMessage(emailError)}`,
       });
     }
   } catch (error) {

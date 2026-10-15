@@ -52,7 +52,12 @@ const sendEmail = async (options) => {
     throw new Error(`Email configuration is incomplete: ${missingConfig.join(', ')}`);
   }
 
-  if (String(process.env.BREVO_API_KEY || '').trim()) {
+  const brevoApiKey = String(process.env.BREVO_API_KEY || '').trim();
+  if (brevoApiKey) {
+    if (brevoApiKey.startsWith('xsmtpsib-')) {
+      throw new Error('BREVO_API_KEY contains an SMTP password. Create a separate Brevo API key starting with xkeysib-.');
+    }
+
     return sendViaBrevoApi({
       email: String(options.email).trim().toLowerCase(),
       subject: options.subject,
