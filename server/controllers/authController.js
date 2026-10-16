@@ -190,6 +190,20 @@ exports.updateProfile = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
 
+    if (Object.prototype.hasOwnProperty.call(req.body, 'username')) {
+      const username = String(req.body.username || '').trim();
+      if (!username) {
+        return res.status(400).json({ success: false, message: 'Username is required.' });
+      }
+
+      const existingUser = await User.findOne({ username, _id: { $ne: user._id } });
+      if (existingUser) {
+        return res.status(409).json({ success: false, message: 'That username is already taken.' });
+      }
+
+      user.username = username;
+    }
+
     const allowedFields = ['name', 'gender', 'birthdate', 'zodiac_sign', 'undertone'];
     for (const field of allowedFields) {
       if (Object.prototype.hasOwnProperty.call(req.body, field)) {

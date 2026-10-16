@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../services/api';
 import '../styles/Register.css';
@@ -34,6 +34,7 @@ export default function Register() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const errors = useMemo(() => Object.fromEntries(
     Object.entries(validationRules)
@@ -70,6 +71,10 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+    if (!acceptedTerms) {
+      setError('Please accept the Terms & Conditions to create an account.');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
@@ -92,7 +97,7 @@ export default function Register() {
           <p className="eyebrow">One last step</p>
           <h2>Verify your email</h2>
           <div className="verify-notice">
-            <p>We sent a verification link to<br/><strong>{formData.email}</strong> via Brevo.</p>
+            <p>We sent a verification link to<br/><strong>{formData.email}</strong></p>
             <Link to="/login" className="btn-register verify-button">
               Go to Login
             </Link>
@@ -212,6 +217,21 @@ export default function Register() {
             <p id="password-hint" className={`field-hint ${touched.password && errors.password ? 'field-error' : ''}`}>
               {touched.password && errors.password ? errors.password : '8+ characters with upper, lower, number, and symbol'}
             </p>
+          </div>
+
+          <div className="register-terms">
+            <input
+              id="accept-terms"
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => {
+                setAcceptedTerms(e.target.checked);
+                setError('');
+              }}
+            />
+            <label htmlFor="accept-terms">
+              I agree to the <Link to="/terms" className="register-link">Terms &amp; Conditions</Link>.
+            </label>
           </div>
 
           <button type="submit" className="btn-register" disabled={loading}>

@@ -55,6 +55,13 @@ const styleInfo = {
   streetwear: { name: 'Urban Streetwear', color: '#000000', text_color: '#ffffff' }
 };
 
+const formatBirthdate = (birthdate) => {
+  if (!birthdate) return 'Not set';
+
+  const [year, month, day] = birthdate.split('T')[0].split('-');
+  return year && month && day ? `${month}-${day}-${year}` : 'Not set';
+};
+
 export default function Dashboard() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('celesticare_user') || '{}'));
   const [latestOutfitItems, setLatestOutfitItems] = useState([]);
@@ -113,7 +120,7 @@ export default function Dashboard() {
           
           <div className="d-flex justify-content-between align-items-start mb-4">
             <div>
-              <h2 className="mb-1 dashboard-welcome-title">The Universe Welcomes your presence, {user.username || user.name || 'Cosmic Traveler'}!</h2>
+              <h2 className="mb-1 dashboard-welcome-title">The Universe Welcomes your presence, { user.name || 'Cosmic Traveler'}!</h2>
               <p className="mb-0 text-muted dashboard-welcome-subtitle">This is your profile dashboard where your zodiac style journey begins.</p>
             </div>
             <div className="d-flex flex-column align-items-end gap-2">
@@ -134,7 +141,7 @@ export default function Dashboard() {
                 <div className="dashboard-profile-item"><span className="dashboard-profile-label">Username:</span><span className="dashboard-profile-value">{user.username || 'Not set'}</span></div>
                 <div className="dashboard-profile-item"><span className="dashboard-profile-label">Email:</span><span className="dashboard-profile-value">{user.email}</span></div>
                 <div className="dashboard-profile-item"><span className="dashboard-profile-label">Gender:</span><span className="dashboard-profile-value">{user.gender || 'Not set'}</span></div>
-                <div className="dashboard-profile-item"><span className="dashboard-profile-label">Birthdate:</span><span className="dashboard-profile-value">{user.birthdate ? user.birthdate.split('T')[0] : 'Not set'}</span></div>
+                <div className="dashboard-profile-item"><span className="dashboard-profile-label">Birthdate:</span><span className="dashboard-profile-value">{formatBirthdate(user.birthdate)}</span></div>
                 <div className="dashboard-profile-item"><span className="dashboard-profile-label">Zodiac:</span><span className="dashboard-profile-value">{user.zodiac_sign || 'Not set'}</span></div>
                 <Link to="/profile" className="dashboard-btn-style mt-3">Profile Settings</Link>
               </div>

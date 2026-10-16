@@ -309,6 +309,26 @@
   backdrop-filter: blur(8px);
 }
 
+.register-terms {
+  align-items: flex-start;
+  color: #cbd5e1;
+  display: flex;
+  font-size: .82rem;
+  gap: 10px;
+  line-height: 1.5;
+  margin: 4px 2px 16px;
+}
+
+.register-terms input {
+  accent-color: #a855f7;
+  flex: 0 0 auto;
+  margin-top: 4px;
+}
+
+.register-terms label {
+  cursor: pointer;
+}
+
 .register-footer {
   color: #94a3b8;
   font-size: .86rem;

@@ -15,6 +15,7 @@ import AboutUs from './pages/AboutUs';
 import Register from './pages/Register';
 import VerifyEmail from './pages/VerifyEmail';
 import Login from './pages/Login';
+import Terms from './pages/Terms';
 import Dashboard from './pages/Dashboard';
 import ProfileSettings from './pages/ProfileSettings';
 import SecuritySettings from './pages/SecuritySettings'; // <-- Newly added Security component
@@ -99,6 +100,7 @@ export default function App() {
 
           {/* Auth, Dashboard & Security Settings */}
           <Route path="/register" element={<Register />} />
+          <Route path="/terms" element={<Terms />} />
           <Route path="/verify" element={<VerifyEmail />} />
           <Route path="/verify-email/:token" element={<VerifyEmail />} />
           <Route path="/login" element={<Login />} />
