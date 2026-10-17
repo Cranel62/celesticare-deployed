@@ -15,8 +15,35 @@ html, body {
 
 #root {
   width: 100%;
-  min-height: 100vh;
   overflow-x: hidden;
+}
+
+:root {
+  color-scheme: light;
+  --app-surface: #ffffff;
+  --app-text: #333333;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --app-surface: #211d2b;
+  --app-text: #f3edf8;
+}
+
+body {
+  color: var(--app-text);
+  background: var(--app-surface);
+}
+
+.app-content {
+  min-height: 100vh;
+  padding-top: var(--app-navbar-height);
+}
+
+:root[data-theme='dark'] input,
+:root[data-theme='dark'] select,
+:root[data-theme='dark'] textarea {
+  color-scheme: dark;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */

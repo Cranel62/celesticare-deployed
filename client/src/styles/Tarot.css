@@ -73,7 +73,7 @@
 
 /* Heart, Head & Path result */
 .four-result-page {
-  min-height: calc(100vh - 100px);
+  min-height: calc(100vh - var(--app-navbar-height, 76px));
   padding: 0 16px 30px;
   background:
     radial-gradient(circle at 8% 15%, rgba(221, 185, 240, 0.5) 0 1px, transparent 1.5px),
@@ -422,9 +422,6 @@
   background: rgba(70, 25, 40, 0.55);
 }
 .four-result-page .stars { z-index: 0; opacity: 0.45; }
-.four-result-open .navbar { display: none !important; }
-.four-result-open #root > div { padding-top: 0 !important; }
-.four-result-open .four-result-page { min-height: 100vh; }
 
 @media (max-width: 650px) {
   .four-result-page { padding: 0 12px 22px; }
@@ -453,13 +450,10 @@
 }
 
 /* Single-card reading result */
-.single-result-open .navbar { display: none !important; }
-.single-result-open #root > div { padding-top: 0 !important; }
-.single-result-open .single-result-page { padding-top: 0; }
 .single-result-page {
-  min-height: 100vh;
-  padding: 18px 16px 14px;
+  min-height: calc(100vh - var(--app-navbar-height, 76px));
   align-items: flex-start;
+  padding-top: 100px;
   background:
     radial-gradient(circle at 13% 24%, rgba(226, 190, 240, 0.48) 0 1px, transparent 1.5px),
     radial-gradient(circle at 30% 82%, rgba(226, 190, 240, 0.4) 0 1px, transparent 1.5px),
@@ -758,11 +752,9 @@
 }
 
 @media (min-width: 761px) {
-  .single-result-open .single-result-page { padding-top: 28px; }
   .single-result-page {
-    height: 100vh;
-    min-height: 100vh;
-    padding: 28px 0;
+    height: calc(100vh - var(--app-navbar-height, 0px));
+    min-height: calc(100vh - var(--app-navbar-height, 76px));
     overflow: hidden;
     background:
       radial-gradient(circle at 12.6% 3%, rgba(226, 190, 240, 0.62) 0 1.5px, transparent 2px),
@@ -779,7 +771,7 @@
     grid-template-columns: 285px minmax(0, 1fr);
     gap: 42px;
     width: min(calc(100% - 120px), 1244px);
-    height: calc(100vh - 56px);
+    height: calc(100vh - var(--app-navbar-height, 76px) - 56px);
     margin: 0 auto;
   }
   .single-card-column {

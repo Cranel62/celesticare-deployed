@@ -73,7 +73,6 @@ export default function SingleCardResult() {
   const infoColumnRef = useRef(null);
 
   useEffect(() => {
-    document.body.classList.add('single-result-open');
     const timer1 = setTimeout(() => setEntranceFading(true), 1500);
     const timer2 = setTimeout(() => setShowEntrance(false), 2200);
     API.post('/tarot/save', {
@@ -85,7 +84,6 @@ export default function SingleCardResult() {
       .catch(err => console.error('Save reading error:', err));
 
     return () => {
-      document.body.classList.remove('single-result-open');
       clearTimeout(timer1);
       clearTimeout(timer2);
     };

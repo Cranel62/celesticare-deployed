@@ -2,7 +2,8 @@
   background: linear-gradient(135deg, #495482 0%, #9b83d3 100%);
   color: #333;
   min-height: 100vh;
-  padding: 2rem 1rem;
+  padding-top: 100px;
+  padding-bottom: 60px;
 }
 .editorial-container {
   max-width: 1400px; margin: 0 auto;

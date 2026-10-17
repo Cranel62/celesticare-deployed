@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import '../styles/AstroView.css';
 
 // --- IMPORT BACKGROUNDS & ASSETS ---
@@ -102,7 +102,7 @@ export default function AstroView() {
           <main className="astroview-main">
             <h2>{ELEMENT_LABEL[activeElem]}</h2>
             
-            <div className="astroview-arrow astroview-left" onClick={handlePrevElem}>←</div>
+            <div className="astroview-arrow astroview-left" onClick={handlePrevElem}>≺</div>
 
             <div className="astroview-diamond-container">
               {ELEMENT_SIGNS[activeElem].map((slug) => {
@@ -123,7 +123,7 @@ export default function AstroView() {
               })}
             </div>
 
-            <div className="astroview-arrow astroview-right" onClick={handleNextElem}>→</div>
+            <div className="astroview-arrow astroview-right" onClick={handleNextElem}>≻</div>
           </main>
         ) : (
           <main className="astroview-sign-page">
@@ -152,9 +152,6 @@ export default function AstroView() {
               <div className="astroview-sign-actions">
                 <button className="astroview-cta" onClick={() => handleBackToElem(SIGN_DATA[activeSign].element)}>
                   Back to {SIGN_DATA[activeSign].element} signs
-                </button>
-                <button className="astroview-cta" onClick={() => handleBackToElem('fire')}>
-                  All Elements
                 </button>
               </div>
             </div>

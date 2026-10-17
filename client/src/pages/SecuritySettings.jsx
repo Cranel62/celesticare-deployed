@@ -113,6 +113,9 @@ export default function SecuritySettings() {
           <i className="fas fa-info-circle" style={{ color: '#6b5b95', marginRight: '10px' }}></i>
           Set up security questions to protect your account. You'll need these if you forget your password.
         </div>
+        <p style={{ color: '#cfcfcf', fontSize: '0.9rem', marginBottom: '24px' }}>
+          Passwords and security-question answers are stored as one-way hashes, not readable text. Choose recovery answers that are difficult to guess and do not reuse your password.
+        </p>
 
         {message && <div style={{ background: '#d1fae5', color: '#065f46', padding: '12px', borderRadius: '8px', marginBottom: '20px', textAlign: 'center' }}>{message}</div>}
         {error && <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px', borderRadius: '8px', marginBottom: '20px', textAlign: 'center' }}>{error}</div>}

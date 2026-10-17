@@ -21,6 +21,23 @@
   margin-bottom: 40px;
 }
 
+.sq-gender-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: -20px auto 35px;
+  font-weight: 600;
+}
+
+.sq-gender-select {
+  border: 1px solid rgba(212, 198, 255, 0.6);
+  border-radius: 8px;
+  background: #fff;
+  color: #30263a;
+  padding: 8px 12px;
+}
+
 .sq-layout {
   display: flex;
   justify-content: center;
@@ -80,15 +97,19 @@
   margin-bottom: 25px;
 }
 
-.sq-category h3 {
+.sq-category-toggle {
   background: rgba(255, 255, 255, 0.08);
   padding: 10px 15px;
   border-radius: 15px;
   color: #cbbfff;
   font-size: 1.1rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   cursor: pointer;
 }
 
@@ -121,6 +142,10 @@
   width: auto;
   height: 120px;
   padding: 5px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
   display: flex;
   justify-content: center;
   align-items: center;

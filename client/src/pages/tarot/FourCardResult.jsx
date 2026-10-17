@@ -134,11 +134,6 @@ export default function FourCardResult() {
   const [loadError, setLoadError] = useState(initialSpread.error);
 
   useEffect(() => {
-    document.body.classList.add('four-result-open');
-    return () => document.body.classList.remove('four-result-open');
-  }, []);
-
-  useEffect(() => {
     if (readingId) {
       API.get(`/tarot/reading/${readingId}`)
         .then(res => {
@@ -188,6 +183,7 @@ export default function FourCardResult() {
   return (
     <main className="tarot-body four-result-page">
       <div className="stars" aria-hidden="true" />
+  
       <div className="tarot-container four-result-container">
         <header className="four-result-header">
           <h1>☪ The Heart, Head &amp; Path ☪</h1>

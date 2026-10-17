@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../services/api';
 import '../styles/Dashboard.css';
@@ -64,6 +64,7 @@ const formatBirthdate = (birthdate) => {
 
 export default function Dashboard() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('celesticare_user') || '{}'));
+  const initialUser = useRef(user);
   const [latestOutfitItems, setLatestOutfitItems] = useState([]);
   const [saveError, setSaveError] = useState('');
 
@@ -73,17 +74,19 @@ export default function Dashboard() {
 
     if (token && onboardingData.zodiac_sign) {
       API.put('/auth/profile', {
-        name: onboardingData.name || user.name,
-        gender: onboardingData.gender || user.gender,
-        birthdate: onboardingData.birthdate || user.birthdate,
+        name: onboardingData.name || initialUser.current.name,
+        gender: onboardingData.gender || initialUser.current.gender,
+        birthdate: onboardingData.birthdate || initialUser.current.birthdate,
         zodiac_sign: onboardingData.zodiac_sign,
-        undertone: onboardingData.undertone || user.undertone
+        undertone: onboardingData.undertone || initialUser.current.undertone
       }).then(({ data }) => {
         const updatedUser = data.user;
         localStorage.setItem('celesticare_user', JSON.stringify(updatedUser));
         setUser(updatedUser);
         localStorage.removeItem('celesticare_onboarding');
-      }).catch(() => {});
+      }).catch((error) => {
+        setSaveError(error.response?.data?.message || 'Unable to save your onboarding profile details.');
+      });
     }
 
     API.get('/auth/me').then(({ data }) => {
@@ -98,7 +101,11 @@ export default function Dashboard() {
       if (data.success && data.outfit && data.outfit.outfit_data) {
         setLatestOutfitItems(data.outfit.outfit_data);
       }
-    }).catch(() => {});
+    }).catch((error) => {
+      if (error.response?.status !== 404) {
+        setSaveError(error.response?.data?.message || 'Unable to load your latest outfit.');
+      }
+    });
   }, []);
 
   const zData = zodiacDetails[user.zodiac_sign] || {
@@ -107,6 +114,7 @@ export default function Dashboard() {
   };
 
   const hasMoodboard = user.aesthetic_result && user.style_result;
+  const hasMissingProfileDetails = !user.name || !user.gender || !user.birthdate || !user.zodiac_sign;
 
   // Robust check: Inspect both user database record and temporary onboarding local storage for an undertone choice
   const onboardingStorage = JSON.parse(localStorage.getItem('celesticare_onboarding') || '{}');
@@ -123,14 +131,23 @@ export default function Dashboard() {
               <h2 className="mb-1 dashboard-welcome-title">The Universe Welcomes your presence, { user.name || 'Cosmic Traveler'}!</h2>
               <p className="mb-0 text-muted dashboard-welcome-subtitle">This is your profile dashboard where your zodiac style journey begins.</p>
             </div>
-            <div className="d-flex flex-column align-items-end gap-2">
-              <Link to="/security" className="btn btn-warning dashboard-secure-btn" style={{ borderRadius: '30px', padding: '10px 25px', color: '#2e2e2e', fontWeight: '600' }}>
-                <i className="fas fa-shield-alt me-2"></i>{user.security_setup_complete ? 'Security Settings' : 'Secure Account'}
-              </Link>
-            </div>
+            {!user.security_setup_complete && (
+              <div className="d-flex flex-column align-items-end gap-2">
+                <Link to="/security" className="btn btn-warning dashboard-secure-btn" style={{ borderRadius: '30px', padding: '10px 25px', color: '#2e2e2e', fontWeight: '600' }}>
+                  <i className="fas fa-shield-alt me-2"></i>Secure Account
+                </Link>
+              </div>
+            )}
           </div>
 
           {saveError && <div className="alert alert-danger dashboard-alert" role="alert">{saveError}</div>}
+
+          {hasMissingProfileDetails && (
+            <div className="dashboard-profile-notice mb-3" role="status">
+              Complete your profile details to personalize your astro insights.
+              <Link to="/profile" className="dashboard-btn-style">Set profile details</Link>
+            </div>
+          )}
 
           <div className="dashboard-grid-container">
             {/* PROFILE SECTION */}
@@ -139,7 +156,7 @@ export default function Dashboard() {
               <div className="dashboard-profile-info">
                 <div className="dashboard-profile-item"><span className="dashboard-profile-label">Name:</span><span className="dashboard-profile-value">{user.name || 'Not set'}</span></div>
                 <div className="dashboard-profile-item"><span className="dashboard-profile-label">Username:</span><span className="dashboard-profile-value">{user.username || 'Not set'}</span></div>
-                <div className="dashboard-profile-item"><span className="dashboard-profile-label">Email:</span><span className="dashboard-profile-value">{user.email}</span></div>
+                <div className="dashboard-profile-item"><span className="dashboard-profile-label">Email:</span><span className="dashboard-profile-value">{user.email || 'Not set'}</span></div>
                 <div className="dashboard-profile-item"><span className="dashboard-profile-label">Gender:</span><span className="dashboard-profile-value">{user.gender || 'Not set'}</span></div>
                 <div className="dashboard-profile-item"><span className="dashboard-profile-label">Birthdate:</span><span className="dashboard-profile-value">{formatBirthdate(user.birthdate)}</span></div>
                 <div className="dashboard-profile-item"><span className="dashboard-profile-label">Zodiac:</span><span className="dashboard-profile-value">{user.zodiac_sign || 'Not set'}</span></div>
@@ -163,12 +180,12 @@ export default function Dashboard() {
                 <div className="dashboard-zodiac-detail-item"><span className="dashboard-zodiac-label">Compatibility:</span><span className="dashboard-zodiac-value" style={{ fontWeight: '600' }}>{zData.compatibility}</span></div>
               </div>
               <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                {user.birthdate ? (
+                {user.birthdate && user.zodiac_sign ? (
                   <Link to="/astro-insights" className="dashboard-astro-glow-btn">VIEW FULL CHART</Link>
                 ) : (
                   <>
-                    <button className="dashboard-astro-glow-btn" disabled>VIEW FULL CHART</button>
-                    <p className="text-muted mt-2" style={{ fontSize: '0.85rem' }}><i className="fas fa-info-circle"></i> Set birthdate to unlock</p>
+                    <Link to="/profile" className="dashboard-astro-glow-btn">SET PROFILE DETAILS</Link>
+                    <p className="text-muted mt-2" style={{ fontSize: '0.85rem' }}><i className="fas fa-info-circle"></i> Add your birthdate and zodiac sign to unlock your chart.</p>
                   </>
                 )}
               </div>

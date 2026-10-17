@@ -15,6 +15,7 @@ import AboutUs from './pages/AboutUs';
 import Register from './pages/Register';
 import VerifyEmail from './pages/VerifyEmail';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
 import Terms from './pages/Terms';
 import Dashboard from './pages/Dashboard';
 import ProfileSettings from './pages/ProfileSettings';
@@ -65,7 +66,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Navbar /> 
-      <div style={{ paddingTop: '100px' }}> 
+      <div className="app-content"> 
         <Routes>
           {/* Onboarding, Core & Info Pages */}
           <Route path="/" element={<Landing />} />
@@ -104,6 +105,7 @@ export default function App() {
           <Route path="/verify" element={<VerifyEmail />} />
           <Route path="/verify-email/:token" element={<VerifyEmail />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
           <Route path="/security" element={<ProtectedRoute><SecuritySettings /></ProtectedRoute>} /> {/* <-- Route mapped here */}

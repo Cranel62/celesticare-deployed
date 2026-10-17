@@ -306,6 +306,73 @@ exports.setupSecurity = async (req, res, next) => {
   }
 };
 
+exports.getPasswordRecoveryQuestions = async (req, res, next) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Account email is required.' });
+    }
+
+    const user = await User.findOne({ email }).select('+security_questions');
+    if (!user || !user.isVerified || user.security_questions.length !== 3) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password recovery is unavailable. Check that the email is correct and that security questions have been set up.',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      questions: user.security_questions.map(({ question }) => question),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.resetPasswordWithSecurityQuestions = async (req, res, next) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
+    const answers = Array.isArray(req.body.answers) ? req.body.answers : [];
+
+    if (!email || !password || answers.length !== 3) {
+      return res.status(400).json({ success: false, message: 'Email, all three security answers, and a new password are required.' });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
+    }
+
+    const user = await User.findOne({ email }).select('+security_questions +password');
+    if (!user || !user.isVerified || user.security_questions.length !== 3) {
+      return res.status(400).json({ success: false, message: 'The email or security answers are incorrect.' });
+    }
+
+    const answersMatch = await Promise.all(user.security_questions.map(async (savedQuestion, index) => {
+      const submittedAnswer = answers[index];
+      if (
+        !submittedAnswer
+        || submittedAnswer.question !== savedQuestion.question
+        || typeof submittedAnswer.answer !== 'string'
+        || !savedQuestion.answerHash
+      ) {
+        return false;
+      }
+      return bcrypt.compare(submittedAnswer.answer.trim().toLowerCase(), savedQuestion.answerHash);
+    }));
+
+    if (answersMatch.some((matches) => !matches)) {
+      return res.status(400).json({ success: false, message: 'The email or security answers are incorrect.' });
+    }
+
+    user.password = password;
+    await user.save();
+    return res.status(200).json({ success: true, message: 'Password reset successfully. You can now sign in.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.deleteAccount = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select('+password');

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../../services/api';
 import '../../styles/StyleQuiz.css';
@@ -10,15 +10,15 @@ const LIMITS = { tops: 2, bottoms: 2, shoes: 1, accessories: 4, dresses: 1 };
 // Calibrated coordinate offsets for exact mannequin anatomical alignment
 const defaultPositions = {
   fem: {
-    tops: { top: '120px', left: '10px' },
-    bottoms: { top: '300px', left: '10px' },
+    tops: { top: '66px', left: '10px' },
+    bottoms: { top: '120px', left: '10px' },
     dresses: { top: '110px', left: '10px' },
     shoes: { top: '560px', left: '15px' },
     accessories: { top: '140px', left: '15px' }
   },
   masc: {
-    tops: { top: '110px', left: '10px' },
-    bottoms: { top: '290px', left: '10px' },
+    tops: { top: '6px', left: '15px' },
+    bottoms: { top: '130px', left: '10px' },
     shoes: { top: '560px', left: '15px' },
     accessories: { top: '130px', left: '15px' }
   }
@@ -26,20 +26,14 @@ const defaultPositions = {
 
 export default function StyleQuiz() {
   const navigate = useNavigate();
-  const [gender, setGender] = useState('fem');
+  const [gender, setGender] = useState(() => {
+    const user = JSON.parse(localStorage.getItem('celesticare_user') || '{}');
+    return user.gender?.toLowerCase() === 'masculine' ? 'masc' : 'fem';
+  });
   const [droppedItems, setDroppedItems] = useState([]);
   const [expandedCategory, setExpandedCategory] = useState('tops');
   const [itemToRemove, setItemToRemove] = useState(null);
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('celesticare_user') || '{}');
-    const userGender = user.gender?.toLowerCase();
-    if (userGender === 'masculine') {
-      setGender('masc');
-    } else {
-      setGender('fem');
-    }
-  }, []);
+  const nextItemId = useRef(0);
 
   const handleDragStart = (e, item, category) => {
     e.dataTransfer.setData('application/json', JSON.stringify({ ...item, category }));
@@ -59,7 +53,7 @@ export default function StyleQuiz() {
     const x = e.clientX - rect.left - 160;
     const y = e.clientY - rect.top - 160;
 
-    setDroppedItems([...droppedItems, { ...data, x, y, id: Date.now() }]);
+    setDroppedItems([...droppedItems, { ...data, x, y, id: ++nextItemId.current }]);
   };
 
   const handleItemClick = (item, category) => {
@@ -82,7 +76,7 @@ export default function StyleQuiz() {
         category, 
         x, 
         y, 
-        id: Date.now() 
+        id: ++nextItemId.current
       }
     ]);
   };
@@ -125,6 +119,20 @@ export default function StyleQuiz() {
       <div className="sq-bg-accent sq-two"></div>
       
       <h1 className="sq-title">Dress Your Model</h1>
+      <label className="sq-gender-label">
+        Outfit styling
+        <select
+          className="sq-gender-select"
+          value={gender}
+          onChange={(event) => {
+            setGender(event.target.value);
+            setDroppedItems([]);
+          }}
+        >
+          <option value="fem">Feminine styling</option>
+          <option value="masc">Masculine styling</option>
+        </select>
+      </label>
       <div className="sq-layout">
         
         <div className="sq-canvas-section">
@@ -138,7 +146,7 @@ export default function StyleQuiz() {
             {droppedItems.map(item => (
               <img 
                 key={item.id} src={item.src} alt="clothing"
-                onContextMenu={(e) => { e.preventDefault(); setItemsToRemoveState(item.id); }}
+                onContextMenu={(e) => { e.preventDefault(); setItemToRemove(item.id); }}
                 style={{ position: 'absolute', left: `${item.x}px`, top: `${item.y}px`, width: '320px', zIndex: 10, cursor: 'grab' }}
               />
             ))}
@@ -152,20 +160,24 @@ export default function StyleQuiz() {
             {['tops', 'bottoms', 'dresses', 'shoes', 'accessories'].map(category => {
               if (category === 'dresses' && gender === 'masc') return null;
               
-              const targetCategoryKey = category === 'shoes' ? 'accessories' : (category === 'accessories' ? 'shoes' : category);
-              const categoryItems = CLOTHING_SETS[gender]?.[targetCategoryKey] || [];
+              const categoryItems = CLOTHING_SETS[gender]?.[category] || [];
               
               return (
                 <div key={category} className="sq-category sq-mb-3">
-                  <h3 onClick={() => setExpandedCategory(expandedCategory === category ? '' : category)}>
+                  <button
+                    className="sq-category-toggle"
+                    type="button"
+                    aria-expanded={expandedCategory === category}
+                    onClick={() => setExpandedCategory(expandedCategory === category ? '' : category)}
+                  >
                     {category.toUpperCase()} <span>{expandedCategory === category ? '▼' : '▶'}</span>
-                  </h3>
+                  </button>
                   {expandedCategory === category && (
                     <div className="sq-category-content sq-open">
                       {categoryItems.map((item, i) => (
-                        <div key={i} className="sq-item" draggable onDragStart={(e) => handleDragStart(e, item, category)} onClick={() => handleItemClick(item, category)}>
-                          <img src={item.src} alt="item" />
-                        </div>
+                        <button key={i} type="button" className="sq-item" draggable onDragStart={(e) => handleDragStart(e, item, category)} onClick={() => handleItemClick(item, category)} aria-label={`Add ${item.name} to outfit`}>
+                          <img src={item.src} alt="" />
+                        </button>
                       ))}
                     </div>
                   )}

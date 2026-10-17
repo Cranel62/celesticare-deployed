@@ -4,8 +4,8 @@
 /* 1. Base Navbar Container */
 .navbar {
   background: #ffffff !important;
-  padding: 0 5% !important;
-  height: 100px !important;
+  padding: 0 3% !important;
+  height: var(--app-navbar-height, 76px) !important;
   font-family: 'Poppins', sans-serif !important;
   /* Removed the border-bottom to eliminate the redundant line */
   position: fixed !important;
@@ -16,6 +16,23 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; /* Smoother, single shadow */
   display: flex !important;
   align-items: center !important;
+}
+
+:root[data-theme='dark'] .navbar,
+:root[data-theme='dark'] .navbar-collapse {
+  background: #211d2b !important;
+}
+
+:root[data-theme='dark'] .navbar-nav .nav-link {
+  color: #f3edf8 !important;
+}
+
+:root[data-theme='dark'] .navbar-nav .nav-icon {
+  filter: invert(1) brightness(1.6);
+}
+
+.navbar-inner {
+  height: 100%;
 }
 
 /* 2. Brand Link Wrapper */
@@ -33,17 +50,17 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 45px !important; /* Locks the physical space the logo occupies so it doesn't push text */
+  width: 38px !important;
 }
 
 .custom-c-image {
-  height: 60px !important; 
+  height: 46px !important; 
   width: auto !important;
   display: block !important;
   object-fit: contain !important;
   margin: 0 !important;
   /* The scale value acts as a zoom multiplier to bypass the transparent image padding */
-  transform: scale(3.5) translateY(-1px) !important; 
+  transform: scale(2.8) translateY(-1px) !important; 
 }
 
 /* 4. Independent Text Styling */
@@ -55,7 +72,7 @@
 .brand-text {
   font-weight: 900 !important;
   color: #984eb5 !important;
-  font-size: 40px !important; 
+  font-size: 30px !important; 
   letter-spacing: 2px !important;
   text-transform: uppercase !important;
   margin: 0 !important;
@@ -84,7 +101,7 @@
   flex-direction: column !important;
   align-items: center !important;
   text-decoration: none !important;
-  padding: 8px 12px !important;
+  padding: 6px 10px !important;
   border-radius: 8px !important;
   transition: all 0.3s ease !important;
 }
@@ -112,17 +129,17 @@ button.nav-link {
 
 /* 6. Navigation Icons */
 .nav-icon {
-  width: 24px !important;
-  height: 24px !important;
-  margin-bottom: 5px !important;
+  width: 20px !important;
+  height: 20px !important;
+  margin-bottom: 3px !important;
   transition: transform 0.3s ease !important;
   object-fit: contain !important;
   display: block !important;
 }
 
 .nav-fa-icon {
-  font-size: 1.3rem !important;
-  margin-bottom: 5px !important;
+  font-size: 1.1rem !important;
+  margin-bottom: 3px !important;
   transition: transform 0.3s ease !important;
   display: block !important;
 }
@@ -186,10 +203,19 @@ button.nav-link {
 .nav-link:hover .spirit-ball { background: radial-gradient(circle at 35% 35%, #b69cf0, #8e6ad6); }
 .nav-link:hover .tarot-card { transform: translateY(-1px); filter: brightness(1.05); }
 
+.navbar-toggler {
+  border: 1px solid rgba(152, 78, 181, 0.35) !important;
+  padding: 6px 9px !important;
+}
+
 /* 8. Mobile Responsiveness */
 @media (max-width: 991.98px) {
+  :root {
+    --app-navbar-height: 64px;
+  }
+
   .navbar { 
-    height: 70px !important; 
+    height: 64px !important; 
     padding: 0 20px !important; 
   }
   
@@ -198,22 +224,22 @@ button.nav-link {
   }
   
   .brand-logo-container {
-    width: 35px !important; 
+    width: 30px !important; 
   }
 
   .custom-c-image {
-    height: 40px !important; 
-    transform: scale(3.5) translateY(-1px) !important;
+    height: 34px !important; 
+    transform: scale(2.8) translateY(-1px) !important;
   }
   
   .brand-text {
-    font-size: 20px !important; 
+    font-size: 18px !important; 
   }
   
   .navbar-collapse {
     background: #ffffff !important; 
     position: absolute !important; 
-    top: 70px !important; 
+    top: 64px !important; 
     left: 0 !important; 
     right: 0 !important; 
     padding: 15px !important;
@@ -221,6 +247,11 @@ button.nav-link {
     border-bottom-right-radius: 12px !important;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; 
     z-index: 1000 !important;
+    display: none !important;
+  }
+
+  .navbar-collapse.show {
+    display: block !important;
   }
   
   .navbar-nav { 
@@ -232,6 +263,10 @@ button.nav-link {
     flex-direction: row !important; 
     width: 100% !important; 
     padding: 12px 15px !important; 
+  }
+
+  .navbar-nav .nav-item {
+    width: 100%;
   }
   
   .nav-icon, .nav-fa-icon, .mystic-icon { 

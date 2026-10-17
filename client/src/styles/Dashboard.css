@@ -15,7 +15,7 @@
   );
   font-family: 'Poppins', sans-serif;
   overflow-x: hidden;
-  padding-top: calc(80px + 30px);
+  padding-top: 100px;
   padding-bottom: 60px;
 }
 
@@ -192,6 +192,59 @@
 .dashboard-moodboard-incomplete-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
 .dashboard-moodboard-incomplete-title { font-size: 1.2rem; font-weight: 700; color: #f0ecfc; margin-bottom: 6px; }
 .dashboard-moodboard-incomplete-subtitle { font-size: 0.88px; color: #d0cce6; }
+
+.dashboard-profile-notice {
+  color: #f0ecfc;
+  background: rgba(193, 155, 250, 0.12);
+  border: 1px solid rgba(193, 155, 250, 0.35);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+:root[data-theme='light'] .dashboard-body {
+  background: linear-gradient(to bottom, #f5f0fb, #e9ddf5);
+}
+
+:root[data-theme='light'] .dashboard-card {
+  color: #30263a;
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(109, 76, 133, 0.18);
+  box-shadow: 0 15px 35px rgba(59, 36, 75, 0.12);
+}
+
+:root[data-theme='light'] .dashboard-card h2,
+:root[data-theme='light'] .dashboard-zodiac-name,
+:root[data-theme='light'] .dashboard-profile-value,
+:root[data-theme='light'] .dashboard-zodiac-value,
+:root[data-theme='light'] .dashboard-profile-notice,
+:root[data-theme='light'] .dashboard-moodboard-incomplete-title {
+  color: #30263a;
+  text-shadow: none;
+}
+
+:root[data-theme='light'] .dashboard-profile-section,
+:root[data-theme='light'] .dashboard-astro-section,
+:root[data-theme='light'] .dashboard-color-section,
+:root[data-theme='light'] .dashboard-aesthetic-section,
+:root[data-theme='light'] .dashboard-outfit-section,
+:root[data-theme='light'] .dashboard-moodboard-section {
+  background: rgba(250, 247, 253, 0.95);
+  border-color: rgba(109, 76, 133, 0.15);
+}
+
+:root[data-theme='light'] .dashboard-card .text-muted,
+:root[data-theme='light'] .dashboard-moodboard-incomplete-subtitle {
+  color: #62586c !important;
+}
+
+:root[data-theme='light'] .dashboard-profile-notice {
+  background: #f3eafd;
+  border-color: #d6c0e8;
+}
+
+:root[data-theme='dark'] .dashboard-body {
+  background: linear-gradient(to bottom, #090614, #1e173d 25%, #422d6b 55%, #765a96 80%, #d4c5e3);
+}
 
 /* Responsive */
 @media (max-width: 768px) {
