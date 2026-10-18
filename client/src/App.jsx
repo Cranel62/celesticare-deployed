@@ -69,7 +69,10 @@ export default function App() {
       <div className="app-content"> 
         <Routes>
           {/* Onboarding, Core & Info Pages */}
-          <Route path="/" element={<Landing />} />
+          <Route
+            path="/"
+            element={localStorage.getItem('celesticare_token') ? <Navigate to="/dashboard" replace /> : <Landing />}
+          />
           <Route path="/about" element={<AboutUs />} /> 
           <Route path="/get-to-know" element={<GetToKnow />} />
           <Route path="/zodiac-result" element={<ZodiacResult />} />

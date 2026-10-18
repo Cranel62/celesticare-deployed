@@ -64,6 +64,7 @@ export default function StyleResult() {
   const info = STYLE_INFO[topStyle] || STYLE_INFO['minimalist'];
 
   return (
+    <div style={{ padding: '100px 0 60px' }}>
     <div className="sr-container">
       {/* Redesigned Grid Display Panel */}
       <div className="sr-display">
@@ -112,6 +113,7 @@ export default function StyleResult() {
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 }

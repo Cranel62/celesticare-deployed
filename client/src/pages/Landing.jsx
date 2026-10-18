@@ -113,7 +113,7 @@ export default function Landing() {
               </div>
               <div className="col-md-4">
                 <div className="landing-feature-card">
-                  <div className="landing-feature-icon"><i className="fas fa-crystal-ball"></i></div>
+                  <div className="landing-feature-icon"><i className="fas fa-crystal-ball">🔮</i></div>
                   <h4>Mystic Arcana Tarot</h4>
                   <p>Access all 78 cards of the tarot - Major Arcana, Cups, Wands, Swords, and Pentacles. Choose between Single Card Reading or Four-Card Spread.</p>
                   <div className="landing-feature-badge">Conflict Resolution</div>
@@ -228,12 +228,12 @@ export default function Landing() {
                 <p className="landing-footer-description">
                   Where astrology meets fashion. Discover your unique style through the wisdom of the stars and express your true cosmic self.
                 </p>
-                <div className="landing-social-links">
-                  <a href="#"><i className="fab fa-facebook-f"></i></a>
-                  <a href="#"><i className="fab fa-instagram"></i></a>
-                  <a href="#"><i className="fab fa-twitter"></i></a>
-                  <a href="#"><i className="fab fa-pinterest"></i></a>
-                </div>
+                {/* <div className="landing-social-links"> */}
+                  {/* <a href="#"><i className="fab fa-facebook-f"></i></a> */}
+                  {/* <a href="#"><i className="fab fa-instagram"></i></a> */}
+                  {/* <a href="#"><i className="fab fa-twitter"></i></a> */}
+                  {/* <a href="#"><i className="fab fa-pinterest"></i></a> */}
+                {/* </div> */}
               </div>
               <div className="col-lg-3 col-md-4 mb-4">
                 <div className="landing-footer-links">
@@ -244,16 +244,7 @@ export default function Landing() {
                   <Link to="/about">About Us</Link>
                 </div>
               </div>
-              <div className="col-lg-4 col-md-4 mb-4">
-                <div className="landing-footer-links">
-                  <h5>Newsletter</h5>
-                  <p className="landing-footer-description" style={{marginBottom: '1rem'}}>Get daily fashion tips based on your zodiac sign.</p>
-                  <div className="input-group mb-3">
-                    <input type="email" className="form-control landing-subscribe-input" placeholder="Your email address" />
-                    <button className="btn landing-subscribe-btn">Subscribe</button>
-                  </div>
-                </div>
-              </div>
+        
             </div>
             <div className="landing-footer-bottom">
               <div className="row align-items-center">
@@ -261,7 +252,7 @@ export default function Landing() {
                   <p className="mb-0">&copy; 2026 CelestiCare. All rights reserved.</p>
                 </div>
                 <div className="col-md-6 text-md-end">
-                  <Link to="/privacy" className="me-3">Privacy Policy</Link>
+                  {/* <Link to="/privacy" className="me-3">Privacy Policy</Link> */}
                   <Link to="/terms">Terms of Service</Link>
                 </div>
               </div>

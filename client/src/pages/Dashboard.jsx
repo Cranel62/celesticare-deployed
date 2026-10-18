@@ -59,7 +59,7 @@ const formatBirthdate = (birthdate) => {
   if (!birthdate) return 'Not set';
 
   const [year, month, day] = birthdate.split('T')[0].split('-');
-  return year && month && day ? `${month}-${day}-${year}` : 'Not set';
+  return year && month && day ? `${day} / ${month} / ${year}` : 'Not set';
 };
 
 export default function Dashboard() {
