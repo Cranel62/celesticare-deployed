@@ -55,22 +55,37 @@ export default function StyleQuiz() {
   const nextItemId = useRef(0);
 
   const handleDragStart = (e, item, category) => {
-    e.dataTransfer.setData('application/json', JSON.stringify({ ...item, category }));
+    e.dataTransfer.effectAllowed = 'copy';
+    e.dataTransfer.setData('application/json', JSON.stringify({ ...item, category, source: 'wardrobe' }));
+  };
+
+  const handlePlacedItemDragStart = (e, itemId) => {
+    e.stopPropagation();
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('application/json', JSON.stringify({ id: itemId, source: 'placed' }));
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     const data = JSON.parse(e.dataTransfer.getData('application/json'));
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - 160;
+    const y = e.clientY - rect.top - 160;
+
+    if (data.source === 'placed') {
+      setDroppedItems(items => items.map(item => (
+        item.id === data.id ? { ...item, x, y } : item
+      )));
+      return;
+    }
+
     const categoryCount = droppedItems.filter(i => i.category === data.category).length;
     
     if (categoryCount >= LIMITS[data.category]) {
       alert(`You can only add ${LIMITS[data.category]} ${data.category}`);
       return;
     }
-
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left - 160;
-    const y = e.clientY - rect.top - 160;
 
     setDroppedItems([...droppedItems, { ...data, x, y, id: ++nextItemId.current }]);
   };
@@ -164,6 +179,8 @@ export default function StyleQuiz() {
             {droppedItems.map(item => (
               <img 
                 key={item.id} src={item.src} alt="clothing"
+                draggable
+                onDragStart={(e) => handlePlacedItemDragStart(e, item.id)}
                 onContextMenu={(e) => { e.preventDefault(); setItemToRemove(item.id); }}
                 style={{ position: 'absolute', left: `${item.x}px`, top: `${item.y}px`, width: '320px', zIndex: 10, cursor: 'grab' }}
               />
