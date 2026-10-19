@@ -4,6 +4,7 @@ const User = require('../models/User');
 // and from the hosting provider's environment in production.
 const FREE_ASTRO_API_KEY = String(process.env.FREE_ASTRO_API_KEY || '').trim();
 const GEMINI_API_KEY = String(process.env.GEMINI_API_KEY || '').trim();
+const FREE_ASTRO_API_URL = String(process.env.FREE_ASTRO_API_URL || 'https://api.freeastroapi.com/api/v1/natal/calculate').trim();
 
 const expandSign = (abbr) => {
   const map = { Ari: 'Aries', Tau: 'Taurus', Gem: 'Gemini', Can: 'Cancer', Leo: 'Leo', Vir: 'Virgo', Lib: 'Libra', Sco: 'Scorpio', Sag: 'Sagittarius', Cap: 'Capricorn', Aqu: 'Aquarius', Pis: 'Pisces' };
@@ -73,16 +74,30 @@ exports.generateChart = async (req, res, next) => {
       lat: location.latitude,
       lng: location.longitude,
       city: location.city,
+      tz_str: 'AUTO',
     };
 
-    const response = await fetch('https://astro-api-1qnc.onrender.com/api/v1/natal/calculate', {
+    const response = await fetch(FREE_ASTRO_API_URL, {
       method: 'POST',
       headers: { 'x-api-key': FREE_ASTRO_API_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify(postData)
+      body: JSON.stringify(postData),
+      signal: AbortSignal.timeout(20000),
     });
 
-    if (!response.ok) throw new Error('The astrology chart service is temporarily unavailable.');
-    const astroData = await response.json();
+    const responseBody = await response.text();
+    if (!response.ok) {
+      console.error(`[Astro API] ${response.status}: ${responseBody.slice(0, 500)}`);
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('The astrology provider rejected FREE_ASTRO_API_KEY. Update the valid FreeAstroAPI key in Render and redeploy.');
+      }
+      throw new Error('The astrology chart service is temporarily unavailable.');
+    }
+    let astroData;
+    try {
+      astroData = JSON.parse(responseBody);
+    } catch {
+      throw new Error('The astrology chart service returned invalid data.');
+    }
     if (!Array.isArray(astroData.planets) || !Array.isArray(astroData.houses)) {
       throw new Error('The astrology service returned an invalid chart.');
     }
