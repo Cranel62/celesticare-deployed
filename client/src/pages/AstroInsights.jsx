@@ -71,10 +71,53 @@ export default function AstroInsights() {
   const [birthPlace, setBirthPlace] = useState('');
   const [birthCity, setBirthCity] = useState('');
   const [birthProvince, setBirthProvince] = useState('');
+  const [provinces, setProvinces] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [locationsLoading, setLocationsLoading] = useState(false);
   const [showForm, setShowForm] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [chartData, setChartData] = useState(null);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    setLocationsLoading(true);
+    fetch('https://psgc.cloud/api/v1/provinces?per_page=100')
+      .then((response) => {
+        if (!response.ok) throw new Error('Unable to load Philippine provinces.');
+        return response.json();
+      })
+      .then((payload) => {
+        const items = Array.isArray(payload) ? payload : payload.data;
+        if (!Array.isArray(items)) throw new Error('Invalid province list.');
+        if (active) setProvinces(items);
+      })
+      .catch((err) => { if (active) setError(err.message || 'Unable to load birthplace locations.'); })
+      .finally(() => { if (active) setLocationsLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!birthProvince) { setCities([]); return undefined; }
+    const province = provinces.find((item) => (item.name || item.area_name) === birthProvince);
+    const code = province?.code || province?.psgc_code || province?.correspondence_code;
+    if (!code) { setCities([]); return undefined; }
+    let active = true;
+    setLocationsLoading(true);
+    fetch(`https://psgc.cloud/api/v1/provinces/${encodeURIComponent(code)}/cities-municipalities?per_page=100`)
+      .then((response) => {
+        if (!response.ok) throw new Error('Unable to load cities and towns for this province.');
+        return response.json();
+      })
+      .then((payload) => {
+        const items = Array.isArray(payload) ? payload : payload.data;
+        if (!Array.isArray(items)) throw new Error('Invalid city and town list.');
+        if (active) setCities(items.map((item) => item.name || item.area_name).filter(Boolean).sort((a, b) => a.localeCompare(b)));
+      })
+      .catch((err) => { if (active) { setCities([]); setError(err.message || 'Unable to load cities and towns.'); } })
+      .finally(() => { if (active) setLocationsLoading(false); });
+    return () => { active = false; };
+  }, [birthProvince, provinces]);
   
   const [isGeminiLoading, setIsGeminiLoading] = useState(false);
   const [housesLoading, setHousesLoading] = useState(false);
@@ -242,14 +285,20 @@ export default function AstroInsights() {
               <input type="time" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} required className="ai-input" />
             </div>
             <div className="ai-input-group">
-              <label className="ai-label" htmlFor="birth-city">Birth City</label>
-              <input id="birth-city" type="text" value={birthCity} onChange={(e) => setBirthCity(e.target.value)} placeholder="e.g. Quezon City" required className="ai-input" />
+              <label className="ai-label" htmlFor="birth-province">Birth Province</label>
+              <select id="birth-province" value={birthProvince} onChange={(e) => { setBirthProvince(e.target.value); setBirthCity(''); setError(''); }} required className="ai-input" disabled={locationsLoading && provinces.length === 0}>
+                <option value="">{locationsLoading && provinces.length === 0 ? 'Loading provinces…' : 'Choose a province'}</option>
+                {provinces.map((province) => { const name = province.name || province.area_name; return <option key={province.code || province.psgc_code || name} value={name}>{name}</option>; })}
+              </select>
             </div>
             <div className="ai-input-group">
-              <label className="ai-label" htmlFor="birth-province">Birth Province</label>
-              <input id="birth-province" type="text" value={birthProvince} onChange={(e) => setBirthProvince(e.target.value)} placeholder="e.g. Metro Manila" required className="ai-input" />
+              <label className="ai-label" htmlFor="birth-city">Birth City or Town</label>
+              <select id="birth-city" value={birthCity} onChange={(e) => { setBirthCity(e.target.value); setError(''); }} required className="ai-input" disabled={!birthProvince || locationsLoading || cities.length === 0}>
+                <option value="">{!birthProvince ? 'Choose a province first' : locationsLoading ? 'Loading cities and towns…' : 'Choose a city or town'}</option>
+                {cities.map((city) => <option key={city} value={city}>{city}</option>)}
+              </select>
             </div>
-            <button type="submit" disabled={isLoading || !userData?.birthdate} className="ai-btn-primary">
+            <button type="submit" disabled={isLoading || locationsLoading || !userData?.birthdate} className="ai-btn-primary">
               Reveal My Insights
             </button>
           </form>

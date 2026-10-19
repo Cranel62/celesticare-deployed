@@ -43,20 +43,27 @@ const geocodeBirthPlace = async (birthPlace) => {
   const placeParts = String(birthPlace || '').split(',');
   const city = placeParts.shift()?.trim() || '';
   const province = placeParts.join(',').trim();
-  const query = new URLSearchParams({ name: city || birthPlace, count: '10', language: 'en', format: 'json' });
-  const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${query}`, {
-    signal: AbortSignal.timeout(10000),
-  });
-  if (!response.ok) throw new Error('Birthplace lookup is unavailable.');
-
-  const results = (await response.json()).results || [];
+  const search = async (name) => {
+    const query = new URLSearchParams({ name, count: '100', language: 'en', format: 'json' });
+    const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${query}`, {
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok) throw new Error('Birthplace lookup is unavailable.');
+    return (await response.json()).results || [];
+  };
+  const results = await search(city || birthPlace);
   const normalizedProvince = normalizeLocationPart(province);
-  const result = results.find((candidate) => {
-    if (!normalizedProvince) return true;
-    return [candidate.admin1, candidate.admin2, candidate.admin3, candidate.country]
-      .map(normalizeLocationPart)
-      .some((field) => field === normalizedProvince || field.includes(normalizedProvince) || normalizedProvince.includes(field));
-  }) || results[0];
+  const provinceMatches = (candidate) => {
+    const fields = [candidate.admin1, candidate.admin2, candidate.admin3]
+      .map(normalizeLocationPart).filter(Boolean);
+    return fields.some((field) => field === normalizedProvince || field.includes(normalizedProvince) || normalizedProvince.includes(field));
+  };
+  const isPhilippines = (candidate) => normalizeLocationPart(candidate.country) === 'philippines';
+  let result = results.find((candidate) => isPhilippines(candidate) && provinceMatches(candidate));
+  if (!result && province) {
+    const broaderResults = await search(`${city}, ${province}, Philippines`);
+    result = broaderResults.find((candidate) => isPhilippines(candidate) && provinceMatches(candidate));
+  }
   if (!result) throw new Error('Birthplace could not be located. Enter a city or town.');
   return { latitude: result.latitude, longitude: result.longitude, city: result.name };
 };
