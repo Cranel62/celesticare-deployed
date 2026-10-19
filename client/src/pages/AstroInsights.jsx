@@ -69,6 +69,8 @@ export default function AstroInsights() {
   const [userData, setUserData] = useState(null);
   const [birthTime, setBirthTime] = useState('');
   const [birthPlace, setBirthPlace] = useState('');
+  const [birthCity, setBirthCity] = useState('');
+  const [birthProvince, setBirthProvince] = useState('');
   const [showForm, setShowForm] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [chartData, setChartData] = useState(null);
@@ -154,6 +156,9 @@ export default function AstroInsights() {
       localStorage.setItem('celesticare_user', JSON.stringify(currentUser));
       setUserData(currentUser);
       setBirthTime(currentUser.birth_time || '');
+      const savedPlaceParts = String(currentUser.birth_place || '').split(',');
+      setBirthCity(savedPlaceParts.shift()?.trim() || '');
+      setBirthProvince(savedPlaceParts.join(',').trim());
       setBirthPlace(currentUser.birth_place || '');
 
       if (currentUser.astro_insights) {
@@ -184,13 +189,21 @@ export default function AstroInsights() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const city = birthCity.trim();
+    const province = birthProvince.trim();
+    if (!city || !province) {
+      setError('Enter both your birth city and province for an accurate chart.');
+      return;
+    }
+    const fullBirthPlace = `${city}, ${province}`;
     setIsLoading(true);
     setError('');
     try {
-      const { data } = await API.post('/astro/save-birth-details', { birthTime, birthPlace });
+      const { data } = await API.post('/astro/save-birth-details', { birthTime, birthCity: city, birthProvince: province });
       const updatedUser = data.user;
       localStorage.setItem('celesticare_user', JSON.stringify(updatedUser));
       setUserData(updatedUser);
+      setBirthPlace(fullBirthPlace);
       setShowForm(false);
       await generateAIChat();
     } catch (err) {
@@ -229,8 +242,12 @@ export default function AstroInsights() {
               <input type="time" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} required className="ai-input" />
             </div>
             <div className="ai-input-group">
-              <label className="ai-label">Birth Place</label>
-              <input type="text" value={birthPlace} onChange={(e) => setBirthPlace(e.target.value)} placeholder="City, Province" required className="ai-input" />
+              <label className="ai-label" htmlFor="birth-city">Birth City</label>
+              <input id="birth-city" type="text" value={birthCity} onChange={(e) => setBirthCity(e.target.value)} placeholder="e.g. Quezon City" required className="ai-input" />
+            </div>
+            <div className="ai-input-group">
+              <label className="ai-label" htmlFor="birth-province">Birth Province</label>
+              <input id="birth-province" type="text" value={birthProvince} onChange={(e) => setBirthProvince(e.target.value)} placeholder="e.g. Metro Manila" required className="ai-input" />
             </div>
             <button type="submit" disabled={isLoading || !userData?.birthdate} className="ai-btn-primary">
               Reveal My Insights

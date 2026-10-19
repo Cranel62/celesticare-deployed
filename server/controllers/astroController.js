@@ -14,10 +14,14 @@ const expandSign = (abbr) => {
 exports.saveBirthDetails = async (req, res, next) => {
   try {
     const birthTime = String(req.body.birthTime || '').trim();
-    const birthPlace = String(req.body.birthPlace || '').trim();
-    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(birthTime) || birthPlace.length < 2) {
-      return res.status(400).json({ success: false, message: 'Enter a valid birth time and birthplace.' });
+    const savedBirthPlace = String(req.body.birthPlace || '').trim();
+    const savedPlaceParts = savedBirthPlace.split(',');
+    const birthCity = String(req.body.birthCity || savedPlaceParts.shift() || '').trim();
+    const birthProvince = String(req.body.birthProvince || savedPlaceParts.join(',') || '').trim();
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(birthTime) || birthCity.length < 2 || birthProvince.length < 2) {
+      return res.status(400).json({ success: false, message: 'Enter a valid birth time, city, and province.' });
     }
+    const birthPlace = `${birthCity}, ${birthProvince}`;
 
     const user = await User.findById(req.user.id);
     if (!user) {
