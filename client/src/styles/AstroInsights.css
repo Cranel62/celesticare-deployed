@@ -196,6 +196,23 @@
   line-height: 1.6;
 }
 
+.ai-triplicity-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-triplicity-card .ai-card-subtitle {
+  order: 1;
+}
+
+.ai-triplicity-card .ai-card-value {
+  order: 2;
+}
+
+.ai-triplicity-card .ai-insight-box {
+  order: 3;
+}
+
 .ai-header {
   text-align: center;
   margin-bottom: 40px;

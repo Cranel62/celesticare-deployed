@@ -3,6 +3,25 @@ import { Link } from 'react-router-dom';
 import API from '../services/api';
 import '../styles/AstroInsights.css';
 
+const SIGN_DESCRIPTIONS = {
+  Aries: 'Bold, direct, and driven to begin new things with courage.',
+  Taurus: 'Patient and reliable, you build lasting foundations with steady determination.',
+  Gemini: 'Curious and adaptable, you connect ideas through communication and learning.',
+  Cancer: 'Sensitive and protective, you create belonging through care and emotional depth.',
+  Leo: 'Creative and warm-hearted, you bring confidence, generosity, and radiant presence.',
+  Virgo: 'Analytical and precise, you improve what you touch through practical wisdom and care.',
+  Libra: 'Diplomatic and graceful, you seek harmony, beauty, and meaningful connection.',
+  Scorpio: 'Intense and perceptive, you pursue truth, transformation, and emotional honesty.',
+  Sagittarius: 'Adventurous and hopeful, you grow through freedom, discovery, and big-picture vision.',
+  Capricorn: 'Focused and responsible, you turn patience and ambition into lasting achievement.',
+  Aquarius: 'Independent and original, you imagine better possibilities and challenge old patterns.',
+  Pisces: 'Compassionate and imaginative, you move through life with intuition and spiritual sensitivity.'
+};
+
+const getPlacementDescription = (sign, fallback = 'This placement adds a distinct tone to how you experience and express your life.') => (
+  SIGN_DESCRIPTIONS[sign] || fallback
+);
+
 export default function AstroInsights() {
   const [userData, setUserData] = useState(null);
   const [birthTime, setBirthTime] = useState('');
@@ -196,16 +215,19 @@ export default function AstroInsights() {
         <h2 className="ai-section-title">The Sacred Triplicity</h2>
         <p className="ai-section-description">Your Sun, Moon, and Ascendant reveal your core identity, emotional world, and the energy you bring into the world.</p>
         <div className="ai-grid-3">
-          <div className="ai-card">
+          <div className="ai-card ai-triplicity-card">
             <div className="ai-card-subtitle">The Sun</div>
+            <div className="ai-insight-box">{getPlacementDescription(chartData?.sun_sign, 'Your Sun reflects your identity, vitality, and the purpose you are growing into.')}</div>
             <div className="ai-card-value">{chartData?.sun_sign} {chartData?.sun_degrees}°</div>
           </div>
-          <div className="ai-card">
+          <div className="ai-card ai-triplicity-card">
             <div className="ai-card-subtitle">The Moon</div>
+            <div className="ai-insight-box">{getPlacementDescription(chartData?.moon_sign, 'Your Moon reflects your emotional needs, instincts, and private inner world.')}</div>
             <div className="ai-card-value">{chartData?.moon_sign}</div>
           </div>
-          <div className="ai-card">
+          <div className="ai-card ai-triplicity-card">
             <div className="ai-card-subtitle">The Ascendant</div>
+            <div className="ai-insight-box">{getPlacementDescription(chartData?.rising_sign, 'Your Ascendant shapes your first impression and the way you approach new experiences.')}</div>
             <div className="ai-card-value">{chartData?.rising_sign}</div>
           </div>
         </div>
@@ -221,11 +243,9 @@ export default function AstroInsights() {
                 <span className="ai-badge">House {planet.house}</span>
               </div>
               <div className="ai-planet-pos">{planet.sign} {planet.degrees}°</div>
-              {planet.influence && (
-                <div className="ai-insight-box">
-                  {planet.influence}
-                </div>
-              )}
+              <div className="ai-insight-box">
+                {planet.influence || getPlacementDescription(planet.sign)}
+              </div>
             </div>
           ))}
         </div>
@@ -246,10 +266,10 @@ export default function AstroInsights() {
                   <span className="ai-badge">House {house.number}</span>
                   <span className="ai-house-pos">{house.sign} {house.degrees}°</span>
                 </div>
-                {house.insight && (
+                {(house.insight || house.sign) && (
                   <div className="ai-insight-box">
                     <span className="ai-insight-tag">✧ AI INSIGHT</span>
-                    {house.insight}
+                    {house.insight || `House ${house.number} brings focus to ${house.sign} themes in your life, inviting you to develop this area with awareness.`}
                   </div>
                 )}
               </div>
