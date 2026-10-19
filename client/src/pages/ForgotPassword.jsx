@@ -16,6 +16,7 @@ export default function ForgotPassword() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [showAlternativeEmail, setShowAlternativeEmail] = useState(false);
   const passwordRule = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 
   const handleLookup = async (event) => {
@@ -25,15 +26,37 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      await API.post('/auth/forgot-password/request-code', {
+      const { data } = await API.post('/auth/forgot-password/questions', { email });
+      setQuestions(data.questions || []);
+      setAnswers((data.questions || []).map(() => ''));
+      setShowAlternativeEmail(false);
+      setIsVerified(true);
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || 'Unable to start password recovery. Please try again.');
+      setShowAlternativeEmail(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRequestCode = async () => {
+    setError('');
+    setMessage('');
+    setLoading(true);
+
+    try {
+      const { data } = await API.post('/auth/forgot-password/request-code', {
         accountEmail: email,
         deliveryEmail: useAlternativeEmail ? deliveryEmail : email,
       });
       setQuestions([]);
       setAnswers([]);
+      setResetCode('');
+      setShowAlternativeEmail(false);
       setIsVerified(true);
+      setMessage(data.message || 'A verification code was sent to your email.');
     } catch (requestError) {
-      setError(requestError.response?.data?.message || 'Unable to start password recovery. Please try again.');
+      setError(requestError.response?.data?.message || 'Unable to send the verification code. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -68,6 +91,7 @@ export default function ForgotPassword() {
       setPassword('');
       setConfirmPassword('');
       setResetCode('');
+      setShowAlternativeEmail(false);
       setIsVerified(false);
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Unable to reset your password. Check your answers and try again.');
@@ -100,22 +124,26 @@ export default function ForgotPassword() {
               placeholder="Enter the email on your account"
               required
             />
-            <button
-              className="forgot-password-back"
-              type="button"
-              onClick={() => setUseAlternativeEmail((value) => !value)}
-            >
-              {useAlternativeEmail ? 'Use account email instead' : 'Try another way / use a different email'}
-            </button>
-            {useAlternativeEmail && (
-              <>
-                <label className="forgot-password-label" htmlFor="delivery-email">Email to receive the verification code</label>
-                <input id="delivery-email" className="forgot-password-input" type="email" value={deliveryEmail} onChange={(event) => setDeliveryEmail(event.target.value)} required />
-              </>
-            )}
             <button className="forgot-password-submit" type="submit" disabled={loading}>
-              {loading ? 'Sending verification code...' : 'Continue'}
+              {loading ? 'Loading security questions...' : 'Answer security questions'}
             </button>
+            {showAlternativeEmail && (
+              <div className="forgot-password-alternative">
+                <p className="forgot-password-alternative-title">Forgot your security answers?</p>
+                <label className="forgot-password-label" htmlFor="delivery-email">Gmail or email to receive the verification code</label>
+                <input id="delivery-email" className="forgot-password-input" type="email" value={deliveryEmail} onChange={(event) => setDeliveryEmail(event.target.value)} placeholder={email} required={showAlternativeEmail} />
+                <button className="forgot-password-back" type="button" onClick={() => setUseAlternativeEmail((value) => {
+                  const nextValue = !value;
+                  if (nextValue) setDeliveryEmail(email);
+                  return nextValue;
+                })}>
+                  {useAlternativeEmail ? 'Use account email' : 'Use a different email address'}
+                </button>
+                <button className="forgot-password-submit" type="button" onClick={handleRequestCode} disabled={loading}>
+                  {loading ? 'Sending verification...' : 'Send verification'}
+                </button>
+              </div>
+            )}
           </form>
         ) : (
           <form onSubmit={handleReset}>
@@ -177,9 +205,30 @@ export default function ForgotPassword() {
               className="forgot-password-back"
               type="button"
               onClick={() => {
+                setDeliveryEmail(email);
+                setShowAlternativeEmail((value) => !value);
+              }}
+            >
+              {showAlternativeEmail ? 'Hide email verification' : 'Try another way'}
+            </button>
+            {showAlternativeEmail && (
+              <div className="forgot-password-alternative">
+                <p className="forgot-password-alternative-title">Forgot the security answers you set up?</p>
+                <label className="forgot-password-label" htmlFor="delivery-email">Gmail or email to receive the verification code</label>
+                <input id="delivery-email" className="forgot-password-input" type="email" value={deliveryEmail} onChange={(event) => setDeliveryEmail(event.target.value)} placeholder={email} required />
+                <button className="forgot-password-submit" type="button" onClick={handleRequestCode} disabled={loading}>
+                  {loading ? 'Sending verification...' : 'Send verification'}
+                </button>
+              </div>
+            )}
+            <button
+              className="forgot-password-back"
+              type="button"
+              onClick={() => {
                 setIsVerified(false);
                 setQuestions([]);
                 setAnswers([]);
+                setShowAlternativeEmail(false);
                 setError('');
               }}
             >

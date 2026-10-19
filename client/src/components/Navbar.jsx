@@ -51,7 +51,7 @@ export default function Navbar() {
     <nav className="navbar navbar-expand-lg navbar-light bg-white fixed-top">
       <div className="container-fluid navbar-inner">
         
-        <Link className="navbar-brand" to={isAuthenticated ? '/dashboard' : '/'} onClick={() => setMenuOpen(false)}>
+        <Link className="navbar-brand" to="/" onClick={() => setMenuOpen(false)} aria-label="Go to CelestiCare home">
           {/* INDEPENDENT LOGO CONTAINER */}
           <div className="brand-logo-container">
             <img src={logoImage} alt="C" className="custom-c-image" />
