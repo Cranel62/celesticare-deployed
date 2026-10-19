@@ -6,7 +6,7 @@ import '../../styles/Admin.css';
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState('active');
-  const [feedback, setFeedback] = useState([]);
+  const feedback = [];
   const adminEmail = JSON.parse(localStorage.getItem('celesticare_user') || '{}').email;
 
   const fetchUsers = async () => {
@@ -24,19 +24,6 @@ export default function ManageUsers() {
       if (active) setUsers(res.data.data);
     }).catch((err) => console.error('Failed to fetch users', err));
     return () => { active = false; };
-  }, []);
-
-  useEffect(() => {
-    let active = true;
-    const fetchFeedback = async () => {
-      try {
-        const res = await API.get('/feedback/admin');
-        if (active) setFeedback(res.data.data || []);
-      } catch (err) { console.error('Failed to fetch feedback', err); }
-    };
-    fetchFeedback();
-    const interval = window.setInterval(fetchFeedback, 5000);
-    return () => { active = false; window.clearInterval(interval); };
   }, []);
 
   const handleAction = async (action, userId, username) => {
@@ -126,7 +113,8 @@ export default function ManageUsers() {
           </table>
         </div>
 
-        <section className="admin-table-container" style={{ marginTop: '40px' }}>
+        {/* Feedback is shown on each user's View page. */}
+        {feedback.length > 0 && <section className="admin-table-container" style={{ marginTop: '40px' }}>
           <div style={{ padding: '20px 24px' }}>
             <h2 style={{ margin: 0 }}>User Feedback</h2>
             <p style={{ margin: '6px 0 0', opacity: 0.7 }}>Automatically refreshed every 5 seconds.</p>
@@ -144,7 +132,7 @@ export default function ManageUsers() {
               {!feedback.length && <tr><td colSpan="7">No feedback submitted yet.</td></tr>}
             </tbody>
           </table>
-        </section>
+        </section>}
       </div>
     </div>
   );

@@ -76,3 +76,12 @@
   backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; color: #2e2e2e;
 }
 .admin-view-field { background: rgba(255, 255, 255, 0.9); border-radius: 12px; border: 1px solid rgba(75, 63, 119, 0.2); padding: 12px 15px; margin-bottom: 1rem; }
+.admin-feedback-entry { background: rgba(255, 255, 255, 0.65); border: 1px solid rgba(75, 63, 119, 0.16); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+.admin-feedback-meta { color: #6c757d; font-size: 0.85rem; margin-bottom: 14px; }
+.admin-feedback-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.admin-feedback-grid > div { display: flex; flex-direction: column; gap: 5px; }
+.admin-feedback-grid strong { color: #4b3f77; font-size: 0.8rem; text-transform: uppercase; }
+.admin-feedback-grid span { overflow-wrap: anywhere; }
+.admin-feedback-suggestions { grid-column: 1 / -1; }
+.admin-feedback-empty { margin: 0; color: #6c757d; }
+@media (max-width: 700px) { .admin-feedback-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

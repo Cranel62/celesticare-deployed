@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const User = require('../models/User');
+const UserFeedback = require('../models/UserFeedback');
 
 const findManagedUser = (id) => User.findOne({
   _id: id,
@@ -30,7 +31,11 @@ exports.getUser = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
 
-    res.status(200).json({ success: true, data: user });
+    const feedback = await UserFeedback.find({ user: user._id })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.status(200).json({ success: true, data: { ...user, feedback } });
   } catch (error) {
     next(error);
   }
@@ -94,6 +99,7 @@ exports.resetUserPassword = async (req, res, next) => {
 
     const temporaryPassword = crypto.randomBytes(12).toString('base64url');
     user.password = temporaryPassword;
+    user.isVerified = true;
     await user.save();
     res.status(200).json({ success: true, temporaryPassword });
   } catch (error) {

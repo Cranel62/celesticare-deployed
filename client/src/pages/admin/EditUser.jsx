@@ -4,7 +4,6 @@ import API from '../../services/api'; // Changed from ../../../
 import '../../styles/Admin.css';       // Changed from ../../../
 
 export default function EditUser() {
-// ... rest of the code remains exactly the same
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -69,6 +68,22 @@ export default function EditUser() {
               <p><strong>Style:</strong> {user.style_result || <span style={{ color: '#6c757d' }}>Not completed</span>}</p>
               <p><strong>Zodiac:</strong> {user.zodiac_sign || 'Not set'}</p>
             </div>
+          </div>
+
+          <div className="admin-view-container admin-feedback-container" style={{ gridColumn: '1 / -1' }}>
+            <h3 style={{ color: '#4b3f77', borderBottom: '2px solid #4b3f77', paddingBottom: '15px', marginBottom: '25px' }}>User Feedback</h3>
+            {user.feedback?.length ? user.feedback.map((entry) => (
+              <article className="admin-feedback-entry" key={entry._id}>
+                <div className="admin-feedback-meta">Submitted {entry.createdAt ? new Date(entry.createdAt).toLocaleString() : '—'}</div>
+                <div className="admin-feedback-grid">
+                  <div><strong>Experience</strong><span>{entry.experience || '—'}</span></div>
+                  <div><strong>Fashion match</strong><span>{entry.fashion_match || '—'}</span></div>
+                  <div><strong>Favorite feature</strong><span>{entry.favorite_feature || '—'}</span></div>
+                  <div><strong>Vibe</strong><span>{entry.vibe || '—'}</span></div>
+                  <div className="admin-feedback-suggestions"><strong>Suggestions</strong><span>{entry.suggestions || '—'}</span></div>
+                </div>
+              </article>
+            )) : <p className="admin-feedback-empty">No feedback submitted by this user yet.</p>}
           </div>
         </div>
       </div>
