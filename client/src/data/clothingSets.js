@@ -177,7 +177,7 @@ const mascEtc = toItems(import.meta.glob('../pages/quizzes/assets/masc/etc/*.png
 
 const femShoes = femEtc.filter((item) => item.name.toLowerCase().includes('shoe'));
 const femAccessories = femEtc.filter((item) => !item.name.toLowerCase().includes('shoe'));
-const femBottoms = femUntitled.filter((item) => /190955|190956|191027|191028|191029/.test(item.name));
+const femBottoms = femUntitled.filter((item) => /190955|190956|191027|191028|191029|191030|191031/.test(item.name));
 const femDresses = femUntitled.filter((item) => /restored2|191111|191112/.test(item.name.toLowerCase()));
 const femTops = femUntitled.filter((item) => !femBottoms.includes(item) && !femDresses.includes(item));
 
