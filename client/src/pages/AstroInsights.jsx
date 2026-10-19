@@ -82,15 +82,13 @@ export default function AstroInsights() {
   useEffect(() => {
     let active = true;
     setLocationsLoading(true);
-    fetch('https://psgc.cloud/api/v1/provinces?per_page=100')
-      .then((response) => {
+    fetch('https://psgc.cloud/api/provinces').then((response) => {
         if (!response.ok) throw new Error('Unable to load Philippine provinces.');
         return response.json();
       })
-      .then((payload) => {
-        const items = Array.isArray(payload) ? payload : payload.data;
-        if (!Array.isArray(items)) throw new Error('Invalid province list.');
-        if (active) setProvinces(items);
+      .then((provinceItems) => {
+        if (!Array.isArray(provinceItems)) throw new Error('Invalid Philippine province list.');
+        if (active) setProvinces(provinceItems);
       })
       .catch((err) => { if (active) setError(err.message || 'Unable to load birthplace locations.'); })
       .finally(() => { if (active) setLocationsLoading(false); });
@@ -99,20 +97,19 @@ export default function AstroInsights() {
 
   useEffect(() => {
     if (!birthProvince) { setCities([]); return undefined; }
-    const province = provinces.find((item) => (item.name || item.area_name) === birthProvince);
-    const code = province?.code || province?.psgc_code || province?.correspondence_code;
-    if (!code) { setCities([]); return undefined; }
+    const province = provinces.find((item) => item.name === birthProvince);
+    if (!province) { setCities([]); return undefined; }
     let active = true;
     setLocationsLoading(true);
-    fetch(`https://psgc.cloud/api/v1/provinces/${encodeURIComponent(code)}/cities-municipalities?per_page=100`)
+    setCities([]);
+    fetch(`https://psgc.cloud/api/provinces/${encodeURIComponent(province.code)}/cities-municipalities`)
       .then((response) => {
-        if (!response.ok) throw new Error('Unable to load cities and towns for this province.');
+        if (!response.ok) throw new Error('Unable to load cities and towns for this Philippine province.');
         return response.json();
       })
-      .then((payload) => {
-        const items = Array.isArray(payload) ? payload : payload.data;
+      .then((items) => {
         if (!Array.isArray(items)) throw new Error('Invalid city and town list.');
-        if (active) setCities(items.map((item) => item.name || item.area_name).filter(Boolean).sort((a, b) => a.localeCompare(b)));
+        if (active) setCities([...new Set(items.map((item) => item.name.replace(/^(City of|Municipality of)\s+/i, '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b)));
       })
       .catch((err) => { if (active) { setCities([]); setError(err.message || 'Unable to load cities and towns.'); } })
       .finally(() => { if (active) setLocationsLoading(false); });
