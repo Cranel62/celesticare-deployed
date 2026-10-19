@@ -78,27 +78,35 @@ export default function FeedbackManagement() {
           )}
 
           {!loading && !error && filteredFeedback.length > 0 && (
-            <div className="admin-feedback-list">
-              {filteredFeedback.map((entry) => (
-                <article className="admin-feedback-entry" key={entry._id}>
-                  <div className="admin-feedback-user">
-                    <div>
-                      <strong>{entry.user?.username || 'Username unavailable'}</strong>
-                      <span>{entry.user?.email || 'Email unavailable'}</span>
-                    </div>
-                    <time dateTime={entry.createdAt}>
-                      {entry.createdAt ? new Date(entry.createdAt).toLocaleString() : 'Date unavailable'}
-                    </time>
-                  </div>
-                  <div className="admin-feedback-grid">
-                    <div><strong>Experience</strong><span>{entry.experience || '—'}</span></div>
-                    <div><strong>Fashion match</strong><span>{entry.fashion_match || '—'}</span></div>
-                    <div><strong>Favorite feature</strong><span>{entry.favorite_feature || '—'}</span></div>
-                    <div><strong>Vibe</strong><span>{entry.vibe || '—'}</span></div>
-                    <div className="admin-feedback-suggestions"><strong>Suggestions</strong><span>{entry.suggestions || '—'}</span></div>
-                  </div>
-                </article>
-              ))}
+            <div className="admin-feedback-table-wrapper">
+              <table className="admin-table admin-feedback-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Experience</th>
+                    <th>Fashion Match</th>
+                    <th>Favorite Feature</th>
+                    <th>Vibe</th>
+                    <th>Suggestions</th>
+                    <th>Submitted</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredFeedback.map((entry) => (
+                    <tr key={entry._id}>
+                      <td>{entry.user?.username || 'Unavailable'}</td>
+                      <td>{entry.user?.email || 'Unavailable'}</td>
+                      <td>{entry.experience || '—'}</td>
+                      <td>{entry.fashion_match || '—'}</td>
+                      <td>{entry.favorite_feature || '—'}</td>
+                      <td>{entry.vibe || '—'}</td>
+                      <td>{entry.suggestions || '—'}</td>
+                      <td>{entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </section>
