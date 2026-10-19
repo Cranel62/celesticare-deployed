@@ -6,7 +6,6 @@ import '../../styles/Admin.css';
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState('active');
-  const feedback = [];
   const adminEmail = JSON.parse(localStorage.getItem('celesticare_user') || '{}').email;
 
   const fetchUsers = async () => {
@@ -65,7 +64,10 @@ export default function ManageUsers() {
         <div className="admin-header">
           <div><h1 style={{ margin: 0, fontWeight: 700, letterSpacing: '2px' }}>CELESTICARE</h1><p style={{ margin: 0, opacity: 0.75 }}>Admin Panel - User Management</p></div>
           <div style={{ background: 'rgba(255,255,255,0.1)', padding: '12px 20px', borderRadius: '15px' }}>
-            Welcome, <strong>{adminEmail}</strong>
+            <div style={{ marginBottom: '10px' }}>Welcome, <strong>{adminEmail}</strong></div>
+            <Link to="/admin/feedback" className="admin-btn admin-feedback-link" style={{ textDecoration: 'none' }}>
+              View All Feedback
+            </Link>
           </div>
         </div>
 
@@ -113,26 +115,6 @@ export default function ManageUsers() {
           </table>
         </div>
 
-        {/* Feedback is shown on each user's View page. */}
-        {feedback.length > 0 && <section className="admin-table-container" style={{ marginTop: '40px' }}>
-          <div style={{ padding: '20px 24px' }}>
-            <h2 style={{ margin: 0 }}>User Feedback</h2>
-            <p style={{ margin: '6px 0 0', opacity: 0.7 }}>Automatically refreshed every 5 seconds.</p>
-          </div>
-          <table className="admin-table">
-            <thead><tr><th>User</th><th>Experience</th><th>Fashion Match</th><th>Favorite Feature</th><th>Vibe</th><th>Suggestions</th><th>Submitted</th></tr></thead>
-            <tbody>
-              {feedback.map((entry) => (
-                <tr key={entry._id}>
-                  <td>{entry.user?.username || entry.user?.email || 'Unknown user'}</td>
-                  <td>{entry.experience}</td><td>{entry.fashion_match}</td><td>{entry.favorite_feature}</td><td>{entry.vibe}</td><td>{entry.suggestions || '—'}</td>
-                  <td>{entry.createdAt ? new Date(entry.createdAt).toLocaleString() : '—'}</td>
-                </tr>
-              ))}
-              {!feedback.length && <tr><td colSpan="7">No feedback submitted yet.</td></tr>}
-            </tbody>
-          </table>
-        </section>}
       </div>
     </div>
   );
