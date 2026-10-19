@@ -55,6 +55,24 @@ const TAROT_CARDS = {
   }
 };
 
+const MAJOR_ARCANA = [
+  'The Fool', 'The Magician', 'The High Priestess', 'The Empress', 'The Emperor',
+  'The Hierophant', 'The Lovers', 'The Chariot', 'Strength', 'The Hermit',
+  'Wheel of Fortune', 'Justice', 'The Hanged Man', 'Death', 'Temperance',
+  'The Devil', 'The Tower', 'The Star', 'The Moon', 'The Sun', 'Judgement', 'The World'
+];
+const SUITS = ['Wands', 'Cups', 'Swords', 'Pentacles'];
+const RANKS = ['Ace', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Page', 'Knight', 'Queen', 'King'];
+
+function getCardName(cardId) {
+  if (cardId < MAJOR_ARCANA.length) return MAJOR_ARCANA[cardId];
+  const suitIndex = Math.floor((cardId - 22) / 14);
+  const rankIndex = (cardId - 22) % 14;
+  return SUITS[suitIndex] && RANKS[rankIndex]
+    ? `${RANKS[rankIndex]} of ${SUITS[suitIndex]}`
+    : 'The Unknown';
+}
+
 function getPeriod() {
   const hour = new Date().getHours();
   if (hour < 12) return { key: 'morning', label: 'This Morning' };
@@ -64,8 +82,9 @@ function getPeriod() {
 
 export default function SingleCardResult() {
   const { id } = useParams();
-  const cardId = parseInt(id, 10) || 18;
-  const card = TAROT_CARDS[cardId] || TAROT_CARDS[18];
+  const parsedCardId = Number.parseInt(id, 10);
+  const cardId = Number.isInteger(parsedCardId) && parsedCardId >= 0 && parsedCardId <= 77 ? parsedCardId : 18;
+  const card = TAROT_CARDS[cardId] || { ...TAROT_CARDS[18], name: getCardName(cardId) };
   const period = getPeriod();
   const timeMessage = card[period.key] || card.essence;
   const [showEntrance, setShowEntrance] = useState(true);

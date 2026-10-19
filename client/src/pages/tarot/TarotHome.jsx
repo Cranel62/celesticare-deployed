@@ -50,7 +50,9 @@ export default function TarotHome() {
               </p>
             </div>
             <Link
-              to={recentReading.reading_type === 'single' ? `/tarot/single-result/${recentReading.id}` : `/tarot/four-result?reading_id=${recentReading.id}`}
+              to={recentReading.reading_type === 'single' && recentReading.cardId !== null
+                ? `/tarot/single-result/${recentReading.cardId}`
+                : `/tarot/four-result?reading_id=${recentReading.id}`}
               className="return-button"
               style={{ padding: '0.4rem 1.2rem', fontSize: '0.85rem' }}
             >

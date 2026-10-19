@@ -60,7 +60,12 @@ exports.getRecentReading = async (req, res, next) => {
     res.status(200).json({
       success: true,
       hasRecent: true,
-      recent: { id: recent._id, reading_type: recent.reading_type, createdAt: recent.createdAt }
+      recent: {
+        id: recent._id,
+        reading_type: recent.reading_type,
+        cardId: recent.reading_type === 'single' ? recent.cards?.[0]?.id ?? null : null,
+        createdAt: recent.createdAt
+      }
     });
   } catch (error) {
     next(error);
