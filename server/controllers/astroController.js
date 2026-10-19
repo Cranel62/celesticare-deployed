@@ -1,7 +1,9 @@
 const User = require('../models/User');
 
-const FREE_ASTRO_API_KEY = process.env.FREE_ASTRO_API_KEY;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// Keep provider credentials server-side. Values are loaded from server/.env by server.js
+// and from the hosting provider's environment in production.
+const FREE_ASTRO_API_KEY = String(process.env.FREE_ASTRO_API_KEY || '').trim();
+const GEMINI_API_KEY = String(process.env.GEMINI_API_KEY || '').trim();
 
 const expandSign = (abbr) => {
   const map = { Ari: 'Aries', Tau: 'Taurus', Gem: 'Gemini', Can: 'Cancer', Leo: 'Leo', Vir: 'Virgo', Lib: 'Libra', Sco: 'Scorpio', Sag: 'Sagittarius', Cap: 'Capricorn', Aqu: 'Aquarius', Pis: 'Pisces' };
