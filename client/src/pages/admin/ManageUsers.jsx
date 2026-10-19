@@ -66,10 +66,7 @@ export default function ManageUsers() {
         <div className="admin-header">
           <div><h1 style={{ margin: 0, fontWeight: 700, letterSpacing: '2px' }}>CELESTICARE</h1><p style={{ margin: 0, opacity: 0.75 }}>Admin Panel - User Management</p></div>
           <div style={{ background: 'rgba(255,255,255,0.1)', padding: '12px 20px', borderRadius: '15px' }}>
-            <div style={{ marginBottom: '10px' }}>Welcome, <strong>{adminEmail}</strong></div>
-            <Link to="/admin/feedback" className="admin-btn admin-feedback-link" style={{ textDecoration: 'none' }}>
-              View All Feedback
-            </Link>
+            Welcome, <strong>{adminEmail}</strong>
           </div>
         </div>
 
@@ -102,14 +99,14 @@ export default function ManageUsers() {
                   <td style={{ display: 'flex', gap: '10px' }}>
                     {user.deletedAt ? (
                       <>
-                        {user.feedbackCount > 0 && <Link to={`/admin/feedback?user=${encodeURIComponent(user._id)}`} className="admin-btn admin-btn-info" style={{ textDecoration: 'none' }}>Feedback</Link>}
+                        {user.feedbackCount > 0 && <Link to={`/admin/user/${user._id}`} className="admin-btn admin-btn-info" style={{ textDecoration: 'none' }}>Feedback</Link>}
                         <button className="admin-btn admin-btn-success" onClick={() => handleAction('restore', user._id, user.username)}>Restore</button>
                         {user.role !== 'admin' && <button className="admin-btn admin-btn-danger" onClick={() => handleAction('delete', user._id, user.username)}>Delete</button>}
                       </>
                     ) : (
                       <>
                         {user.role !== 'admin' && <Link to={`/admin/user/${user._id}`} className="admin-btn admin-btn-warning" style={{ textDecoration: 'none' }}>View</Link>}
-                        {user.feedbackCount > 0 && <Link to={`/admin/feedback?user=${encodeURIComponent(user._id)}`} className="admin-btn admin-btn-info" style={{ textDecoration: 'none' }}>Feedback</Link>}
+                        {user.feedbackCount > 0 && <Link to={`/admin/user/${user._id}`} className="admin-btn admin-btn-info" style={{ textDecoration: 'none' }}>Feedback</Link>}
                         {user.role !== 'admin' && <button className="admin-btn admin-btn-danger" onClick={() => handleAction('archive', user._id, user.username)}>Archive</button>}
                       </>
                     )}

@@ -90,37 +90,6 @@
 /* Feedback Management */
 .admin-page-container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; padding: 0 20px; }
 .admin-header-link { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); text-decoration: none; }
-.admin-feedback-link { display: inline-block; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35); }
-.feedback-page-card { margin-bottom: 20px; padding: 14px; }
-.feedback-page-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 0 0 12px; }
-.feedback-page-count { margin: 6px 0 0; color: #6c757d; }
-.feedback-clear-filter { display: inline-block; margin-top: 6px; color: #4b3f77; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
-.admin-feedback-search { width: min(100%, 300px); padding: 9px 12px; border: 1px solid rgba(75, 63, 119, 0.25); border-radius: 12px; color: #2e2e2e; background: rgba(255, 255, 255, 0.9); }
-.admin-feedback-search:focus { outline: 2px solid #6b5b95; outline-offset: 1px; }
-.admin-feedback-table-wrapper { overflow-x: auto; }
-.admin-feedback-table { font-size: 0.76rem; table-layout: fixed; }
-.admin-feedback-table th, .admin-feedback-table td { padding: 8px 7px; vertical-align: top; overflow-wrap: anywhere; }
-.admin-feedback-table th { font-size: 0.7rem; line-height: 1.15; }
-.admin-feedback-table th:nth-child(1) { width: 10%; }
-.admin-feedback-table th:nth-child(2) { width: 16%; }
-.admin-feedback-table th:nth-child(3) { width: 10%; }
-.admin-feedback-table th:nth-child(4) { width: 12%; }
-.admin-feedback-table th:nth-child(5) { width: 13%; }
-.admin-feedback-table th:nth-child(6) { width: 10%; }
-.admin-feedback-table th:nth-child(7) { width: 19%; }
-.admin-feedback-table th:nth-child(8) { width: 10%; }
-.admin-feedback-error { margin: 0; color: #dc3545; }
-.admin-feedback-page { padding-top: 8px; }
-.admin-feedback-page .admin-page-container { max-width: 1500px; }
-.admin-feedback-page .admin-header { padding: 18px 22px; margin-bottom: 14px; border-radius: 14px; }
-.admin-feedback-page .admin-header h1 { font-size: 1.45rem !important; }
-.admin-feedback-page .admin-header p { font-size: 0.82rem; }
-.admin-feedback-page .admin-header-link { padding: 6px 11px; font-size: 0.78rem; }
-.admin-feedback-page .feedback-page-card h2 { font-size: 1.15rem; }
-.admin-feedback-page .feedback-page-count { font-size: 0.75rem; }
-.admin-feedback-page .admin-feedback-table td { line-height: 1.2; }
 @media (max-width: 700px) {
-  .feedback-page-toolbar { flex-direction: column; align-items: stretch; }
-  .admin-feedback-search { width: 100%; }
   .admin-header { gap: 20px; align-items: flex-start; flex-direction: column; }
 }

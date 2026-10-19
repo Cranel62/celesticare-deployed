@@ -46,7 +46,6 @@ import MoodboardResult from './pages/moodboard/MoodboardResult';
 import AdminLogin from './pages/admin/AdminLogin';
 import ManageUsers from './pages/admin/ManageUsers';
 import EditUser from './pages/admin/EditUser';
-import FeedbackManagement from './pages/admin/FeedbackManagement';
 
 // Global Styles
 import './styles/global.css';
@@ -117,7 +116,6 @@ export default function App() {
           {/* Admin Module */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminRoute><ManageUsers /></AdminRoute>} />
-          <Route path="/admin/feedback" element={<AdminRoute><FeedbackManagement /></AdminRoute>} />
           <Route path="/admin/user/:id" element={<AdminRoute><EditUser /></AdminRoute>} />
 
           {/* Fallback Route */}
