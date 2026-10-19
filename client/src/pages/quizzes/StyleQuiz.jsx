@@ -24,6 +24,25 @@ const defaultPositions = {
   }
 };
 
+// Short and midi dresses have transparent padding sized for their full source
+// images. They need a higher placement than floor-length dresses so the
+// garment sits on the mannequin's shoulders and waist when selected.
+const SHORT_DRESS_NAMES = new Set([
+  'Untitled18_20251019111152.png',
+  'Untitled18_20251019111157.png',
+  'Untitled18_20251019111202.png',
+  'Untitled18_20251019111209.png',
+  'Untitled18_20251019111226.png',
+  'Untitled18_20251019111232.png',
+  'Untitled18_Restored2_20251021152843.png',
+  'Untitled18_Restored2_20251021152849.png',
+  'Untitled18_Restored2_20251021152853.png',
+  'Untitled18_Restored2_20251021152922.png',
+  'Untitled18_Restored2_20251021152930.png',
+  'Untitled18_Restored2_20251021160004.png',
+  'Untitled18_Restored2_20251021163927.png'
+]);
+
 export default function StyleQuiz() {
   const navigate = useNavigate();
   const [gender, setGender] = useState(() => {
@@ -64,7 +83,10 @@ export default function StyleQuiz() {
     }
 
     const genderPositions = defaultPositions[gender] || defaultPositions.fem;
-    const pos = genderPositions[category] || { top: '150px', left: '10px' };
+    const basePosition = genderPositions[category] || { top: '150px', left: '10px' };
+    const pos = gender === 'fem' && category === 'dresses' && SHORT_DRESS_NAMES.has(item.name)
+      ? { ...basePosition, top: '0px' }
+      : basePosition;
     
     const x = parseInt(pos.left) || 10;
     const y = parseInt(pos.top) || 150;
