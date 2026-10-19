@@ -14,6 +14,13 @@ const protect = async (req, res, next) => {
         return res.status(401).json({ success: false, message: 'User record not found.' });
       }
 
+      if (req.user.deletedAt) {
+        return res.status(403).json({
+          success: false,
+          message: 'Your account has been disabled. The administrator is monitoring your account.',
+        });
+      }
+
       // Require verified email for every account, including administrators.
       if (!req.user.isVerified) {
         return res.status(403).json({ success: false, message: 'Account not verified. Check your Brevo email.' });

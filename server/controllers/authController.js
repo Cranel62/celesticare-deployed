@@ -153,6 +153,13 @@ exports.login = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials.' });
     }
 
+    if (user.deletedAt) {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account has been disabled. The administrator is monitoring your account.',
+      });
+    }
+
     const isAdminUser = user.role === 'admin' || user.is_admin === true;
     if (isAdminUser && user.role !== 'admin') {
       user.role = 'admin';
