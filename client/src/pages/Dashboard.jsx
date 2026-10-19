@@ -117,8 +117,9 @@ export default function Dashboard() {
   const hasMissingProfileDetails = !user.name || !user.gender || !user.birthdate || !user.zodiac_sign;
 
   // Robust check: Inspect both user database record and temporary onboarding local storage for an undertone choice
-  const onboardingStorage = JSON.parse(localStorage.getItem('celesticare_onboarding') || '{}');
-  const hasUserUndertone = (user.undertone && user.undertone !== 'Not set') || onboardingStorage.undertone;
+  const savedUndertone = user.undertone && user.undertone !== 'Not set' ? user.undertone : '';
+  const savedZodiac = user.zodiac_sign || '';
+  const hasUserUndertone = Boolean(savedUndertone);
   const undertoneLinkTarget = hasUserUndertone ? '/undertone-result' : '/undertone-test';
 
   return (
@@ -197,14 +198,14 @@ export default function Dashboard() {
               {hasUserUndertone ? (
                 <div className="dashboard-color-content">
                   <div className="mb-3">
-                    <p className="mb-1"><strong>Zodiac:</strong> {user.zodiac_sign || onboardingStorage.zodiac_sign}</p>
-                    <p className="mb-1"><strong>Undertone:</strong> {user.undertone || onboardingStorage.undertone}</p>
+                    <p className="mb-1"><strong>Zodiac:</strong> {savedZodiac || 'Not set'}</p>
+                    <p className="mb-1"><strong>Undertone:</strong> {savedUndertone}</p>
                   </div>
                   <div className="dashboard-color-visual mb-3">
-                    <img src={assetUrl(`/src/pages/undertone/assets/${(user.undertone || onboardingStorage.undertone).toLowerCase()}_wheel.png`)} alt="Undertone wheel" className="undertoneresult-wheel" />
+                    <img src={assetUrl(`/src/pages/undertone/assets/${savedUndertone.toLowerCase()}_wheel.png`)} alt="Undertone wheel" className="undertoneresult-wheel" />
                   </div>
                   <div className="dashboard-color-palette mb-3">
-                    {(palettes[(user.undertone || onboardingStorage.undertone)] || []).map((color, i) => (
+                    {(palettes[savedUndertone] || []).map((color, i) => (
                       <div key={i} className="dashboard-color-swatch d-inline-block" style={{ background: color }}></div>
                     ))}
                   </div>

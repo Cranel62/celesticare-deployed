@@ -1,17 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import '../../styles/Tarot.css';
 import '../../styles/TarotPickers.css';
 import { TAROT_BACK } from '../../utils/tarotImages';
+import API from '../../services/api';
 
 export default function SingleCardPicker() {
   const navigate = useNavigate();
   const [shuffling, setShuffling] = useState(false);
+  const [savedCardId, setSavedCardId] = useState(null);
   const deckRef = useRef(null);
   const cardsRef = useRef([]);
   const animFrameRef = useRef(null);
 
   useEffect(() => {
+    API.get('/tarot/single-card').then(({ data }) => {
+      if (data.cardId !== null && data.cardId !== undefined) setSavedCardId(data.cardId);
+    }).catch(() => {});
     const starsContainer = document.getElementById('stars');
     if (starsContainer && starsContainer.children.length === 0) {
       for (let i = 0; i < 100; i++) {
@@ -97,7 +102,7 @@ export default function SingleCardPicker() {
       } else {
         cancelAnimationFrame(animFrameRef.current);
         setTimeout(() => {
-          const randomId = Math.floor(Math.random() * 78) + 1;
+          const randomId = Math.floor(Math.random() * 78);
           navigate(`/tarot/single-result/${randomId}`);
         }, 600);
       }
@@ -133,6 +138,11 @@ export default function SingleCardPicker() {
             <span className="scp-shuffle-text active">° Shuffling the mystical deck... °</span>
           )}
         </div>
+        {savedCardId !== null && !shuffling && (
+          <button type="button" className="return-button" onClick={() => navigate(`/tarot/single-result/${savedCardId}`)}>
+            View your saved card
+          </button>
+        )}
       </div>
     </div>
   );

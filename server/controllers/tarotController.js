@@ -1,4 +1,5 @@
 const TarotReading = require('../models/TarotReading');
+const User = require('../models/User');
 
 // Mock partial deck for generation logic
 const TAROT_DECK = [
@@ -36,6 +37,9 @@ exports.saveReading = async (req, res, next) => {
       interpretation,
       spread_data
     });
+    if (reading_type === 'single' && cards?.[0]?.id !== undefined) {
+      await User.findByIdAndUpdate(req.user.id, { selected_single_card: Number(cards[0].id) });
+    }
     res.status(201).json({ success: true, reading_id: reading._id, message: 'Reading saved successfully' });
   } catch (error) {
     next(error);
@@ -106,4 +110,22 @@ exports.getFashionAdvice = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+exports.getSelectedSingleCard = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id).select('selected_single_card').lean();
+    res.status(200).json({ success: true, cardId: user?.selected_single_card ?? null });
+  } catch (error) { next(error); }
+};
+
+exports.saveSelectedSingleCard = async (req, res, next) => {
+  try {
+    const cardId = Number(req.body.cardId);
+    if (!Number.isInteger(cardId) || cardId < 0 || cardId > 77) {
+      return res.status(400).json({ success: false, message: 'A valid card ID is required.' });
+    }
+    await User.findByIdAndUpdate(req.user.id, { selected_single_card: cardId });
+    res.status(200).json({ success: true, cardId });
+  } catch (error) { next(error); }
 };

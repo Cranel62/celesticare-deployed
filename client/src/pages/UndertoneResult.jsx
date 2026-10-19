@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { assetUrl } from '../utils/assetUrls';
 import '../styles/Undertone.css';
@@ -96,9 +96,9 @@ export default function UndertoneResult() {
   const onboardingData = JSON.parse(localStorage.getItem('celesticare_onboarding') || '{}');
   const userData = JSON.parse(localStorage.getItem('celesticare_user') || '{}');
   
-  const undertone = onboardingData.undertone || userData.undertone;
-  const zodiacSign = onboardingData.zodiac_sign || userData.zodiac_sign;
   const token = localStorage.getItem('celesticare_token');
+  const undertone = token ? userData.undertone : onboardingData.undertone;
+  const zodiacSign = token ? userData.zodiac_sign : onboardingData.zodiac_sign;
 
   useEffect(() => {
     if (!undertone || !zodiacSign) {

@@ -6,6 +6,8 @@ const {
   saveReading,
   getRecentReading,
   getReadingById,
+  getSelectedSingleCard,
+  saveSelectedSingleCard,
   getFashionAdvice
 } = require('../controllers/tarotController');
 
@@ -16,5 +18,7 @@ router.get('/fashion-advice', getFashionAdvice);
 router.post('/save', protect, saveReading);
 router.get('/recent', protect, getRecentReading);
 router.get('/reading/:id', protect, getReadingById);
+router.get('/single-card', protect, getSelectedSingleCard);
+router.put('/single-card', protect, saveSelectedSingleCard);
 
 module.exports = router;

@@ -24,6 +24,7 @@ export default function Login() {
       const res = await API.post('/auth/login', credentials);
       localStorage.setItem('celesticare_token', res.data.token);
       localStorage.setItem('celesticare_user', JSON.stringify(res.data.user));
+      window.dispatchEvent(new Event('celesticare-auth-changed'));
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login attempt failed.');

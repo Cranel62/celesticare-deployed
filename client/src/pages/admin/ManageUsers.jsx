@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../../services/api';
 import '../../styles/Admin.css';
@@ -6,6 +6,7 @@ import '../../styles/Admin.css';
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState('active');
+  const [feedback, setFeedback] = useState([]);
   const adminEmail = JSON.parse(localStorage.getItem('celesticare_user') || '{}').email;
 
   const fetchUsers = async () => {
@@ -17,7 +18,26 @@ export default function ManageUsers() {
     }
   };
 
-  useEffect(() => { fetchUsers(); }, []);
+  useEffect(() => {
+    let active = true;
+    API.get('/admin/users').then((res) => {
+      if (active) setUsers(res.data.data);
+    }).catch((err) => console.error('Failed to fetch users', err));
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const fetchFeedback = async () => {
+      try {
+        const res = await API.get('/feedback/admin');
+        if (active) setFeedback(res.data.data || []);
+      } catch (err) { console.error('Failed to fetch feedback', err); }
+    };
+    fetchFeedback();
+    const interval = window.setInterval(fetchFeedback, 5000);
+    return () => { active = false; window.clearInterval(interval); };
+  }, []);
 
   const handleAction = async (action, userId, username) => {
     const messages = {
@@ -105,6 +125,26 @@ export default function ManageUsers() {
             </tbody>
           </table>
         </div>
+
+        <section className="admin-table-container" style={{ marginTop: '40px' }}>
+          <div style={{ padding: '20px 24px' }}>
+            <h2 style={{ margin: 0 }}>User Feedback</h2>
+            <p style={{ margin: '6px 0 0', opacity: 0.7 }}>Automatically refreshed every 5 seconds.</p>
+          </div>
+          <table className="admin-table">
+            <thead><tr><th>User</th><th>Experience</th><th>Fashion Match</th><th>Favorite Feature</th><th>Vibe</th><th>Suggestions</th><th>Submitted</th></tr></thead>
+            <tbody>
+              {feedback.map((entry) => (
+                <tr key={entry._id}>
+                  <td>{entry.user?.username || entry.user?.email || 'Unknown user'}</td>
+                  <td>{entry.experience}</td><td>{entry.fashion_match}</td><td>{entry.favorite_feature}</td><td>{entry.vibe}</td><td>{entry.suggestions || '—'}</td>
+                  <td>{entry.createdAt ? new Date(entry.createdAt).toLocaleString() : '—'}</td>
+                </tr>
+              ))}
+              {!feedback.length && <tr><td colSpan="7">No feedback submitted yet.</td></tr>}
+            </tbody>
+          </table>
+        </section>
       </div>
     </div>
   );

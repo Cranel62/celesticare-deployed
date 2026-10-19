@@ -8,6 +8,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const astroRoutes = require('./routes/astroRoutes');
 const outfitRoutes = require('./routes/outfitRoutes');
 const tarotRoutes = require('./routes/tarotRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
 const errorHandler = require('./middleware/errorMiddleware');
 const { apiLimiter } = require('./middleware/rateLimiter');
 
@@ -51,6 +52,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/astro', astroRoutes);
 app.use('/api/outfits', outfitRoutes);
 app.use('/api/tarot', tarotRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 // Error Handling
 app.use(errorHandler);

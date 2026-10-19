@@ -31,6 +31,7 @@ const getEmailFailureMessage = (error) => {
 };
 
 const getClientUrl = () => (process.env.CLIENT_URL || 'https://celesticare-deployed-client.vercel.app').replace(/\/$/, '');
+const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 
 const sendVerificationEmail = async (user, rawToken) => {
   const verificationUrl = `${getClientUrl()}/verify?token=${encodeURIComponent(rawToken)}`;
@@ -65,8 +66,8 @@ exports.register = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Please provide all required fields.' });
     }
 
-    if (password.length < 8) {
-      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
+    if (!passwordPattern.test(password)) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.' });
     }
 
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
@@ -339,8 +340,8 @@ exports.resetPasswordWithSecurityQuestions = async (req, res, next) => {
     if (!email || !password || answers.length !== 3) {
       return res.status(400).json({ success: false, message: 'Email, all three security answers, and a new password are required.' });
     }
-    if (password.length < 8) {
-      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
+    if (!passwordPattern.test(password)) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.' });
     }
 
     const user = await User.findOne({ email }).select('+security_questions +password');
@@ -371,6 +372,50 @@ exports.resetPasswordWithSecurityQuestions = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+exports.requestPasswordResetCode = async (req, res, next) => {
+  try {
+    const accountEmail = String(req.body.accountEmail || req.body.email || '').trim().toLowerCase();
+    const deliveryEmail = String(req.body.deliveryEmail || accountEmail).trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(accountEmail) || !/^\S+@\S+\.\S+$/.test(deliveryEmail)) {
+      return res.status(400).json({ success: false, message: 'Enter valid account and delivery email addresses.' });
+    }
+    const user = await User.findOne({ email: accountEmail });
+    if (!user || !user.isVerified) {
+      return res.status(400).json({ success: false, message: 'No verified account was found for that email.' });
+    }
+    const code = String(crypto.randomInt(100000, 1000000));
+    user.passwordResetToken = crypto.createHash('sha256').update(code).digest('hex');
+    user.passwordResetTokenExpires = Date.now() + 15 * 60 * 1000;
+    await user.save({ validateBeforeSave: false });
+    await sendEmail({
+      email: deliveryEmail,
+      subject: 'CelestiCare Password Reset Code',
+      html: `<h3>Password reset request</h3><p>Your CelestiCare verification code is:</p><h2>${code}</h2><p>This code expires in 15 minutes. If you did not request this, ignore this email.</p>`,
+      text: `Your CelestiCare password reset code is ${code}. It expires in 15 minutes.`,
+    });
+    res.status(200).json({ success: true, message: 'A password reset code was sent to the provided email address.' });
+  } catch (error) { next(error); }
+};
+
+exports.resetPasswordWithCode = async (req, res, next) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const code = String(req.body.code || '').trim();
+    const password = String(req.body.password || '');
+    if (!email || !/^\d{6}$/.test(code) || !passwordPattern.test(password)) {
+      return res.status(400).json({ success: false, message: 'Enter the six-digit code and a password with at least 8 characters, uppercase, lowercase, a number, and a special character.' });
+    }
+    const hashedCode = crypto.createHash('sha256').update(code).digest('hex');
+    const user = await User.findOne({ email, passwordResetToken: hashedCode, passwordResetTokenExpires: { $gt: Date.now() } }).select('+password +passwordResetToken +passwordResetTokenExpires');
+    if (!user) return res.status(400).json({ success: false, message: 'The reset code is invalid or expired.' });
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpires = undefined;
+    await user.save();
+    res.status(200).json({ success: true, message: 'Password reset successfully. You can now sign in.' });
+  } catch (error) { next(error); }
 };
 
 exports.deleteAccount = async (req, res, next) => {

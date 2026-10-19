@@ -5,6 +5,9 @@ import '../styles/ForgotPassword.css';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
+  const [deliveryEmail, setDeliveryEmail] = useState('');
+  const [useAlternativeEmail, setUseAlternativeEmail] = useState(false);
+  const [resetCode, setResetCode] = useState('');
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [password, setPassword] = useState('');
@@ -13,6 +16,7 @@ export default function ForgotPassword() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const passwordRule = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 
   const handleLookup = async (event) => {
     event.preventDefault();
@@ -21,9 +25,12 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      const { data } = await API.post('/auth/forgot-password/questions', { email });
-      setQuestions(data.questions);
-      setAnswers(data.questions.map(() => ''));
+      await API.post('/auth/forgot-password/request-code', {
+        accountEmail: email,
+        deliveryEmail: useAlternativeEmail ? deliveryEmail : email,
+      });
+      setQuestions([]);
+      setAnswers([]);
       setIsVerified(true);
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Unable to start password recovery. Please try again.');
@@ -37,8 +44,8 @@ export default function ForgotPassword() {
     setError('');
     setMessage('');
 
-    if (password.length < 8) {
-      setError('Your new password must be at least 8 characters.');
+    if (!passwordRule.test(password)) {
+      setError('Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.');
       return;
     }
     if (password !== confirmPassword) {
@@ -48,19 +55,19 @@ export default function ForgotPassword() {
 
     setLoading(true);
     try {
-      const { data } = await API.post('/auth/forgot-password/reset', {
+      const endpoint = questions.length ? '/auth/forgot-password/reset' : '/auth/forgot-password/reset-code';
+      const payload = questions.length ? {
         email,
-        answers: questions.map((question, index) => ({
-          question,
-          answer: answers[index],
-        })),
+        answers: questions.map((question, index) => ({ question, answer: answers[index] })),
         password,
-      });
+      } : { email, code: resetCode, password };
+      const { data } = await API.post(endpoint, payload);
       setMessage(data.message || 'Password reset successfully. You can now sign in.');
       setQuestions([]);
       setAnswers([]);
       setPassword('');
       setConfirmPassword('');
+      setResetCode('');
       setIsVerified(false);
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Unable to reset your password. Check your answers and try again.');
@@ -74,8 +81,7 @@ export default function ForgotPassword() {
       <section className="forgot-password-card">
         <h1><i className="fas fa-shield-alt" aria-hidden="true"></i> Reset Your Password</h1>
         <div className="forgot-password-notice">
-          Verify your account with the three security questions you saved in Security Settings.
-          Your answers are checked securely and are never shown back to you.
+          Verify your account with a Brevo email verification code. The code expires after 15 minutes.
         </div>
 
         {message && <div className="forgot-password-success" role="status">{message}</div>}
@@ -94,12 +100,31 @@ export default function ForgotPassword() {
               placeholder="Enter the email on your account"
               required
             />
+            <button
+              className="forgot-password-back"
+              type="button"
+              onClick={() => setUseAlternativeEmail((value) => !value)}
+            >
+              {useAlternativeEmail ? 'Use account email instead' : 'Try another way / use a different email'}
+            </button>
+            {useAlternativeEmail && (
+              <>
+                <label className="forgot-password-label" htmlFor="delivery-email">Email to receive the verification code</label>
+                <input id="delivery-email" className="forgot-password-input" type="email" value={deliveryEmail} onChange={(event) => setDeliveryEmail(event.target.value)} required />
+              </>
+            )}
             <button className="forgot-password-submit" type="submit" disabled={loading}>
-              {loading ? 'Loading security questions...' : 'Continue'}
+              {loading ? 'Sending verification code...' : 'Continue'}
             </button>
           </form>
         ) : (
           <form onSubmit={handleReset}>
+            {!questions.length && (
+              <div className="forgot-password-field">
+                <label className="forgot-password-label" htmlFor="reset-code">Verification code</label>
+                <input id="reset-code" className="forgot-password-input" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} value={resetCode} onChange={(event) => setResetCode(event.target.value.replace(/\D/g, ''))} required />
+              </div>
+            )}
             {questions.map((question, index) => (
               <div className="forgot-password-field" key={question}>
                 <label className="forgot-password-label" htmlFor={`recovery-answer-${index}`}>
@@ -143,6 +168,7 @@ export default function ForgotPassword() {
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 required
               />
+              {confirmPassword && <small>{password === confirmPassword ? 'Passwords match.' : 'Passwords do not match.'}</small>}
             </div>
             <button className="forgot-password-submit" type="submit" disabled={loading}>
               {loading ? 'Resetting password...' : 'Reset Password'}

@@ -22,6 +22,7 @@ exports.saveBirthDetails = async (req, res, next) => {
     }
     user.birth_time = birthTime;
     user.birth_place = birthPlace;
+    user.astro_insights = null;
     await user.save();
     res.status(200).json({ success: true, message: 'Birth details saved successfully', user });
   } catch (error) {
@@ -43,6 +44,10 @@ const geocodeBirthPlace = async (birthPlace) => {
 
 exports.generateChart = async (req, res, next) => {
   try {
+    const savedUser = await User.findById(req.user.id).select('astro_insights');
+    if (savedUser?.astro_insights) {
+      return res.status(200).json({ success: true, chart: savedUser.astro_insights, cached: true });
+    }
     if (!FREE_ASTRO_API_KEY) {
       return res.status(503).json({ success: false, message: 'Astrology service is not configured.' });
     }
@@ -117,6 +122,19 @@ exports.generateChart = async (req, res, next) => {
   }
 };
 
+exports.saveChart = async (req, res, next) => {
+  try {
+    if (!req.body.chart || typeof req.body.chart !== 'object') {
+      return res.status(400).json({ success: false, message: 'A valid chart is required.' });
+    }
+    const user = await User.findByIdAndUpdate(req.user.id, { $set: { astro_insights: req.body.chart } }, { new: true });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found.' });
+    res.status(200).json({ success: true, chart: user.astro_insights });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.enhanceChart = async (req, res, next) => {
   try {
     const { chartData } = req.body;
@@ -147,6 +165,15 @@ exports.enhanceChart = async (req, res, next) => {
     // Clean markdown blocks
     text = text.replace(/```(?:json)?\s*|\s*```/g, '').trim();
     const enhancedData = JSON.parse(text);
+
+    const currentUser = await User.findById(req.user.id);
+    if (currentUser) {
+      const mergedChart = { ...chartData, ...enhancedData };
+      if (enhancedData.houses) mergedChart.houses = chartData.houses.map((house) => ({ ...house, ...enhancedData.houses.find((item) => item.number === house.number) }));
+      if (enhancedData.planets) mergedChart.planets = chartData.planets.map((planet) => ({ ...planet, ...enhancedData.planets.find((item) => item.name === planet.name) }));
+      currentUser.astro_insights = mergedChart;
+      await currentUser.save({ validateBeforeSave: false });
+    }
 
     res.status(200).json({ success: true, enhancedData });
   } catch (error) {

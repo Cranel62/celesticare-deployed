@@ -68,6 +68,15 @@ export default function AstroInsights() {
       if (!res.data.success || !res.data.chart) throw new Error('The chart service returned no chart data.');
       setChartData(res.data.chart);
       setIsLoading(false);
+      if (res.data.cached) {
+        setHousesLoading(false);
+        return;
+      }
+      try {
+        await API.put('/astro/chart', { chart: res.data.chart });
+      } catch (saveError) {
+        console.error('Unable to cache astro chart:', saveError);
+      }
       await enhanceWithGemini(res.data.chart);
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Unable to generate your chart. Please try again.');
@@ -84,7 +93,12 @@ export default function AstroInsights() {
       setBirthTime(currentUser.birth_time || '');
       setBirthPlace(currentUser.birth_place || '');
 
-      if (currentUser.birthdate && currentUser.birth_time && currentUser.birth_place) {
+      if (currentUser.astro_insights) {
+        setChartData(currentUser.astro_insights);
+        setShowForm(false);
+        setIsLoading(false);
+        setHousesLoading(false);
+      } else if (currentUser.birthdate && currentUser.birth_time && currentUser.birth_place) {
         setShowForm(false);
         generateAIChat();
       } else {

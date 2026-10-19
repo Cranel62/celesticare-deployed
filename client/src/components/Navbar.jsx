@@ -9,7 +9,7 @@ import { assetUrl } from '../utils/assetUrls';
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const token = localStorage.getItem('celesticare_token');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(localStorage.getItem('celesticare_token')));
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('celesticare_theme') === 'dark' ? 'dark' : 'light');
 
@@ -18,19 +18,31 @@ export default function Navbar() {
     localStorage.setItem('celesticare_theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    const syncAuth = () => setIsAuthenticated(Boolean(localStorage.getItem('celesticare_token')));
+    window.addEventListener('celesticare-auth-changed', syncAuth);
+    window.addEventListener('storage', syncAuth);
+    return () => {
+      window.removeEventListener('celesticare-auth-changed', syncAuth);
+      window.removeEventListener('storage', syncAuth);
+    };
+  }, []);
+
   const handleLogout = () => {
     if (!window.confirm('Are you sure you want to log out?')) return;
     localStorage.removeItem('celesticare_token');
     localStorage.removeItem('celesticare_user');
+    setIsAuthenticated(false);
+    window.dispatchEvent(new Event('celesticare-auth-changed'));
     setMenuOpen(false);
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
   };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white fixed-top">
       <div className="container-fluid navbar-inner">
         
-        <Link className="navbar-brand" to="/">
+        <Link className="navbar-brand" to={isAuthenticated ? '/dashboard' : '/'} onClick={() => setMenuOpen(false)}>
           {/* INDEPENDENT LOGO CONTAINER */}
           <div className="brand-logo-container">
             <img src={logoImage} alt="C" className="custom-c-image" />
@@ -55,7 +67,7 @@ export default function Navbar() {
 
         <div className={`navbar-collapse justify-content-end${menuOpen ? ' show' : ''}`} id="navbarNav">
           <ul className="navbar-nav align-items-center">
-            {token ? (
+            {isAuthenticated ? (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/dashboard" onClick={() => setMenuOpen(false)}>

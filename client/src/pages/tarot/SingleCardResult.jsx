@@ -82,6 +82,8 @@ export default function SingleCardResult() {
       spread_data: { time_message: timeMessage }
     })
       .catch(err => console.error('Save reading error:', err));
+    API.put('/tarot/single-card', { cardId })
+      .catch(err => console.error('Save selected card error:', err));
 
     return () => {
       clearTimeout(timer1);

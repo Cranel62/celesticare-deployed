@@ -53,7 +53,7 @@ const sendEmail = async (options) => {
   }
 
   const brevoApiKey = String(process.env.BREVO_API_KEY || '').trim();
-  if (brevoApiKey && !brevoApiKey.startsWith('xsmtpsib-')) {
+  if (brevoApiKey && brevoApiKey.startsWith('xkeysib-')) {
     return sendViaBrevoApi({
       email: String(options.email).trim().toLowerCase(),
       subject: options.subject,

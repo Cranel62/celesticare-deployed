@@ -24,6 +24,8 @@ const userSchema = new mongoose.Schema(
     style_result: { type: String, default: '' },
     birth_time: { type: String, default: '' },
     birth_place: { type: String, default: '' },
+    astro_insights: { type: mongoose.Schema.Types.Mixed, default: null },
+    selected_single_card: { type: Number, default: null },
     security_setup_complete: { type: Boolean, default: false },
     security_questions: { type: [{ question: String, answerHash: String }], default: [], select: false },
     email: {
@@ -55,6 +57,8 @@ const userSchema = new mongoose.Schema(
     deletedAt: { type: Date, default: null },
     verificationToken: String,
     verificationTokenExpires: Date,
+    passwordResetToken: { type: String, select: false },
+    passwordResetTokenExpires: { type: Date, select: false },
   },
   { timestamps: true }
 );
