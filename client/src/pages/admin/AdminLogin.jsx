@@ -18,6 +18,7 @@ export default function AdminLogin() {
       if (isAdminUser) {
         localStorage.setItem('celesticare_token', res.data.token);
         localStorage.setItem('celesticare_user', JSON.stringify(res.data.user));
+        window.dispatchEvent(new Event('celesticare-auth-changed'));
         navigate('/admin/dashboard');
       } else {
         setError('Invalid admin credentials.');

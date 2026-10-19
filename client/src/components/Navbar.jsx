@@ -10,6 +10,10 @@ import { assetUrl } from '../utils/assetUrls';
 export default function Navbar() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(localStorage.getItem('celesticare_token')));
+  const [isAdmin, setIsAdmin] = useState(() => {
+    const user = JSON.parse(localStorage.getItem('celesticare_user') || '{}');
+    return user.role === 'admin' || user.is_admin === true;
+  });
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('celesticare_theme') === 'dark' ? 'dark' : 'light');
 
@@ -19,7 +23,11 @@ export default function Navbar() {
   }, [theme]);
 
   useEffect(() => {
-    const syncAuth = () => setIsAuthenticated(Boolean(localStorage.getItem('celesticare_token')));
+    const syncAuth = () => {
+      const user = JSON.parse(localStorage.getItem('celesticare_user') || '{}');
+      setIsAuthenticated(Boolean(localStorage.getItem('celesticare_token')));
+      setIsAdmin(user.role === 'admin' || user.is_admin === true);
+    };
     window.addEventListener('celesticare-auth-changed', syncAuth);
     window.addEventListener('storage', syncAuth);
     return () => {
@@ -33,6 +41,7 @@ export default function Navbar() {
     localStorage.removeItem('celesticare_token');
     localStorage.removeItem('celesticare_user');
     setIsAuthenticated(false);
+    setIsAdmin(false);
     window.dispatchEvent(new Event('celesticare-auth-changed'));
     setMenuOpen(false);
     navigate('/', { replace: true });
@@ -69,6 +78,14 @@ export default function Navbar() {
           <ul className="navbar-nav align-items-center">
             {isAuthenticated ? (
               <>
+                {isAdmin && (
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/admin/dashboard" onClick={() => setMenuOpen(false)}>
+                      <i className="fas fa-user-shield nav-fa-icon"></i>
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  </li>
+                )}
                 <li className="nav-item">
                   <Link className="nav-link" to="/dashboard" onClick={() => setMenuOpen(false)}>
                     <img src={assetUrl('/src/assets/icons/dashboard.png')} alt="Dashboard" className="nav-icon" />
