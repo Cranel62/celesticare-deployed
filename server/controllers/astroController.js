@@ -37,14 +37,26 @@ exports.saveBirthDetails = async (req, res, next) => {
   }
 };
 
+const normalizeLocationPart = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
 const geocodeBirthPlace = async (birthPlace) => {
-  const query = new URLSearchParams({ name: birthPlace, count: '1', language: 'en', format: 'json' });
+  const placeParts = String(birthPlace || '').split(',');
+  const city = placeParts.shift()?.trim() || '';
+  const province = placeParts.join(',').trim();
+  const query = new URLSearchParams({ name: city || birthPlace, count: '10', language: 'en', format: 'json' });
   const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${query}`, {
     signal: AbortSignal.timeout(10000),
   });
   if (!response.ok) throw new Error('Birthplace lookup is unavailable.');
 
-  const result = (await response.json()).results?.[0];
+  const results = (await response.json()).results || [];
+  const normalizedProvince = normalizeLocationPart(province);
+  const result = results.find((candidate) => {
+    if (!normalizedProvince) return true;
+    return [candidate.admin1, candidate.admin2, candidate.admin3, candidate.country]
+      .map(normalizeLocationPart)
+      .some((field) => field === normalizedProvince || field.includes(normalizedProvince) || normalizedProvince.includes(field));
+  }) || results[0];
   if (!result) throw new Error('Birthplace could not be located. Enter a city or town.');
   return { latitude: result.latitude, longitude: result.longitude, city: result.name };
 };
