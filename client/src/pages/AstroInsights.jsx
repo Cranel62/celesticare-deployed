@@ -317,7 +317,6 @@ export default function AstroInsights() {
                 </div>
                 {(house.insight || house.sign) && (
                   <div className="ai-insight-box">
-                    <span className="ai-insight-tag">✧ AI INSIGHT</span>
                     {house.insight || getHouseDescription(house)}
                   </div>
                 )}
