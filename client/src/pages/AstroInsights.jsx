@@ -45,7 +45,7 @@ const HOUSE_AREAS = {
   11: 'friendships, communities, dreams, and future goals',
   12: 'rest, spirituality, the subconscious, and private healing'
 };
-const INSIGHT_VERSION = 2;
+const INSIGHT_VERSION = 3;
 
 const getTriplicityDescription = (role, sign, fallback) => {
   const signDescription = SIGN_DESCRIPTIONS[sign] || fallback;
@@ -56,13 +56,13 @@ const getPlanetDescription = (planet) => {
   const theme = PLANET_THEMES[planet.name] || 'your personal growth and self-expression';
   const area = HOUSE_AREAS[planet.house] || 'an important area of your life';
   const signDescription = SIGN_DESCRIPTIONS[planet.sign] || 'This sign gives the placement its own distinct style and tone.';
-  return `${planet.name} in ${planet.sign} shapes your ${theme}. Because it falls in House ${planet.house}, this energy is most visible through ${area}. ${signDescription}`;
+  return `${planet.name} in ${planet.sign} shapes your ${theme}. In House ${planet.house}, it is expressed through ${area}; ${signDescription}`;
 };
 
 const getHouseDescription = (house) => {
   const area = HOUSE_AREAS[house.number] || 'a meaningful area of your life';
   const signDescription = SIGN_DESCRIPTIONS[house.sign] || 'The sign adds a distinct style to how this area develops.';
-  return `House ${house.number} guides ${area}. With ${house.sign} on this house, ${signDescription}`;
+  return `House ${house.number} focuses on ${area}. With ${house.sign} here, ${signDescription}`;
 };
 
 export default function AstroInsights() {

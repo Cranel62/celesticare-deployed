@@ -164,7 +164,7 @@ exports.enhanceChart = async (req, res, next) => {
       return res.status(200).json({ success: true, enhancedData: {}, available: false });
     }
     
-    let prompt = `You are a professional astrologer writing for a beginner. Create detailed, personalized, easy-to-understand insights from this exact birth chart. Do not repeat the same wording between placements. Explain what each placement means in real life, why its sign and house matter, and include one practical reflection or example when useful. Write 3-4 clear sentences for every planet and house, with a warm and direct tone.\n\n`;
+    let prompt = `You are a professional astrologer writing for a beginner. Use only the exact signs and houses provided in this birth chart. Write concise, personalized, easy-to-understand insights. Make every planet and house explanation different, accurate to its placement, and no more than 1-2 short sentences or 35 words. Avoid repeated wording, vague claims, and unnecessary jargon.\n\n`;
     prompt += `Sun: ${chartData.sun_sign} ${chartData.sun_degrees}°\nMoon: ${chartData.moon_sign}\nRising: ${chartData.rising_sign}\n\n`;
     prompt += `Return a JSON object strictly matching this structure: {"houses": [{"number": 1, "insight": "..."}], "planets": [{"name": "Sun", "influence": "..."}], "life_purpose": "...", "element_balance": "...", "modal_balance": "..."}`;
     const planetaryPlacements = (chartData.planets || [])
@@ -177,7 +177,7 @@ exports.enhanceChart = async (req, res, next) => {
 
     const payload = {
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.8, maxOutputTokens: 8192 }
+      generationConfig: { temperature: 0.6, maxOutputTokens: 4096 }
     };
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
@@ -198,7 +198,7 @@ exports.enhanceChart = async (req, res, next) => {
     const currentUser = await User.findById(req.user.id);
     if (currentUser) {
       const mergedChart = { ...chartData, ...enhancedData };
-      mergedChart.enhancement_version = 2;
+      mergedChart.enhancement_version = 3;
       if (enhancedData.houses) mergedChart.houses = chartData.houses.map((house) => ({ ...house, ...enhancedData.houses.find((item) => item.number === house.number) }));
       if (enhancedData.planets) mergedChart.planets = chartData.planets.map((planet) => ({ ...planet, ...enhancedData.planets.find((item) => item.name === planet.name) }));
       currentUser.astro_insights = mergedChart;
