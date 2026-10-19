@@ -18,9 +18,52 @@ const SIGN_DESCRIPTIONS = {
   Pisces: 'Compassionate and imaginative, you move through life with intuition and spiritual sensitivity.'
 };
 
-const getPlacementDescription = (sign, fallback = 'This placement adds a distinct tone to how you experience and express your life.') => (
-  SIGN_DESCRIPTIONS[sign] || fallback
-);
+const PLANET_THEMES = {
+  Sun: 'identity, confidence, and life direction',
+  Moon: 'emotional needs, instincts, and sense of safety',
+  Mercury: 'thinking style, communication, and decision-making',
+  Venus: 'love language, values, and what brings you pleasure',
+  Mars: 'motivation, courage, desire, and how you take action',
+  Jupiter: 'growth, opportunity, faith, and the way you learn',
+  Saturn: 'responsibility, boundaries, discipline, and long-term mastery',
+  Uranus: 'independence, innovation, and the changes you are meant to make',
+  Neptune: 'imagination, compassion, spirituality, and intuition',
+  Pluto: 'deep transformation, power, and personal renewal'
+};
+
+const HOUSE_AREAS = {
+  1: 'identity and first impressions',
+  2: 'money, personal values, and self-worth',
+  3: 'communication, learning, and your close community',
+  4: 'home, family, roots, and emotional foundations',
+  5: 'creativity, romance, joy, and self-expression',
+  6: 'daily routines, health, work, and practical service',
+  7: 'partnerships, commitment, and one-to-one relationships',
+  8: 'intimacy, shared resources, healing, and transformation',
+  9: 'beliefs, higher learning, travel, and wider perspective',
+  10: 'career, public reputation, and long-term achievement',
+  11: 'friendships, communities, dreams, and future goals',
+  12: 'rest, spirituality, the subconscious, and private healing'
+};
+const INSIGHT_VERSION = 2;
+
+const getTriplicityDescription = (role, sign, fallback) => {
+  const signDescription = SIGN_DESCRIPTIONS[sign] || fallback;
+  return `${sign} ${role} ${signDescription}`;
+};
+
+const getPlanetDescription = (planet) => {
+  const theme = PLANET_THEMES[planet.name] || 'your personal growth and self-expression';
+  const area = HOUSE_AREAS[planet.house] || 'an important area of your life';
+  const signDescription = SIGN_DESCRIPTIONS[planet.sign] || 'This sign gives the placement its own distinct style and tone.';
+  return `${planet.name} in ${planet.sign} shapes your ${theme}. Because it falls in House ${planet.house}, this energy is most visible through ${area}. ${signDescription}`;
+};
+
+const getHouseDescription = (house) => {
+  const area = HOUSE_AREAS[house.number] || 'a meaningful area of your life';
+  const signDescription = SIGN_DESCRIPTIONS[house.sign] || 'The sign adds a distinct style to how this area develops.';
+  return `House ${house.number} guides ${area}. With ${house.sign} on this house, ${signDescription}`;
+};
 
 export default function AstroInsights() {
   const [userData, setUserData] = useState(null);
@@ -65,6 +108,7 @@ export default function AstroInsights() {
           if (enhanced.life_purpose) newData.life_purpose = enhanced.life_purpose;
           if (enhanced.element_balance) newData.element_balance = enhanced.element_balance;
           if (enhanced.modal_balance) newData.modal_balance = enhanced.modal_balance;
+          newData.enhancement_version = INSIGHT_VERSION;
           return newData;
         });
       }
@@ -113,10 +157,15 @@ export default function AstroInsights() {
       setBirthPlace(currentUser.birth_place || '');
 
       if (currentUser.astro_insights) {
-        setChartData(currentUser.astro_insights);
+        const savedChart = currentUser.astro_insights;
+        setChartData(savedChart);
         setShowForm(false);
         setIsLoading(false);
-        setHousesLoading(false);
+        if (savedChart.enhancement_version === INSIGHT_VERSION) {
+          setHousesLoading(false);
+        } else {
+          enhanceWithGemini(savedChart);
+        }
       } else if (currentUser.birthdate && currentUser.birth_time && currentUser.birth_place) {
         setShowForm(false);
         generateAIChat();
@@ -217,17 +266,17 @@ export default function AstroInsights() {
         <div className="ai-grid-3">
           <div className="ai-card ai-triplicity-card">
             <div className="ai-card-subtitle">The Sun</div>
-            <div className="ai-insight-box">{getPlacementDescription(chartData?.sun_sign, 'Your Sun reflects your identity, vitality, and the purpose you are growing into.')}</div>
+            <div className="ai-insight-box">{chartData?.planets?.find((planet) => planet.name?.toLowerCase() === 'sun')?.influence || getTriplicityDescription('expresses your core identity and life direction.', chartData?.sun_sign, 'Your Sun reflects your identity, vitality, and the purpose you are growing into.')}</div>
             <div className="ai-card-value">{chartData?.sun_sign} {chartData?.sun_degrees}°</div>
           </div>
           <div className="ai-card ai-triplicity-card">
             <div className="ai-card-subtitle">The Moon</div>
-            <div className="ai-insight-box">{getPlacementDescription(chartData?.moon_sign, 'Your Moon reflects your emotional needs, instincts, and private inner world.')}</div>
+            <div className="ai-insight-box">{chartData?.planets?.find((planet) => planet.name?.toLowerCase() === 'moon')?.influence || getTriplicityDescription('describes your emotional needs and private inner world.', chartData?.moon_sign, 'Your Moon reflects your emotional needs, instincts, and private inner world.')}</div>
             <div className="ai-card-value">{chartData?.moon_sign}</div>
           </div>
           <div className="ai-card ai-triplicity-card">
             <div className="ai-card-subtitle">The Ascendant</div>
-            <div className="ai-insight-box">{getPlacementDescription(chartData?.rising_sign, 'Your Ascendant shapes your first impression and the way you approach new experiences.')}</div>
+            <div className="ai-insight-box">{getTriplicityDescription('shapes your first impression and the way you approach new experiences.', chartData?.rising_sign, 'Your Ascendant shapes your first impression and the way you approach new experiences.')}</div>
             <div className="ai-card-value">{chartData?.rising_sign}</div>
           </div>
         </div>
@@ -244,7 +293,7 @@ export default function AstroInsights() {
               </div>
               <div className="ai-planet-pos">{planet.sign} {planet.degrees}°</div>
               <div className="ai-insight-box">
-                {planet.influence || getPlacementDescription(planet.sign)}
+                {planet.influence || getPlanetDescription(planet)}
               </div>
             </div>
           ))}
@@ -269,7 +318,7 @@ export default function AstroInsights() {
                 {(house.insight || house.sign) && (
                   <div className="ai-insight-box">
                     <span className="ai-insight-tag">✧ AI INSIGHT</span>
-                    {house.insight || `House ${house.number} brings focus to ${house.sign} themes in your life, inviting you to develop this area with awareness.`}
+                    {house.insight || getHouseDescription(house)}
                   </div>
                 )}
               </div>
