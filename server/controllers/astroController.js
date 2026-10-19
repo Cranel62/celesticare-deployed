@@ -2,9 +2,9 @@ const User = require('../models/User');
 
 // Keep provider credentials server-side. Values are loaded from server/.env by server.js
 // and from the hosting provider's environment in production.
-const FREE_ASTRO_API_KEY = String(process.env.FREE_ASTRO_API_KEY || '').trim();
+const NATALCHART_API_KEY = String(process.env.NATALCHART_API_KEY || process.env.FREE_ASTRO_API_KEY || '').trim();
 const GEMINI_API_KEY = String(process.env.GEMINI_API_KEY || '').trim();
-const FREE_ASTRO_API_URL = String(process.env.FREE_ASTRO_API_URL || 'https://api.freeastroapi.com/api/v1/natal/calculate').trim();
+const NATALCHART_API_URL = String(process.env.NATALCHART_API_URL || 'https://api.natalchart.ai/v1/chart/full').trim();
 
 const expandSign = (abbr) => {
   const map = { Ari: 'Aries', Tau: 'Taurus', Gem: 'Gemini', Can: 'Cancer', Leo: 'Leo', Vir: 'Virgo', Lib: 'Libra', Sco: 'Scorpio', Sag: 'Sagittarius', Cap: 'Capricorn', Aqu: 'Aquarius', Pis: 'Pisces' };
@@ -51,7 +51,7 @@ exports.generateChart = async (req, res, next) => {
     if (savedUser?.astro_insights) {
       return res.status(200).json({ success: true, chart: savedUser.astro_insights, cached: true });
     }
-    if (!FREE_ASTRO_API_KEY) {
+    if (!NATALCHART_API_KEY) {
       return res.status(503).json({ success: false, message: 'Astrology service is not configured.' });
     }
 
@@ -65,30 +65,28 @@ exports.generateChart = async (req, res, next) => {
 
     const location = await geocodeBirthPlace(birthPlace);
 
+    const birthDate = `${dateObj.getUTCFullYear()}-${String(dateObj.getUTCMonth() + 1).padStart(2, '0')}-${String(dateObj.getUTCDate()).padStart(2, '0')}`;
     const postData = {
-      year: dateObj.getFullYear(),
-      month: dateObj.getMonth() + 1,
-      day: dateObj.getDate(),
-      hour: Number(timeMatch[1]),
-      minute: Number(timeMatch[2]),
-      lat: location.latitude,
-      lng: location.longitude,
-      city: location.city,
-      tz_str: 'AUTO',
+      birth: {
+        date: birthDate,
+        time: `${timeMatch[1]}:${timeMatch[2]}`,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      },
     };
 
-    const response = await fetch(FREE_ASTRO_API_URL, {
+    const response = await fetch(NATALCHART_API_URL, {
       method: 'POST',
-      headers: { 'x-api-key': FREE_ASTRO_API_KEY, 'Content-Type': 'application/json' },
+      headers: { Authorization: `Bearer ${NATALCHART_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(postData),
       signal: AbortSignal.timeout(20000),
     });
 
     const responseBody = await response.text();
     if (!response.ok) {
-      console.error(`[Astro API] ${response.status}: ${responseBody.slice(0, 500)}`);
+      console.error(`[NatalChart.AI] ${response.status}: ${responseBody.slice(0, 500)}`);
       if (response.status === 401 || response.status === 403) {
-        throw new Error('The astrology provider rejected FREE_ASTRO_API_KEY. Update the valid FreeAstroAPI key in Render and redeploy.');
+        throw new Error('The astrology provider rejected NATALCHART_API_KEY. Update the valid NatalChart.AI key in Render and redeploy.');
       }
       throw new Error('The astrology chart service is temporarily unavailable.');
     }
@@ -103,23 +101,30 @@ exports.generateChart = async (req, res, next) => {
     }
 
     // Map Core Placements
-    const sunPlanet = astroData.planets.find((planet) => planet.id === 'sun');
-    const moonPlanet = astroData.planets.find((planet) => planet.id === 'moon');
-    const risingSign = astroData.angles_details?.asc?.sign ? expandSign(astroData.angles_details.asc.sign) : 'Unknown';
+    const planetKey = (planet) => String(planet.name || planet.id || '').toLowerCase();
+    const sunPlanet = astroData.planets.find((planet) => planetKey(planet) === 'sun');
+    const moonPlanet = astroData.planets.find((planet) => planetKey(planet) === 'moon');
+    const risingSign = expandSign(
+      astroData.angles?.ascendant?.sign
+      || astroData.angles?.asc?.sign
+      || astroData.angles_details?.asc?.sign
+      || astroData.ascendant?.sign
+      || 'Unknown'
+    );
 
     // Format Planets & Houses
     const planets = astroData.planets.map(p => ({
-      name: p.name,
-      sign: expandSign(p.sign),
-      degrees: Math.floor(p.pos || 0),
-      house: p.house || 0,
-      symbol: { sun: '☉', moon: '☾', mercury: '☿', venus: '♀', mars: '♂', jupiter: '♃', saturn: '♄' }[p.id] || '●'
+      name: p.name || p.id || 'Unknown',
+      sign: expandSign(p.sign || ''),
+      degrees: Math.floor(p.degreeInSign ?? p.pos ?? p.degree ?? 0),
+      house: p.house ?? 0,
+      symbol: { sun: '☉', moon: '☾', mercury: '☿', venus: '♀', mars: '♂', jupiter: '♃', saturn: '♄' }[planetKey(p)] || '●'
     }));
 
     const houses = astroData.houses.map(h => ({
-      number: h.house,
-      sign: expandSign(h.sign),
-      degrees: Math.floor(h.pos || 0)
+      number: h.house ?? h.number,
+      sign: expandSign(h.sign || ''),
+      degrees: Math.floor(h.degreeInSign ?? h.pos ?? h.degree ?? h.longitude ?? 0)
     }));
 
     res.status(200).json({
@@ -128,7 +133,7 @@ exports.generateChart = async (req, res, next) => {
         sun_sign: sunPlanet ? expandSign(sunPlanet.sign) : expandSign(user.zodiac_sign || 'Unknown'),
         moon_sign: moonPlanet ? expandSign(moonPlanet.sign) : 'Unknown',
         rising_sign: risingSign,
-        sun_degrees: Math.floor(sunPlanet?.pos || 0),
+        sun_degrees: Math.floor(sunPlanet?.degreeInSign ?? sunPlanet?.pos ?? sunPlanet?.degree ?? 0),
         planets,
         houses
       }

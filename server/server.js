@@ -61,7 +61,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
-  console.log(`[Config] FreeAstroAPI key configured: ${Boolean(String(process.env.FREE_ASTRO_API_KEY || '').trim())}`);
+  console.log(`[Config] NatalChart.AI key configured: ${Boolean(String(process.env.NATALCHART_API_KEY || process.env.FREE_ASTRO_API_KEY || '').trim())}`);
   console.log(`[Config] Gemini API key configured: ${Boolean(String(process.env.GEMINI_API_KEY || '').trim())}`);
   await connectDB();
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
