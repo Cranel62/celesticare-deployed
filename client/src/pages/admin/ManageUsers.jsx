@@ -48,10 +48,12 @@ export default function ManageUsers() {
   const activeCount = users.filter(u => !u.deletedAt).length;
   const archivedCount = users.filter(u => u.deletedAt).length;
   const adminCount = users.filter(u => u.role === 'admin').length;
+  const feedbackUserCount = users.filter(u => u.feedbackCount > 0).length;
 
   const displayedUsers = users.filter(u => {
     if (filter === 'active') return !u.deletedAt;
     if (filter === 'archived') return u.deletedAt;
+    if (filter === 'feedback') return u.feedbackCount > 0;
     return true;
   });
 
@@ -78,10 +80,11 @@ export default function ManageUsers() {
           <div className="admin-stat-card bg-secondary-grad"><h3>{adminCount}</h3><p>Admin Users</p></div>
         </div>
 
-        <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginBottom: '25px' }}>
+        <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginBottom: '25px', flexWrap: 'wrap' }}>
           <button className={`admin-filter-btn ${filter === 'active' ? 'active' : ''}`} onClick={() => setFilter('active')}>Active Users</button>
           <button className={`admin-filter-btn ${filter === 'archived' ? 'active' : ''}`} onClick={() => setFilter('archived')}>Archived Users</button>
           <button className={`admin-filter-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>All Users</button>
+          <button className={`admin-filter-btn ${filter === 'feedback' ? 'active' : ''}`} onClick={() => setFilter('feedback')}>Users With Feedback ({feedbackUserCount})</button>
         </div>
 
         <div className="admin-table-container">
@@ -99,12 +102,14 @@ export default function ManageUsers() {
                   <td style={{ display: 'flex', gap: '10px' }}>
                     {user.deletedAt ? (
                       <>
+                        {user.feedbackCount > 0 && <Link to={`/admin/feedback?user=${encodeURIComponent(user._id)}`} className="admin-btn admin-btn-info" style={{ textDecoration: 'none' }}>Feedback</Link>}
                         <button className="admin-btn admin-btn-success" onClick={() => handleAction('restore', user._id, user.username)}>Restore</button>
                         {user.role !== 'admin' && <button className="admin-btn admin-btn-danger" onClick={() => handleAction('delete', user._id, user.username)}>Delete</button>}
                       </>
                     ) : (
                       <>
                         {user.role !== 'admin' && <Link to={`/admin/user/${user._id}`} className="admin-btn admin-btn-warning" style={{ textDecoration: 'none' }}>View</Link>}
+                        {user.feedbackCount > 0 && <Link to={`/admin/feedback?user=${encodeURIComponent(user._id)}`} className="admin-btn admin-btn-info" style={{ textDecoration: 'none' }}>Feedback</Link>}
                         {user.role !== 'admin' && <button className="admin-btn admin-btn-danger" onClick={() => handleAction('archive', user._id, user.username)}>Archive</button>}
                       </>
                     )}

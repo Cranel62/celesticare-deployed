@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import API from '../../services/api';
 import '../../styles/Admin.css';
 
 export default function FeedbackManagement() {
+  const [searchParams] = useSearchParams();
+  const selectedUserId = searchParams.get('user') || '';
   const [feedback, setFeedback] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -28,14 +30,14 @@ export default function FeedbackManagement() {
 
   const filteredFeedback = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return feedback;
-
     return feedback.filter((entry) => {
+      const matchesSelectedUser = !selectedUserId || entry.user?._id === selectedUserId;
       const username = entry.user?.username || '';
       const email = entry.user?.email || '';
-      return `${username} ${email}`.toLowerCase().includes(query);
+      const matchesSearch = !query || `${username} ${email}`.toLowerCase().includes(query);
+      return matchesSelectedUser && matchesSearch;
     });
-  }, [feedback, search]);
+  }, [feedback, search, selectedUserId]);
 
   return (
     <div className="admin-body admin-feedback-page">
@@ -58,6 +60,7 @@ export default function FeedbackManagement() {
               <p className="feedback-page-count">
                 Showing {filteredFeedback.length} of {feedback.length} submission{feedback.length === 1 ? '' : 's'}
               </p>
+              {selectedUserId && <Link className="feedback-clear-filter" to="/admin/feedback">Clear user filter</Link>}
             </div>
             <input
               className="admin-feedback-search"

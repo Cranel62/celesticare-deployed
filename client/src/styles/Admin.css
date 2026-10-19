@@ -69,6 +69,7 @@
 .admin-btn-warning { background: linear-gradient(135deg, #ff9800, #ffc107); color: #2e2e2e; }
 .admin-btn-danger { background: linear-gradient(135deg, #dc3545, #e83e8c); }
 .admin-btn-success { background: linear-gradient(135deg, #28a745, #20c997); }
+.admin-btn-info { background: linear-gradient(135deg, #4b3f77, #8d6bc7); }
 
 /* View Container (Edit User) */
 .admin-view-container {
@@ -93,6 +94,7 @@
 .feedback-page-card { margin-bottom: 20px; padding: 14px; }
 .feedback-page-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 0 0 12px; }
 .feedback-page-count { margin: 6px 0 0; color: #6c757d; }
+.feedback-clear-filter { display: inline-block; margin-top: 6px; color: #4b3f77; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
 .admin-feedback-search { width: min(100%, 300px); padding: 9px 12px; border: 1px solid rgba(75, 63, 119, 0.25); border-radius: 12px; color: #2e2e2e; background: rgba(255, 255, 255, 0.9); }
 .admin-feedback-search:focus { outline: 2px solid #6b5b95; outline-offset: 1px; }
 .admin-feedback-table-wrapper { overflow-x: auto; }

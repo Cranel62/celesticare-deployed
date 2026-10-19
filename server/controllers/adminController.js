@@ -15,7 +15,19 @@ exports.getUsers = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    res.status(200).json({ success: true, data: users });
+    const feedbackCounts = await UserFeedback.aggregate([
+      { $match: { user: { $in: users.map((user) => user._id) } } },
+      { $group: { _id: '$user', count: { $sum: 1 } } },
+    ]);
+    const countsByUserId = new Map(
+      feedbackCounts.map((entry) => [String(entry._id), entry.count])
+    );
+    const usersWithFeedbackCounts = users.map((user) => ({
+      ...user,
+      feedbackCount: countsByUserId.get(String(user._id)) || 0,
+    }));
+
+    res.status(200).json({ success: true, data: usersWithFeedbackCounts });
   } catch (error) {
     next(error);
   }
