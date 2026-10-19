@@ -108,6 +108,15 @@
 .admin-feedback-table th:nth-child(7) { width: 19%; }
 .admin-feedback-table th:nth-child(8) { width: 10%; }
 .admin-feedback-error { margin: 0; color: #dc3545; }
+.admin-feedback-page { padding-top: 8px; }
+.admin-feedback-page .admin-page-container { max-width: 1500px; }
+.admin-feedback-page .admin-header { padding: 18px 22px; margin-bottom: 14px; border-radius: 14px; }
+.admin-feedback-page .admin-header h1 { font-size: 1.45rem !important; }
+.admin-feedback-page .admin-header p { font-size: 0.82rem; }
+.admin-feedback-page .admin-header-link { padding: 6px 11px; font-size: 0.78rem; }
+.admin-feedback-page .feedback-page-card h2 { font-size: 1.15rem; }
+.admin-feedback-page .feedback-page-count { font-size: 0.75rem; }
+.admin-feedback-page .admin-feedback-table td { line-height: 1.2; }
 @media (max-width: 700px) {
   .feedback-page-toolbar { flex-direction: column; align-items: stretch; }
   .admin-feedback-search { width: 100%; }

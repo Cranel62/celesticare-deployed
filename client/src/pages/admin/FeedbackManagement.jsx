@@ -38,7 +38,7 @@ export default function FeedbackManagement() {
   }, [feedback, search]);
 
   return (
-    <div className="admin-body">
+    <div className="admin-body admin-feedback-page">
       <div className="admin-bg-accent one"></div>
       <div className="admin-bg-accent two"></div>
 
