@@ -1,22 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import API from '../../services/api';
 import '../../styles/StyleResult.css';
-
-const STYLE_INFO = {
-  minimalist: { name: 'Minimalist Elegance', desc: 'Clean, simple, and timeless pieces.', colors: 'White, black, beige, grey', occasions: 'Everyday, casual' },
-  businesswear: { name: 'Professional Businesswear', desc: 'Polished, professional, and structured.', colors: 'Navy, black, grey, white', occasions: 'Work, meetings' },
-  elegant: { name: 'Classic Elegance', desc: 'Sophisticated, classy, and luxurious.', colors: 'Pastels, jewel tones', occasions: 'Formal events' },
-  creative: { name: 'Creative Expression', desc: 'Bold, artistic, and expressive.', colors: 'Bright, contrasting', occasions: 'Art events, casual' },
-  soft: { name: 'Soft Elegance', desc: 'Gentle, pastel, and cozy pieces.', colors: 'Pastels, cream', occasions: 'Coffee dates' },
-  rough: { name: 'Rough Edge', desc: 'Edgy, casual, and street-inspired.', colors: 'Black, grey', occasions: 'Street, concerts' },
-  streetwear: { name: 'Urban Streetwear', desc: 'Urban, trendy, and casual.', colors: 'Black, white, bold', occasions: 'City walks' }
-};
+import { getOutfitAnalysis } from '../../data/clothingSets';
 
 export default function StyleResult() {
   const navigate = useNavigate();
   const [outfitData, setOutfitData] = useState([]);
-  const [topStyle, setTopStyle] = useState('minimalist');
+  const [outfitDescription, setOutfitDescription] = useState('');
+  const [outfitPieces, setOutfitPieces] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -25,8 +17,11 @@ export default function StyleResult() {
         const res = await API.get('/outfits/latest');
         if (res.data.success && res.data.outfit) {
           // Limit to 9 items for the 3x3 grid display
-          setOutfitData(res.data.outfit.outfit_data.slice(0, 9));
-          setTopStyle(res.data.outfit.clothing_style || 'minimalist');
+          const items = res.data.outfit.outfit_data || [];
+          const analysis = getOutfitAnalysis(items);
+          setOutfitData(items);
+          setOutfitDescription(analysis.description);
+          setOutfitPieces(analysis.pieces);
         } else {
           navigate('/style-welcome');
         }
@@ -61,7 +56,9 @@ export default function StyleResult() {
     }
   };
 
-  const info = STYLE_INFO[topStyle] || STYLE_INFO['minimalist'];
+  const analysis = getOutfitAnalysis(outfitData);
+  const info = analysis.profile;
+  const description = outfitDescription || analysis.description;
 
   return (
     <div style={{ padding: '100px 0 60px' }}>
@@ -74,7 +71,7 @@ export default function StyleResult() {
             <p className="sr-no-items">No items found in this outfit.</p>
           ) : (
             <div className="sr-cards-grid">
-              {outfitData.map((item, idx) => (
+              {outfitData.slice(0, 9).map((item, idx) => (
                 <div key={idx} className="sr-grid-card">
                   <div className="sr-thumbnail-wrapper">
                     <img 
@@ -93,7 +90,14 @@ export default function StyleResult() {
       <div className="sr-info">
         <div className="sr-badge">Style Analysis</div>
         <h1 className="sr-title">{info.name}</h1>
-        <p className="sr-desc">{info.desc}</p>
+        <p className="sr-desc">{description}</p>
+
+        {outfitPieces.length > 0 && (
+          <div className="sr-card">
+            <strong>What you selected</strong>
+            <p>{outfitPieces.join(' • ')}</p>
+          </div>
+        )}
         
         <div className="sr-card">
           <strong>Color Palette</strong>

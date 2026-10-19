@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../../services/api';
 import '../../styles/StyleQuiz.css';
-import { CLOTHING_SETS } from '../../data/clothingSets';
+import { CLOTHING_SETS, getOutfitAnalysis } from '../../data/clothingSets';
 import { assetUrl } from '../../utils/assetUrls';
 
 const LIMITS = { tops: 2, bottoms: 2, shoes: 1, accessories: 4, dresses: 1 };
@@ -84,12 +84,8 @@ export default function StyleQuiz() {
   const finishQuiz = async () => {
     if (droppedItems.length === 0) return alert("Try dressing your mannequin first!");
 
-    const styleCounts = droppedItems.reduce((acc, item) => {
-      acc[item.style] = (acc[item.style] || 0) + 1;
-      return acc;
-    }, {});
-    
-    const topStyle = Object.keys(styleCounts).reduce((a, b) => styleCounts[a] > styleCounts[b] ? a : b);
+    const analysis = getOutfitAnalysis(droppedItems);
+    const topStyle = analysis.style;
 
     try {
       await API.post('/outfits/save', {
