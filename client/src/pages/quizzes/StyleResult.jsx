@@ -100,6 +100,11 @@ export default function StyleResult() {
         )}
         
         <div className="sr-card">
+          <strong>Style Tips</strong>
+          <p>{analysis.tips}</p>
+        </div>
+
+        <div className="sr-card">
           <strong>Color Palette</strong>
           <p>{info.colors}</p>
         </div>
