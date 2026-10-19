@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../services/api';
+import PHILIPPINE_LOCATIONS from '../data/philippineLocations.json';
 import '../styles/AstroInsights.css';
 
 const SIGN_DESCRIPTIONS = {
@@ -71,51 +72,13 @@ export default function AstroInsights() {
   const [birthPlace, setBirthPlace] = useState('');
   const [birthCity, setBirthCity] = useState('');
   const [birthProvince, setBirthProvince] = useState('');
-  const [provinces, setProvinces] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [locationsLoading, setLocationsLoading] = useState(false);
+  const cities = (PHILIPPINE_LOCATIONS.find((item) => item.province === birthProvince)?.cities || [])
+    .map((city) => city.replace(/^City of\s+/i, '').trim());
   const [showForm, setShowForm] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [chartData, setChartData] = useState(null);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    let active = true;
-    setLocationsLoading(true);
-    fetch('https://psgc.cloud/api/provinces').then((response) => {
-        if (!response.ok) throw new Error('Unable to load Philippine provinces.');
-        return response.json();
-      })
-      .then((provinceItems) => {
-        if (!Array.isArray(provinceItems)) throw new Error('Invalid Philippine province list.');
-        if (active) setProvinces(provinceItems);
-      })
-      .catch((err) => { if (active) setError(err.message || 'Unable to load birthplace locations.'); })
-      .finally(() => { if (active) setLocationsLoading(false); });
-    return () => { active = false; };
-  }, []);
-
-  useEffect(() => {
-    if (!birthProvince) { setCities([]); return undefined; }
-    const province = provinces.find((item) => item.name === birthProvince);
-    if (!province) { setCities([]); return undefined; }
-    let active = true;
-    setLocationsLoading(true);
-    setCities([]);
-    fetch(`https://psgc.cloud/api/provinces/${encodeURIComponent(province.code)}/cities-municipalities`)
-      .then((response) => {
-        if (!response.ok) throw new Error('Unable to load cities and towns for this Philippine province.');
-        return response.json();
-      })
-      .then((items) => {
-        if (!Array.isArray(items)) throw new Error('Invalid city and town list.');
-        if (active) setCities([...new Set(items.map((item) => item.name.replace(/^(City of|Municipality of)\s+/i, '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b)));
-      })
-      .catch((err) => { if (active) { setCities([]); setError(err.message || 'Unable to load cities and towns.'); } })
-      .finally(() => { if (active) setLocationsLoading(false); });
-    return () => { active = false; };
-  }, [birthProvince, provinces]);
-  
   const [isGeminiLoading, setIsGeminiLoading] = useState(false);
   const [housesLoading, setHousesLoading] = useState(false);
 
@@ -283,19 +246,19 @@ export default function AstroInsights() {
             </div>
             <div className="ai-input-group">
               <label className="ai-label" htmlFor="birth-province">Birth Province</label>
-              <select id="birth-province" value={birthProvince} onChange={(e) => { setBirthProvince(e.target.value); setBirthCity(''); setError(''); }} required className="ai-input" disabled={locationsLoading && provinces.length === 0}>
-                <option value="">{locationsLoading && provinces.length === 0 ? 'Loading provinces…' : 'Choose a province'}</option>
-                {provinces.map((province) => { const name = province.name || province.area_name; return <option key={province.code || province.psgc_code || name} value={name}>{name}</option>; })}
+              <select id="birth-province" value={birthProvince} onChange={(e) => { setBirthProvince(e.target.value); setBirthCity(''); setError(''); }} required className="ai-input">
+                <option value="">Choose a province</option>
+                {PHILIPPINE_LOCATIONS.map(({ province }) => <option key={province} value={province}>{province}</option>)}
               </select>
             </div>
             <div className="ai-input-group">
               <label className="ai-label" htmlFor="birth-city">Birth City or Town</label>
-              <select id="birth-city" value={birthCity} onChange={(e) => { setBirthCity(e.target.value); setError(''); }} required className="ai-input" disabled={!birthProvince || locationsLoading || cities.length === 0}>
-                <option value="">{!birthProvince ? 'Choose a province first' : locationsLoading ? 'Loading cities and towns…' : 'Choose a city or town'}</option>
+              <select id="birth-city" value={birthCity} onChange={(e) => { setBirthCity(e.target.value); setError(''); }} required className="ai-input" disabled={!birthProvince || cities.length === 0}>
+                <option value="">{!birthProvince ? 'Choose a province first' : 'Choose a city or town'}</option>
                 {cities.map((city) => <option key={city} value={city}>{city}</option>)}
               </select>
             </div>
-            <button type="submit" disabled={isLoading || locationsLoading || !userData?.birthdate} className="ai-btn-primary">
+            <button type="submit" disabled={isLoading || !userData?.birthdate} className="ai-btn-primary">
               Reveal My Insights
             </button>
           </form>
