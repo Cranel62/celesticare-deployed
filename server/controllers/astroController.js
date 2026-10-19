@@ -164,9 +164,16 @@ exports.enhanceChart = async (req, res, next) => {
       return res.status(200).json({ success: true, enhancedData: {}, available: false });
     }
     
-    let prompt = `You are a professional astrologer. Analyze this birth chart and provide mystical, personalized insights. DO NOT give generic statements. Write 3-4 sentences explaining how this placement affects their life.\n\n`;
+    let prompt = `You are a professional astrologer. Analyze this birth chart and provide concise, personalized insights. Avoid generic statements. Explain the Sacred Triplicity (Sun, Moon, and Ascendant), every planetary placement, and every celestial house in clear language. Each planet influence and house insight should be 1-2 useful sentences.\n\n`;
     prompt += `Sun: ${chartData.sun_sign} ${chartData.sun_degrees}°\nMoon: ${chartData.moon_sign}\nRising: ${chartData.rising_sign}\n\n`;
     prompt += `Return a JSON object strictly matching this structure: {"houses": [{"number": 1, "insight": "..."}], "planets": [{"name": "Sun", "influence": "..."}], "life_purpose": "...", "element_balance": "...", "modal_balance": "..."}`;
+    const planetaryPlacements = (chartData.planets || [])
+      .map((planet) => `${planet.name}: ${planet.sign} ${planet.degrees} degrees in House ${planet.house}`)
+      .join('\n');
+    const celestialHouses = (chartData.houses || [])
+      .map((house) => `House ${house.number}: ${house.sign} ${house.degrees} degrees`)
+      .join('\n');
+    prompt += `\nFull Planetary Placements:\n${planetaryPlacements}\n\nThe Twelve Celestial Houses:\n${celestialHouses}`;
 
     const payload = {
       contents: [{ parts: [{ text: prompt }] }],

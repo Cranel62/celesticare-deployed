@@ -188,6 +188,14 @@
   letter-spacing: -0.5px;
 }
 
+.ai-section-description {
+  max-width: 900px;
+  margin: -12px 0 22px;
+  color: #d0cce6;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
 .ai-header {
   text-align: center;
   margin-bottom: 40px;

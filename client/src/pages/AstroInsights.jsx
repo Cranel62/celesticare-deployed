@@ -194,6 +194,7 @@ export default function AstroInsights() {
 
         {/* The Sacred Triplicity */}
         <h2 className="ai-section-title">The Sacred Triplicity</h2>
+        <p className="ai-section-description">Your Sun, Moon, and Ascendant reveal your core identity, emotional world, and the energy you bring into the world.</p>
         <div className="ai-grid-3">
           <div className="ai-card">
             <div className="ai-card-subtitle">The Sun</div>
@@ -211,6 +212,7 @@ export default function AstroInsights() {
 
         {/* Planetary Placements Section */}
         <h2 className="ai-section-title">Planetary Placements</h2>
+        <p className="ai-section-description">Each planet represents a different part of your life, while its sign and house show how that energy is expressed.</p>
         <div className="ai-grid-responsive">
           {chartData?.planets?.map((planet, index) => (
             <div key={index} className="ai-card ai-flex-between">
@@ -230,6 +232,7 @@ export default function AstroInsights() {
 
         {/* Houses */}
         <h2 className="ai-section-title">The Twelve Celestial Houses</h2>
+        <p className="ai-section-description">The twelve houses map the major areas of life, from identity and relationships to purpose, growth, and long-term goals.</p>
         {housesLoading ? (
           <div className="ai-loader-center">
             <div className="ai-spinner-small"></div>
