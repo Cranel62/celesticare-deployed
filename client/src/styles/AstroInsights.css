@@ -113,6 +113,17 @@
   transition: all 0.3s ease;
 }
 
+.ai-input option {
+  color: #24143a;
+  background-color: #fff;
+}
+
+.ai-input option:checked,
+.ai-input option:hover {
+  color: #fff;
+  background-color: #7b36a6;
+}
+
 .ai-input:focus {
   border-color: #c19bfa;
   box-shadow: 0 0 15px rgba(193, 155, 250, 0.4);
