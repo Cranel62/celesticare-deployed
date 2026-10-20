@@ -67,6 +67,71 @@
   gap: 18px;
 }
 
+.gettoknow-birthdate-control {
+  min-width: 0;
+  position: relative;
+  width: 100%;
+}
+
+.gettoknow-setup-box .gettoknow-birthdate-input {
+  padding-right: 60px !important;
+}
+
+.gettoknow-date-picker-button,
+.gettoknow-native-date-picker {
+  height: 42px;
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+}
+
+.gettoknow-date-picker-button {
+  align-items: center;
+  background: rgba(193, 155, 250, 0.12);
+  border: 1px solid rgba(193, 155, 250, 0.32);
+  border-radius: 50%;
+  color: #e5d3ff;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  z-index: 2;
+}
+
+.gettoknow-date-picker-button:hover,
+.gettoknow-date-picker-button:focus-visible {
+  background: rgba(193, 155, 250, 0.25);
+  border-color: #c19bfa;
+  outline: none;
+}
+
+.gettoknow-date-picker-button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(193, 155, 250, 0.25);
+}
+
+.gettoknow-date-picker-button svg {
+  fill: none;
+  height: 19px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+  width: 19px;
+}
+
+.gettoknow-native-date-picker {
+  box-sizing: border-box;
+  cursor: pointer;
+  margin: 0;
+  opacity: 0;
+  padding: 0;
+  width: 42px !important;
+  z-index: 3;
+}
+
 .gettoknow-setup-box .gettoknow-input {
   background: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important; 

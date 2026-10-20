@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/GetToKnow.css';
 
@@ -6,6 +6,7 @@ export default function GetToKnow() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: '', birthdate: '', gender: '' });
   const birthdateInputRef = useRef(null);
+  const calendarInputRef = useRef(null);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -17,10 +18,8 @@ export default function GetToKnow() {
       return;
     }
 
-    // Minimal update: Automatically clear/reset onboarding input session storage/state 
-    // when a guest user visits or refreshes the get-to-know page so inputs don't persist unexpectedly.
+    // A fresh page mount starts with blank form state; clear stale onboarding data.
     localStorage.removeItem('celesticare_onboarding');
-    setFormData({ name: '', birthdate: '', gender: '' });
   }, [navigate]);
 
   const formatBirthdateInput = (value) => {
@@ -81,6 +80,31 @@ export default function GetToKnow() {
     navigate('/zodiac-result');
   };
 
+  const today = new Date();
+  const maxBirthdate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const parsedBirthdate = parseBirthdate(formData.birthdate);
+
+  const handleCalendarChange = (event) => {
+    if (!event.target.value) return;
+    const [year, month, day] = event.target.value.split('-');
+    birthdateInputRef.current?.setCustomValidity('');
+    setFormData(current => ({ ...current, birthdate: `${month}/${day}/${year}` }));
+  };
+
+  const openCalendarPicker = () => {
+    const dateInput = calendarInputRef.current;
+    if (!dateInput) return;
+    try {
+      if (typeof dateInput.showPicker === 'function') dateInput.showPicker();
+      else {
+        dateInput.focus();
+        dateInput.click();
+      }
+    } catch {
+      dateInput.focus();
+    }
+  };
+
   return (
     <div className="gettoknow-body">
       <div className="gettoknow-setup-box">
@@ -96,24 +120,48 @@ export default function GetToKnow() {
             required 
             onChange={e => setFormData({...formData, name: e.target.value})} 
           />
-          <input 
-            ref={birthdateInputRef}
-            type="text"
-            className="form-control gettoknow-input" 
-            placeholder="MM/DD/YYYY"
-            aria-label="Birth date (MM/DD/YYYY)"
-            autoComplete="bday"
-            inputMode="numeric"
-            maxLength={10}
-            pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}"
-            title="Enter your birth date as MM/DD/YYYY"
-            value={formData.birthdate}
-            required 
-            onChange={e => {
-              birthdateInputRef.current?.setCustomValidity('');
-              setFormData({ ...formData, birthdate: formatBirthdateInput(e.target.value) });
-            }}
-          />
+          <div className="gettoknow-birthdate-control">
+            <input
+              ref={birthdateInputRef}
+              type="text"
+              className="form-control gettoknow-input gettoknow-birthdate-input"
+              placeholder="MM/DD/YYYY"
+              aria-label="Birth date (MM/DD/YYYY)"
+              autoComplete="bday"
+              inputMode="numeric"
+              maxLength={10}
+              pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}"
+              title="Enter your birth date as MM/DD/YYYY"
+              value={formData.birthdate}
+              required
+              onChange={e => {
+                birthdateInputRef.current?.setCustomValidity('');
+                setFormData(current => ({ ...current, birthdate: formatBirthdateInput(e.target.value) }));
+              }}
+            />
+            <button
+              type="button"
+              className="gettoknow-date-picker-button"
+              aria-label="Choose birth date from calendar"
+              onClick={openCalendarPicker}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="16" rx="2" />
+                <path d="M16 3v4M8 3v4M3 10h18M8 14h2M14 14h2M8 17h2" />
+              </svg>
+            </button>
+            <input
+              ref={calendarInputRef}
+              className="gettoknow-native-date-picker"
+              type="date"
+              lang="en-US"
+              aria-hidden="true"
+              tabIndex={-1}
+              value={parsedBirthdate?.isoDate || ''}
+              max={maxBirthdate}
+              onChange={handleCalendarChange}
+            />
+          </div>
           <select 
             className="form-control gettoknow-input" 
             required 
