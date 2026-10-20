@@ -97,36 +97,49 @@ export default function AboutUs() {
                 <article className="info-card">
                   <h3>Core Team</h3>
                   <div className="team-grid">
-                    <div className="team-card">
-                      <div className="member-role">Project Manager, Systems Analyst, Main Dev, UI/UX & DBA</div>
-                      <div className="member-name">Elle Skye S. Babao</div>
-                      <div className="member-desc">Leads vision, user experience, and delivery. Aligns timelines, coordinates the team, and shapes the interface so Celesticare feels intuitive, elegant, and emotionally resonant.</div>
-                    </div>
-                    <div className="team-card">
-                      <div className="member-role">Asset Developer, Presentation Manager, UI Designer & Records Manager</div>
-                      <div className="member-name">Ma. Monica L. Deloa</div>
-                      <div className="member-desc">Bridges the gap between design and development. Crafts the user interface, manages digital assets and project records.</div>
-                    </div>
-                    <div className="team-card">
-                      <div className="member-role">Documentation Specialist, Presentation Lead, Diagram Manager & Tester</div>
-                      <div className="member-name">Nicole G. Dequito</div>
-                      <div className="member-desc">Builds the project's information backbone. Creates comprehensive documentation, manages visual diagrams and presentations, and conducts testing.</div>
-                    </div>
-                    <div className="team-card">
-                      <div className="member-role">Documentation Specialist, Tester & UI Designer</div>
-                      <div className="member-name">Alyssa Kate C. Dimaano</div>
-                      <div className="member-desc">Creates with intention and verifies with precision. Shapes the user interface while maintaining project documentation and conducting tests.</div>
-                    </div>
-                    <div className="team-card">
-                      <div className="member-role">Assistant Programmer, Optimization Analyst, Iteration & Feedback Coordinator</div>
-                      <div className="member-name">Camille M. Vallinan</div>
-                      <div className="member-desc">Maintains clarity across the project. Creates and organizes documentation, diagrams, and reports so the system stays understandable and future-ready.</div>
-                    </div>
-                    <div className="team-card">
-                      <div className="member-role">Former Dev</div>
-                      <div className="member-name">Bryan Josef Sarmiento</div>
-                      <div className="member-desc">Helped Bring Life to Celesticare when it first started.</div>
-                    </div>
+                    {[
+                      {
+                        name: 'Elle Skye S. Babao',
+                        role: 'Project Manager',
+                        phrase: 'Guiding Celesticare from vision to launch.'
+                      },
+                      {
+                        name: 'Ma. Monica L. Deloa',
+                        role: 'UI/UX Designer',
+                        phrase: 'Making every interaction feel clear and considered.'
+                      },
+                      {
+                        name: 'Ken Joseph L. Estayo',
+                        role: 'Frontend Developer',
+                        phrase: 'Bringing cosmic ideas to life in the interface.'
+                      },
+                      {
+                        name: 'Jovanie C. Nadado',
+                        role: 'Quality Assurance',
+                        phrase: 'Finding the details that make the experience dependable.'
+                      },
+                      {
+                        name: 'Dave E. Pimentel',
+                        role: 'Presentation Specialist',
+                        phrase: 'Turning the story into a presentation that shines.'
+                      },
+                      {
+                        name: 'Mark Lawrence M. Soriano',
+                        role: 'Database Administrator',
+                        phrase: 'Keeping every piece of data in orbit.'
+                      },
+                      {
+                        name: 'Jerald E. Vinoya',
+                        role: 'Documentation Manager',
+                        phrase: 'Giving every idea a clear place to land.'
+                      }
+                    ].map((member) => (
+                      <div className="team-card" key={member.name}>
+                        <div className="member-role">{member.role}</div>
+                        <div className="member-name">{member.name}</div>
+                        <div className="member-desc">{member.phrase}</div>
+                      </div>
+                    ))}
                   </div>
                 </article>
               </section>
@@ -206,8 +219,8 @@ export default function AboutUs() {
                 </div>
                 <div className="modal-body" style={{ textAlign: 'center' }}>
                   <i className="fas fa-users" style={{ fontSize: '3rem', color: '#6b5b95', marginBottom: '1rem' }}></i>
-                  <h4 style={{ color: '#2e2e2e', marginBottom: '15px' }}>Want to share your thoughts?</h4>
-                  <p style={{ color: '#575767', marginBottom: '25px' }}>Create an account to provide feedback and get personalized style recommendations!</p>
+                  <h4 style={{ color: '#f0ecfc', marginBottom: '15px' }}>Want to share your thoughts?</h4>
+                  <p style={{ color: '#d0cce6', marginBottom: '25px' }}>Create an account to provide feedback and get personalized style recommendations!</p>
                   <div style={{ maxWidth: '300px', margin: '0 auto' }}>
                     <Link to="/login" className="login-prompt-btn">Login</Link>
                     <Link to="/register" className="login-prompt-btn black">Sign Up</Link>
