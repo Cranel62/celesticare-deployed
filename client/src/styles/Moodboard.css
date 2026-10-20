@@ -49,4 +49,71 @@
 .action-btn.primary { background: linear-gradient(135deg, #9177c0ff, #594082ff); color: white; }
 .action-btn.secondary { background: transparent; border: 2px solid #9177c0ff; color: #9177c0ff; }
 .action-btn:hover { transform: translateY(-3px); color: white;}
-@media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } .aesthetic-display { grid-template-columns: 1fr; } }
+@media (max-width: 1024px) {
+  .mb-body {
+    min-height: calc(100dvh - var(--app-navbar-height, 64px));
+    overflow-x: clip;
+    padding: 28px 0 36px;
+  }
+
+  .editorial-container {
+    border-radius: 20px;
+    margin-inline: auto;
+    max-width: 900px;
+    overflow: hidden;
+    width: calc(100% - 32px);
+  }
+
+  .magazine-header { padding: clamp(24px, 5vw, 42px) 20px; }
+  .magazine-title { font-size: clamp(2.1rem, 6vw, 3.2rem); }
+  .magazine-subtitle {
+    font-size: clamp(0.78rem, 2vw, 1rem);
+    letter-spacing: clamp(0.08rem, 1.5vw, 0.3rem);
+    line-height: 1.5;
+  }
+
+  .main-content { grid-template-columns: minmax(0, 1fr); }
+  .left-panel,
+  .right-panel { gap: 18px; padding: clamp(18px, 4vw, 32px); }
+  .section-card { min-width: 0; padding: clamp(16px, 3.5vw, 26px); }
+  .section-title { font-size: clamp(1.25rem, 3.5vw, 1.6rem); margin-bottom: 1rem; }
+  .aesthetic-display { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .aesthetic-display > div:first-child {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    min-width: 0;
+  }
+  .aesthetic-image { height: clamp(130px, 30vw, 220px); margin: 0; min-width: 0; }
+  .aesthetic-title { font-size: clamp(1.5rem, 4vw, 1.9rem); }
+  .aesthetic-tag { max-width: 100%; overflow-wrap: anywhere; }
+  .color-wheel-container { margin: 1rem 0; }
+  .mb-body .undertoneresult-wheel { height: auto; max-width: 100%; width: min(220px, 70vw); }
+  .zodiac-display p { color: #5b5362 !important; }
+  .outfit-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 12px; }
+  .outfit-item { height: clamp(130px, 35vw, 180px); min-width: 0; }
+  .editorial-container > div:last-child { padding: clamp(16px, 4vw, 28px) !important; }
+  .action-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 12px; }
+  .action-btn { min-width: 0; padding: 14px 16px; width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .mb-body { padding: 16px 0 24px; }
+  .editorial-container { border-radius: 16px; width: calc(100% - 20px); }
+  .magazine-header { padding: 24px 16px; }
+  .magazine-title { font-size: clamp(1.8rem, 9vw, 2.5rem); letter-spacing: 2px; }
+  .magazine-subtitle { letter-spacing: 0.08rem; }
+  .left-panel,
+  .right-panel { padding: 14px; }
+  .section-card { border-radius: 13px; padding: 16px; }
+  .section-title { line-height: 1.25; }
+  .aesthetic-display > div:first-child { gap: 8px; }
+  .aesthetic-image { height: clamp(110px, 34vw, 160px); border-radius: 10px; }
+  .aesthetic-mood { font-size: 0.9rem; line-height: 1.45; }
+  .aesthetic-desc { font-size: 0.92rem; overflow-wrap: anywhere; }
+  .color-palette { gap: 10px; }
+  .color-swatch { height: 34px; width: 34px; }
+  .outfit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .action-buttons { grid-template-columns: minmax(0, 1fr); margin-top: 18px; }
+  .action-btn { box-sizing: border-box; min-height: 48px; }
+}
