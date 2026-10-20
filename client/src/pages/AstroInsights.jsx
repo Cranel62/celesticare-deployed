@@ -94,7 +94,7 @@ const SIGN_MEANINGS = {
 };
 const SIGN_ELEMENTS = { Aries: 'Fire', Leo: 'Fire', Sagittarius: 'Fire', Taurus: 'Earth', Virgo: 'Earth', Capricorn: 'Earth', Gemini: 'Air', Libra: 'Air', Aquarius: 'Air', Cancer: 'Water', Scorpio: 'Water', Pisces: 'Water' };
 const SIGN_MODALITIES = { Aries: 'Cardinal', Cancer: 'Cardinal', Libra: 'Cardinal', Capricorn: 'Cardinal', Taurus: 'Fixed', Leo: 'Fixed', Scorpio: 'Fixed', Aquarius: 'Fixed', Gemini: 'Mutable', Virgo: 'Mutable', Sagittarius: 'Mutable', Pisces: 'Mutable' };
-const INSIGHT_VERSION = 4;
+const INSIGHT_VERSION = 5;
 
 const getTriplicityDescription = (role, sign, fallback) => {
   const traits = SIGN_TRAITS[sign];
@@ -118,7 +118,7 @@ const getHouseDescription = (house) => {
 const formatPosition = (placement) => {
   if (!placement?.sign) return '';
   const degrees = placement.degrees ?? 0;
-  return `${placement.sign} ${degrees}°${placement.minutes != null ? ` ${placement.minutes}'` : ''}`;
+  return `${placement.sign} ${degrees}°${placement.minutes ? ` ${placement.minutes}'` : ''}`;
 };
 
 const getBalance = (planets, dictionary) => {
@@ -383,7 +383,7 @@ export default function AstroInsights() {
                 <span className="ai-planet-name">{planet.symbol} {planet.name}</span>
                 <span className="ai-badge">House {planet.house}</span>
               </div>
-              <div className="ai-planet-pos">{planet.sign} {planet.degrees}°</div>
+              <div className="ai-planet-pos">{formatPosition(planet)}</div>
               <div className="ai-insight-box">
                 {getPlanetDescription(planet)}
               </div>
@@ -405,7 +405,7 @@ export default function AstroInsights() {
               <div key={house.number} className="ai-card ai-flex-between">
                 <div className="ai-row-between">
                   <span className="ai-badge">House {house.number}</span>
-                  <span className="ai-house-pos">{house.sign} {house.degrees}°</span>
+                  <span className="ai-house-pos">{formatPosition(house)}</span>
                 </div>
                 <div className="ai-house-topic">{HOUSE_PROFILES[house.number]?.[0]}</div>
                 {(house.insight || house.sign) && (

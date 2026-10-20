@@ -5,7 +5,7 @@ const User = require('../models/User');
 const NATALCHART_API_KEY = String(process.env.NATALCHART_API_KEY || process.env.FREE_ASTRO_API_KEY || '').trim();
 const GEMINI_API_KEY = String(process.env.GEMINI_API_KEY || '').trim();
 const NATALCHART_API_URL = String(process.env.NATALCHART_API_URL || 'https://api.natalchart.ai/v1/chart/full').trim();
-const INSIGHT_VERSION = 4;
+const INSIGHT_VERSION = 5;
 
 const expandSign = (abbr) => {
   const map = { Ari: 'Aries', Tau: 'Taurus', Gem: 'Gemini', Can: 'Cancer', Leo: 'Leo', Vir: 'Virgo', Lib: 'Libra', Sco: 'Scorpio', Sag: 'Sagittarius', Cap: 'Capricorn', Aqu: 'Aquarius', Pis: 'Pisces' };
@@ -47,6 +47,46 @@ const getBirthDateString = (birthdate) => {
   return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
 };
 
+const getNumericPlacementValue = (entry, keys) => {
+  for (const key of keys) {
+    const value = entry?.[key];
+    if (value && typeof value === 'object') {
+      const nested = getNumericPlacementValue(value, ['degreeInSign', 'pos', 'position', 'degree', 'longitude', 'value']);
+      if (nested !== null) return nested;
+    }
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string') {
+      const match = value.match(/-?\d+(?:\.\d+)?/);
+      if (match) return Number(match[0]);
+    }
+  }
+  return null;
+};
+
+const getPlacementDegree = (entry) => {
+  const value = getNumericPlacementValue(entry, ['degreeInSign', 'pos', 'position', 'degree', 'longitude', 'cusp', 'cusp_degree', 'cuspDegree', 'value']);
+  if (value === null) return 0;
+  // Some providers return absolute longitude for a cusp; convert it to the
+  // degree within its zodiac sign before displaying it.
+  return Math.floor(value >= 30 ? value % 30 : value);
+};
+
+const getPlacementMinutes = (entry) => {
+  const value = getNumericPlacementValue(entry, ['degreeInSign', 'pos', 'position', 'degree', 'longitude']);
+  const explicitMinutes = getNumericPlacementValue(entry, ['minute', 'minutes']);
+  if (explicitMinutes !== null) return Math.round(explicitMinutes);
+  if (value === null || value >= 30) return 0;
+  return Math.round((value % 1) * 60);
+};
+
+const getPlacementSign = (entry) => expandSign(
+  entry?.sign
+  || entry?.cusp?.sign
+  || entry?.position?.sign
+  || entry?.zodiac?.sign
+  || ''
+);
+
 const getChartBirthData = (user) => ({
   date: getBirthDateString(user.birthdate),
   time: String(user.birth_time || '').trim(),
@@ -55,7 +95,7 @@ const getChartBirthData = (user) => ({
 });
 
 const chartMatchesBirthData = (chart, birthData) => (
-  chart?.chart_version === 2
+  chart?.chart_version === 3
   && chart?.birth_data
   && chart.birth_data.date === birthData.date
   && chart.birth_data.time === birthData.time
@@ -171,16 +211,17 @@ exports.generateChart = async (req, res, next) => {
     const planets = astroData.planets.map(p => ({
       name: p.name || p.id || 'Unknown',
       sign: expandSign(p.sign || ''),
-      degrees: Math.floor(p.degreeInSign ?? p.pos ?? p.degree ?? 0),
-      minutes: Math.round((((p.degreeInSign ?? p.pos ?? p.degree ?? 0) % 1) * 60) || p.minute || 0),
+      degrees: getPlacementDegree(p),
+      minutes: getPlacementMinutes(p),
       house: p.house ?? 0,
       symbol: { sun: '☉', moon: '☾', mercury: '☿', venus: '♀', mars: '♂', jupiter: '♃', saturn: '♄' }[planetKey(p)] || '●'
     }));
 
     const houses = astroData.houses.map(h => ({
       number: h.house ?? h.number,
-      sign: expandSign(h.sign || ''),
-      degrees: Math.floor(h.degreeInSign ?? h.pos ?? h.degree ?? h.longitude ?? 0)
+      sign: getPlacementSign(h),
+      degrees: getPlacementDegree(h),
+      minutes: getPlacementMinutes(h)
     }));
 
     const aspects = (Array.isArray(astroData.aspects) ? astroData.aspects : []).map((aspect) => ({
@@ -193,13 +234,13 @@ exports.generateChart = async (req, res, next) => {
     res.status(200).json({
       success: true,
       chart: {
-        chart_version: 2,
+        chart_version: 3,
         birth_data: birthData,
         sun_sign: sunPlanet ? expandSign(sunPlanet.sign) : expandSign(user.zodiac_sign || 'Unknown'),
         moon_sign: moonPlanet ? expandSign(moonPlanet.sign) : 'Unknown',
         rising_sign: risingSign,
-        rising_degrees: Math.floor(risingAngle.degreeInSign ?? risingAngle.pos ?? risingAngle.degree ?? 0),
-        sun_degrees: Math.floor(sunPlanet?.degreeInSign ?? sunPlanet?.pos ?? sunPlanet?.degree ?? 0),
+        rising_degrees: getPlacementDegree(risingAngle),
+        sun_degrees: getPlacementDegree(sunPlanet),
         planets,
         houses,
         aspects
