@@ -5,6 +5,7 @@ const User = require('../models/User');
 const NATALCHART_API_KEY = String(process.env.NATALCHART_API_KEY || process.env.FREE_ASTRO_API_KEY || '').trim();
 const GEMINI_API_KEY = String(process.env.GEMINI_API_KEY || '').trim();
 const NATALCHART_API_URL = String(process.env.NATALCHART_API_URL || 'https://api.natalchart.ai/v1/chart/full').trim();
+const INSIGHT_VERSION = 4;
 
 const expandSign = (abbr) => {
   const map = { Ari: 'Aries', Tau: 'Taurus', Gem: 'Gemini', Can: 'Cancer', Leo: 'Leo', Vir: 'Virgo', Lib: 'Libra', Sco: 'Scorpio', Sag: 'Sagittarius', Cap: 'Capricorn', Aqu: 'Aquarius', Pis: 'Pisces' };
@@ -54,7 +55,8 @@ const getChartBirthData = (user) => ({
 });
 
 const chartMatchesBirthData = (chart, birthData) => (
-  chart?.birth_data
+  chart?.chart_version === 2
+  && chart?.birth_data
   && chart.birth_data.date === birthData.date
   && chart.birth_data.time === birthData.time
   && chart.birth_data.place === birthData.place
@@ -159,12 +161,18 @@ exports.generateChart = async (req, res, next) => {
       || astroData.ascendant?.sign
       || 'Unknown'
     );
+    const risingAngle = astroData.angles?.ascendant
+      || astroData.angles?.asc
+      || astroData.angles_details?.asc
+      || astroData.ascendant
+      || {};
 
     // Format Planets & Houses
     const planets = astroData.planets.map(p => ({
       name: p.name || p.id || 'Unknown',
       sign: expandSign(p.sign || ''),
       degrees: Math.floor(p.degreeInSign ?? p.pos ?? p.degree ?? 0),
+      minutes: Math.round((((p.degreeInSign ?? p.pos ?? p.degree ?? 0) % 1) * 60) || p.minute || 0),
       house: p.house ?? 0,
       symbol: { sun: '☉', moon: '☾', mercury: '☿', venus: '♀', mars: '♂', jupiter: '♃', saturn: '♄' }[planetKey(p)] || '●'
     }));
@@ -175,16 +183,26 @@ exports.generateChart = async (req, res, next) => {
       degrees: Math.floor(h.degreeInSign ?? h.pos ?? h.degree ?? h.longitude ?? 0)
     }));
 
+    const aspects = (Array.isArray(astroData.aspects) ? astroData.aspects : []).map((aspect) => ({
+      first: aspect.first || aspect.planet1 || aspect.from || aspect.body1 || '',
+      second: aspect.second || aspect.planet2 || aspect.to || aspect.body2 || '',
+      type: aspect.type || aspect.aspect || aspect.name || 'aspect',
+      orb: aspect.orb ?? aspect.orbital_distance ?? '',
+    })).filter((aspect) => aspect.first && aspect.second);
+
     res.status(200).json({
       success: true,
       chart: {
+        chart_version: 2,
         birth_data: birthData,
         sun_sign: sunPlanet ? expandSign(sunPlanet.sign) : expandSign(user.zodiac_sign || 'Unknown'),
         moon_sign: moonPlanet ? expandSign(moonPlanet.sign) : 'Unknown',
         rising_sign: risingSign,
+        rising_degrees: Math.floor(risingAngle.degreeInSign ?? risingAngle.pos ?? risingAngle.degree ?? 0),
         sun_degrees: Math.floor(sunPlanet?.degreeInSign ?? sunPlanet?.pos ?? sunPlanet?.degree ?? 0),
         planets,
-        houses
+        houses,
+        aspects
       }
     });
   } catch (error) {
@@ -213,7 +231,7 @@ exports.enhanceChart = async (req, res, next) => {
       return res.status(200).json({ success: true, enhancedData: {}, available: false });
     }
     
-    let prompt = `You are a professional astrologer writing for a beginner. Use only the exact signs and houses provided in this birth chart. Write concise, personalized, easy-to-understand insights. Make every planet and house explanation different, accurate to its placement, and no more than 1-2 short sentences or 35 words. Avoid repeated wording, vague claims, and unnecessary jargon.\n\n`;
+    let prompt = `You are a professional astrologer writing for a beginner. Use only the exact signs, degrees, and houses provided in this birth chart. Write precise, personalized, easy-to-understand insights. Every planet and house explanation must name the exact placement, explain the planet or house topic, and connect it to the sign and house. Never use generic filler such as "growth and transformation". Keep each explanation to 2-3 specific sentences and do not invent aspects or placements.\n\n`;
     prompt += `Sun: ${chartData.sun_sign} ${chartData.sun_degrees}°\nMoon: ${chartData.moon_sign}\nRising: ${chartData.rising_sign}\n\n`;
     prompt += `Return a JSON object strictly matching this structure: {"houses": [{"number": 1, "insight": "..."}], "planets": [{"name": "Sun", "influence": "..."}], "life_purpose": "...", "element_balance": "...", "modal_balance": "..."}`;
     const planetaryPlacements = (chartData.planets || [])
@@ -247,7 +265,7 @@ exports.enhanceChart = async (req, res, next) => {
     const currentUser = await User.findById(req.user.id);
     if (currentUser) {
       const mergedChart = { ...chartData, ...enhancedData };
-      mergedChart.enhancement_version = 3;
+      mergedChart.enhancement_version = INSIGHT_VERSION;
       if (enhancedData.houses) mergedChart.houses = chartData.houses.map((house) => ({ ...house, ...enhancedData.houses.find((item) => item.number === house.number) }));
       if (enhancedData.planets) mergedChart.planets = chartData.planets.map((planet) => ({ ...planet, ...enhancedData.planets.find((item) => item.name === planet.name) }));
       currentUser.astro_insights = mergedChart;

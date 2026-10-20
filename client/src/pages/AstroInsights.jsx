@@ -19,6 +19,21 @@ const SIGN_DESCRIPTIONS = {
   Pisces: 'Compassionate and imaginative, you move through life with intuition and spiritual sensitivity.'
 };
 
+const SIGN_TRAITS = {
+  Aries: ['You act with courage and initiative.', 'You prefer direct answers and visible progress.', 'Your growth comes from balancing independence with patience.'],
+  Taurus: ['You build lasting foundations through patience and consistency.', 'You value comfort, loyalty, and tangible results.', 'Your growth comes from staying open when life asks you to change.'],
+  Gemini: ['You learn quickly and connect people, ideas, and information.', 'Conversation and variety keep your mind engaged.', 'Your growth comes from focusing your curiosity into clear priorities.'],
+  Cancer: ['You are protective, intuitive, and deeply responsive to your environment.', 'A sense of belonging gives you the confidence to move forward.', 'Your growth comes from caring for yourself as carefully as you care for others.'],
+  Leo: ['You bring warmth, creativity, and natural presence wherever you go.', 'Recognition matters because you give your whole heart to what you create.', 'Your growth comes from leading generously without needing constant approval.'],
+  Virgo: ['You notice what needs improving and have the skill to make it better.', 'Practical service, precision, and useful results matter to you.', 'Your growth comes from allowing progress to be good enough before perfection.'],
+  Libra: ['You seek fairness, beauty, and cooperation in the way you move through life.', 'You understand different perspectives and can create common ground.', 'Your growth comes from making clear choices instead of waiting for perfect balance.'],
+  Scorpio: ['You read beneath the surface and take meaningful commitments seriously.', 'Intensity gives you focus, resilience, and emotional honesty.', 'Your growth comes from trusting others without giving away your power.'],
+  Sagittarius: ['You grow through exploration, truth-seeking, and wider perspective.', 'Hope and humor help you recover quickly and keep moving.', 'Your growth comes from pairing freedom with follow-through.'],
+  Capricorn: ['You turn patience, structure, and ambition into measurable progress.', 'Responsibility is a strength when it serves a meaningful goal.', 'Your growth comes from making room for rest, play, and emotional openness.'],
+  Aquarius: ['You think independently and notice possibilities others may overlook.', 'Community and originality are central to how you contribute.', 'Your growth comes from letting your ideas stay connected to your feelings.'],
+  Pisces: ['You move through life with empathy, imagination, and strong intuition.', 'You are sensitive to symbolism, atmosphere, and the needs of others.', 'Your growth comes from giving your compassion healthy boundaries.']
+};
+
 const PLANET_THEMES = {
   Sun: 'identity, confidence, and life direction',
   Moon: 'emotional needs, instincts, and sense of safety',
@@ -29,7 +44,10 @@ const PLANET_THEMES = {
   Saturn: 'responsibility, boundaries, discipline, and long-term mastery',
   Uranus: 'independence, innovation, and the changes you are meant to make',
   Neptune: 'imagination, compassion, spirituality, and intuition',
-  Pluto: 'deep transformation, power, and personal renewal'
+  Pluto: 'deep transformation, power, and personal renewal',
+  'North Node': 'growth, direction, and the qualities you are developing',
+  Lilith: 'independence, boundaries, and the parts of yourself you reclaim',
+  Chiron: 'healing, vulnerability, and wisdom earned through experience'
 };
 
 const HOUSE_AREAS = {
@@ -46,24 +64,64 @@ const HOUSE_AREAS = {
   11: 'friendships, communities, dreams, and future goals',
   12: 'rest, spirituality, the subconscious, and private healing'
 };
-const INSIGHT_VERSION = 3;
+const HOUSE_PROFILES = {
+  1: ['Identity, appearance, and new beginnings', 'How you enter situations and make a first impression'],
+  2: ['Values, resources, and security', 'Money, possessions, self-worth, and personal priorities'],
+  3: ['Communication, learning, and siblings', 'Your everyday thinking, conversations, and close environment'],
+  4: ['Home, family, and emotional foundations', 'Your roots, private life, and sense of belonging'],
+  5: ['Creativity, romance, and joy', 'Self-expression, pleasure, dating, and the things you create'],
+  6: ['Daily routines, health, and service', 'Work habits, practical responsibilities, and sustainable wellbeing'],
+  7: ['Partnerships, marriage, and relationships', 'Committed one-to-one bonds and what you seek in others'],
+  8: ['Transformation and shared resources', 'Intimacy, trust, healing, and resources shared with others'],
+  9: ['Philosophy, travel, and higher learning', 'Beliefs, meaning, study, and experiences that widen your world'],
+  10: ['Career, public image, and life direction', 'Achievement, reputation, leadership, and your visible contribution'],
+  11: ['Friendships, community, and hopes', 'Networks, collaboration, future goals, and social belonging'],
+  12: ['Spirituality, solitude, and hidden strengths', 'Rest, the subconscious, closure, and private renewal']
+};
+const SIGN_ELEMENTS = { Aries: 'Fire', Leo: 'Fire', Sagittarius: 'Fire', Taurus: 'Earth', Virgo: 'Earth', Capricorn: 'Earth', Gemini: 'Air', Libra: 'Air', Aquarius: 'Air', Cancer: 'Water', Scorpio: 'Water', Pisces: 'Water' };
+const SIGN_MODALITIES = { Aries: 'Cardinal', Cancer: 'Cardinal', Libra: 'Cardinal', Capricorn: 'Cardinal', Taurus: 'Fixed', Leo: 'Fixed', Scorpio: 'Fixed', Aquarius: 'Fixed', Gemini: 'Mutable', Virgo: 'Mutable', Sagittarius: 'Mutable', Pisces: 'Mutable' };
+const INSIGHT_VERSION = 4;
 
 const getTriplicityDescription = (role, sign, fallback) => {
-  const signDescription = SIGN_DESCRIPTIONS[sign] || fallback;
-  return `${sign} ${role} ${signDescription}`;
+  const traits = SIGN_TRAITS[sign];
+  if (!traits) return [`${sign || 'Your sign'} ${role} ${fallback}`];
+  return traits;
 };
 
 const getPlanetDescription = (planet) => {
   const theme = PLANET_THEMES[planet.name] || 'your personal growth and self-expression';
   const area = HOUSE_AREAS[planet.house] || 'an important area of your life';
-  const signDescription = SIGN_DESCRIPTIONS[planet.sign] || 'This sign gives the placement its own distinct style and tone.';
-  return `${planet.name} in ${planet.sign} shapes your ${theme}. In House ${planet.house}, it is expressed through ${area}; ${signDescription}`;
+  const traits = SIGN_TRAITS[planet.sign] || ['This placement gives your energy a distinct style.', 'Its expression becomes clearer through lived experience.', 'Use it consciously as part of your wider chart.'];
+  return `${planet.name} in ${planet.sign} focuses your ${theme}. In House ${planet.house}, that energy is expressed through ${area}. ${traits[0]} ${traits[2]}`;
 };
 
 const getHouseDescription = (house) => {
   const area = HOUSE_AREAS[house.number] || 'a meaningful area of your life';
-  const signDescription = SIGN_DESCRIPTIONS[house.sign] || 'The sign adds a distinct style to how this area develops.';
-  return `House ${house.number} focuses on ${area}. With ${house.sign} here, ${signDescription}`;
+  const traits = SIGN_TRAITS[house.sign] || ['This sign gives the house a distinct style.', 'Its themes develop through your personal experience.', 'Awareness helps you use this area intentionally.'];
+  return `House ${house.number} governs ${area}. With ${house.sign} on its cusp, ${traits[0]} ${traits[1]}`;
+};
+
+const formatPosition = (placement) => {
+  if (!placement?.sign) return '';
+  const degrees = placement.degrees ?? 0;
+  return `${placement.sign} ${degrees}°${placement.minutes != null ? ` ${placement.minutes}'` : ''}`;
+};
+
+const getBalance = (planets, dictionary) => {
+  const counts = Object.values(dictionary).reduce((result, value) => ({ ...result, [value]: 0 }), {});
+  (planets || []).forEach((planet) => {
+    const group = dictionary[planet.sign];
+    if (group) counts[group] += 1;
+  });
+  const total = Object.values(counts).reduce((sum, count) => sum + count, 0) || 1;
+  return Object.entries(counts).map(([name, count]) => `${name}: ${count} (${Math.round((count / total) * 100)}%)`).join(' • ');
+};
+
+const getLifePurpose = (chart) => {
+  const sun = chart?.sun_sign || 'your Sun sign';
+  const moon = chart?.moon_sign || 'your Moon sign';
+  const rising = chart?.rising_sign || 'your Ascendant';
+  return `Your ${sun} Sun gives you a clear way to develop your talents and direction. Your ${moon} Moon shows the emotional values that keep you grounded, while your ${rising} Ascendant describes how you bring that purpose into the world. Your path is to turn those three energies into choices that are both authentic and useful.`;
 };
 
 export default function AstroInsights() {
@@ -84,9 +142,9 @@ export default function AstroInsights() {
 
   const formatDate = (isoString) => {
     if (!isoString) return '';
-    const date = new Date(isoString);
-    if (isNaN(date.getTime())) return isoString;
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const [year, month, day] = String(isoString).split('T')[0].split('-').map(Number);
+    if (!year || !month || !day) return isoString;
+    return new Date(year, month - 1, day).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
   const enhanceWithGemini = useCallback(async (basicChart) => {
@@ -286,18 +344,18 @@ export default function AstroInsights() {
         <div className="ai-grid-3">
           <div className="ai-card ai-triplicity-card">
             <div className="ai-card-subtitle">The Sun</div>
-            <div className="ai-insight-box">{chartData?.planets?.find((planet) => planet.name?.toLowerCase() === 'sun')?.influence || getTriplicityDescription('expresses your core identity and life direction.', chartData?.sun_sign, 'Your Sun reflects your identity, vitality, and the purpose you are growing into.')}</div>
+            <ul className="ai-reading-list">{getTriplicityDescription('expresses your core identity and life direction.', chartData?.sun_sign, 'Your Sun reflects your identity, vitality, and the purpose you are growing into.').map((line) => <li key={line}>{line}</li>)}</ul>
             <div className="ai-card-value">{chartData?.sun_sign} {chartData?.sun_degrees}°</div>
           </div>
           <div className="ai-card ai-triplicity-card">
             <div className="ai-card-subtitle">The Moon</div>
-            <div className="ai-insight-box">{chartData?.planets?.find((planet) => planet.name?.toLowerCase() === 'moon')?.influence || getTriplicityDescription('describes your emotional needs and private inner world.', chartData?.moon_sign, 'Your Moon reflects your emotional needs, instincts, and private inner world.')}</div>
+            <ul className="ai-reading-list">{getTriplicityDescription('describes your emotional needs and private inner world.', chartData?.moon_sign, 'Your Moon reflects your emotional needs, instincts, and private inner world.').map((line) => <li key={line}>{line}</li>)}</ul>
             <div className="ai-card-value">{chartData?.moon_sign}</div>
           </div>
           <div className="ai-card ai-triplicity-card">
             <div className="ai-card-subtitle">The Ascendant</div>
-            <div className="ai-insight-box">{getTriplicityDescription('shapes your first impression and the way you approach new experiences.', chartData?.rising_sign, 'Your Ascendant shapes your first impression and the way you approach new experiences.')}</div>
-            <div className="ai-card-value">{chartData?.rising_sign}</div>
+            <ul className="ai-reading-list">{getTriplicityDescription('shapes your first impression and the way you approach new experiences.', chartData?.rising_sign, 'Your Ascendant shapes your first impression and the way you approach new experiences.').map((line) => <li key={line}>{line}</li>)}</ul>
+            <div className="ai-card-value">{chartData?.rising_sign} {chartData?.rising_degrees ?? 0}°</div>
           </div>
         </div>
 
@@ -313,7 +371,7 @@ export default function AstroInsights() {
               </div>
               <div className="ai-planet-pos">{planet.sign} {planet.degrees}°</div>
               <div className="ai-insight-box">
-                {planet.influence || getPlanetDescription(planet)}
+                {getPlanetDescription(planet)}
               </div>
             </div>
           ))}
@@ -335,9 +393,12 @@ export default function AstroInsights() {
                   <span className="ai-badge">House {house.number}</span>
                   <span className="ai-house-pos">{house.sign} {house.degrees}°</span>
                 </div>
+                <div className="ai-house-topic">{HOUSE_PROFILES[house.number]?.[0]}</div>
                 {(house.insight || house.sign) && (
                   <div className="ai-insight-box">
-                    {house.insight || getHouseDescription(house)}
+                    <strong>{HOUSE_PROFILES[house.number]?.[1]}</strong>
+                    <p>{getHouseDescription(house)}</p>
+                    {house.insight && <small className="ai-ai-note">AI context: {house.insight}</small>}
                   </div>
                 )}
               </div>
@@ -363,11 +424,24 @@ export default function AstroInsights() {
           </div>
         )}
 
+        {!chartData?.element_balance && !chartData?.modal_balance && (
+          <div className="ai-grid-2">
+            <div className="ai-card">
+              <h3 className="ai-balance-title">Elemental Balance</h3>
+              <p className="ai-balance-desc">{getBalance(chartData?.planets, SIGN_ELEMENTS)}</p>
+            </div>
+            <div className="ai-card">
+              <h3 className="ai-balance-title">Modality Balance</h3>
+              <p className="ai-balance-desc">{getBalance(chartData?.planets, SIGN_MODALITIES)}</p>
+            </div>
+          </div>
+        )}
+
         {/* Life Purpose */}
-        {chartData?.life_purpose && (
+        {chartData && (
           <div className="ai-purpose-box">
             <h2 className="ai-purpose-title">🌙 Your Cosmic Purpose</h2>
-            <p className="ai-purpose-text">{chartData.life_purpose}</p>
+            <p className="ai-purpose-text">{chartData.life_purpose || getLifePurpose(chartData)}</p>
           </div>
         )}
 

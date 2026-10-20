@@ -323,6 +323,47 @@
   color: #ffffff;
 }
 
+.ai-reading-list {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+  text-align: left;
+}
+
+.ai-reading-list li {
+  position: relative;
+  margin: 10px 0;
+  padding-left: 20px;
+  color: #f0ecfc;
+  line-height: 1.55;
+}
+
+.ai-reading-list li::before {
+  content: '✧';
+  position: absolute;
+  left: 0;
+  color: #c19bfa;
+}
+
+.ai-house-topic {
+  margin: 4px 0 8px;
+  color: #d9c8ff;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.ai-insight-box p {
+  margin: 9px 0 0;
+}
+
+.ai-ai-note {
+  display: block;
+  margin-top: 12px;
+  color: #cfc3e8;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
 .ai-flex-between {
   display: flex;
   flex-direction: column;
