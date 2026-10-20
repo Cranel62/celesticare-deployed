@@ -16,7 +16,7 @@
 
 /* Four Card Picker Styles */
 .fcp-spread-row { display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap; margin: 2rem 0 3rem 0; width: 100%; }
-.picker-back-button { position: fixed; top: calc(var(--app-navbar-height, 76px) + 50px); left: 1rem; z-index: 1050; font: inherit; }
+.picker-back-button { position: fixed; top: calc(var(--app-navbar-height, 76px) + 40px); left: 1rem; z-index: 1050; font: inherit; }
 .fcp-position-card { width: 170px; height: 270px; background: rgba(30, 20, 30, 0.7); backdrop-filter: blur(5px); border: 2px solid #8a6a9a; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); cursor: pointer; flex-shrink: 0; overflow: hidden; }
 .fcp-position-card.filled { border-color: #c0a0c0; box-shadow: 0 0 30px rgba(180,130,200,0.5); }
 .fcp-position-card.active { border-color: #c0a0c0; box-shadow: 0 0 40px rgba(200,150,220,0.8); transform: scale(1.05); animation: fcpGlowPulse 2s infinite; }
