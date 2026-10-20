@@ -389,6 +389,14 @@ body:has(.register-body) {
   .register-brand { font-size: 1.3rem; }
 }
 
+@media (min-width: 992px) {
+  .register-body {
+    min-height: 100dvh;
+    height: 100dvh;
+    margin-bottom: calc(-1 * var(--app-navbar-height, 76px));
+  }
+}
+
 @media (max-height: 760px) {
   .register-body { align-items: flex-start; padding-block: 12px; }
   .register-box { padding-block: 18px; }
