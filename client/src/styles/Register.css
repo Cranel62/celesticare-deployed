@@ -48,6 +48,7 @@ body:has(.register-body) {
 }
 
 .register-box {
+  margin-top: clamp(24px, 4vh, 40px);
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -56,7 +57,9 @@ body:has(.register-body) {
   border-radius: 24px;
   width: 100%;
   max-width: 440px;
-  margin-block: auto;
+  margin-right: auto;
+  margin-bottom: clamp(24px, 4vh, 40px);
+  margin-left: auto;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(193, 155, 250, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.15);
   position: relative;
