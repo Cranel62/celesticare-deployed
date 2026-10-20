@@ -1,22 +1,37 @@
 .stylewelcome-body {
-  min-height: calc(100vh - 80px);
-  background: linear-gradient(135deg, #2e2e2e 0%, #3b3b3b 100%);
+  margin: 0;
+  min-height: calc(100vh - var(--app-navbar-height, 76px));
+  min-height: calc(100dvh - var(--app-navbar-height, 76px));
+  background: linear-gradient(to bottom, #090614 0%, #1e173d 35%, #422d6b 70%, #765a96 100%) fixed;
   font-family: 'Poppins', sans-serif;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
+  position: relative;
   transition: filter 0.6s ease, opacity 0.6s ease;
+}
+
+body:has(.stylewelcome-body) {
+  background: linear-gradient(to bottom, #090614 0%, #1e173d 35%, #422d6b 70%, #765a96 100%) fixed;
+}
+
+html:has(.stylewelcome-body) {
+  scroll-padding-top: calc(var(--app-navbar-height, 76px) + 16px);
+  scroll-padding-bottom: 20px;
 }
 .stylewelcome-body.fade-blur-out {
   opacity: 0;
   filter: blur(25px);
 }
 .stylewelcome-container {
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - var(--app-navbar-height, 76px));
+  min-height: calc(100dvh - var(--app-navbar-height, 76px));
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow: hidden;
-  padding: 20px;
+  overflow-x: clip;
+  overflow-y: visible;
+  padding: clamp(16px, 4vh, 40px) clamp(14px, 3vw, 32px);
 }
 .stylewelcome-bg-accent {
   position: absolute;
@@ -24,6 +39,7 @@
   filter: blur(120px);
   opacity: 0.3;
   z-index: 0;
+  pointer-events: none;
   animation: stylewelcomeFloat 10s ease-in-out infinite alternate;
 }
 .stylewelcome-bg-accent.stylewelcome-one { background: #bba6ff; width: 400px; height: 400px; top: -80px; left: -80px; }
@@ -35,51 +51,81 @@
 .stylewelcome-box {
   position: relative;
   z-index: 2;
-  background: linear-gradient(135deg, #e8e4f2 0%, #c6b9e8 100%);
-  backdrop-filter: blur(20px);
-  border-radius: 35px;
-  padding: 80px 60px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(193, 155, 250, 0.15);
+  color: #ffffff;
+  margin-block: auto;
+  padding: clamp(26px, 5vh, 42px) clamp(22px, 3vw, 35px);
   text-align: center;
-  max-width: 850px;
+  max-width: 440px;
   width: 100%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
-  color: #2e2e2e;
 }
 .stylewelcome-brand-title {
-  font-weight: 700;
-  font-size: 2.8rem;
-  letter-spacing: 3px;
-  margin-bottom: 25px;
-  color: #4b3f77;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(193, 155, 250, 0.5);
 }
 .stylewelcome-box h2 {
-  font-size: 1.9rem;
-  font-weight: 600;
-  color: #3e3e3e;
-  margin-bottom: 25px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #f0ecfc;
+  line-height: 1.35;
+  margin: 0 0 16px;
 }
 .stylewelcome-box p {
-  font-size: 1.15rem;
-  color: #3f3f3f;
-  margin-bottom: 35px;
-  line-height: 1.8;
-  max-width: 700px;
+  font-size: 0.95rem;
+  color: #d0cce6;
+  margin: 0 auto 24px;
+  line-height: 1.65;
+  max-width: 42rem;
   margin-left: auto;
   margin-right: auto;
 }
 .stylewelcome-btn-start {
-  background-color: #4b3f77;
-  color: #fff;
-  border: none;
-  border-radius: 40px;
-  padding: 15px 55px;
+  background: linear-gradient(135deg, #c19bfa, #a628c5);
+  color: #ffffff;
+  border: 0;
+  border-radius: 30px;
+  box-shadow: 0 6px 20px rgba(166, 40, 197, 0.4);
+  box-sizing: border-box;
+  min-height: 50px;
+  padding: 14px 20px;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   cursor: pointer;
-  transition: all 0.35s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+  width: 100%;
 }
 .stylewelcome-btn-start:hover {
-  background-color: #6b5b95;
-  transform: scale(1.08);
+  box-shadow: 0 10px 25px rgba(166, 40, 197, 0.6);
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+}
+
+@media (min-width: 992px) {
+  .stylewelcome-box { margin-block: 100px; }
+}
+
+@media (max-width: 520px) {
+  .stylewelcome-container { padding-inline: 14px; }
+  .stylewelcome-box { border-radius: 20px; padding: 26px 22px; }
+  .stylewelcome-brand-title { font-size: 1.3rem; }
+  .stylewelcome-bg-accent { animation: none; filter: blur(80px); }
+}
+
+@media (max-height: 640px) {
+  .stylewelcome-container { align-items: flex-start; padding-block: 16px; }
+  .stylewelcome-box { padding-block: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stylewelcome-bg-accent,
+  .stylewelcome-body { animation: none; transition-duration: 0.01ms; }
 }
