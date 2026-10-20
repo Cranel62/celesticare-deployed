@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
 import '../styles/ProfileSettings.css';
@@ -38,9 +38,40 @@ const calculateZodiac = (dateStr) => {
   return 'Pisces';
 };
 
+const toDisplayBirthdate = (isoDate) => {
+  if (!isoDate) return '';
+  const [year, month, day] = isoDate.split('T')[0].split('-');
+  return year && month && day ? `${month}/${day}/${year}` : '';
+};
+
+const formatBirthdateEntry = (value) => {
+  const digits = value.replace(/\D/g, '').slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+};
+
+const parseBirthdateEntry = (value) => {
+  const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+  if (!match) return null;
+  const month = Number(match[1]);
+  const day = Number(match[2]);
+  const year = Number(match[3]);
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  const today = new Date();
+
+  if (year < 1 || month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) return null;
+  if (year > today.getFullYear() || (year === today.getFullYear() && (month > today.getMonth() + 1 || (month === today.getMonth() + 1 && day > today.getDate())))) return null;
+
+  return `${match[3]}-${match[1]}-${match[2]}`;
+};
+
 export default function ProfileSettings() {
   const navigate = useNavigate();
+  const calendarInputRef = useRef(null);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('celesticare_user') || '{}'));
+  const [birthdateText, setBirthdateText] = useState(() => toDisplayBirthdate(user.birthdate || ''));
   const [formData, setFormData] = useState({
     name: user.name || '',
     username: user.username || '',
@@ -64,6 +95,7 @@ export default function ProfileSettings() {
         birthdate: currentUser.birthdate ? currentUser.birthdate.split('T')[0] : '',
         zodiac_sign: currentUser.zodiac_sign || ''
       });
+      setBirthdateText(toDisplayBirthdate(currentUser.birthdate || ''));
     }).catch((err) => {
       setErrorMessage(err.response?.data?.message || 'Unable to retrieve user data.');
     });
@@ -72,6 +104,7 @@ export default function ProfileSettings() {
   const handleBirthdateChange = (e) => {
     const newDate = e.target.value;
     const computedZodiac = calculateZodiac(newDate);
+    setBirthdateText(toDisplayBirthdate(newDate));
     setFormData({
       ...formData,
       birthdate: newDate,
@@ -79,14 +112,52 @@ export default function ProfileSettings() {
     });
   };
 
+  const handleBirthdateTextChange = (e) => {
+    const nextText = formatBirthdateEntry(e.target.value);
+    const isoDate = parseBirthdateEntry(nextText);
+    setBirthdateText(nextText);
+    if (isoDate) {
+      setFormData(current => ({
+        ...current,
+        birthdate: isoDate,
+        zodiac_sign: calculateZodiac(isoDate)
+      }));
+    }
+  };
+
+  const openCalendarPicker = () => {
+    const dateInput = calendarInputRef.current;
+    if (!dateInput) return;
+    try {
+      if (typeof dateInput.showPicker === 'function') dateInput.showPicker();
+      else {
+        dateInput.focus();
+        dateInput.click();
+      }
+    } catch {
+      dateInput.focus();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const parsedBirthdate = parseBirthdateEntry(birthdateText);
+    if (!parsedBirthdate) {
+      setErrorMessage('Enter a valid date of birth in MM/DD/YYYY format.');
+      return;
+    }
+
     setIsSaving(true);
     setSuccessMessage('');
     setErrorMessage('');
 
     try {
-      const { data } = await API.put('/auth/profile', formData);
+      const profileData = {
+        ...formData,
+        birthdate: parsedBirthdate,
+        zodiac_sign: calculateZodiac(parsedBirthdate)
+      };
+      const { data } = await API.put('/auth/profile', profileData);
       const updatedUser = data.user;
       localStorage.setItem('celesticare_user', JSON.stringify(updatedUser));
       setUser(updatedUser);
@@ -98,6 +169,9 @@ export default function ProfileSettings() {
       setIsSaving(false);
     }
   };
+
+  const today = new Date();
+  const maxBirthdate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
   return (
     <div className="profilesettings-body">
@@ -158,14 +232,46 @@ export default function ProfileSettings() {
                 </select>
               </div>
               <div className="col-md-6 mb-3">
-                <label className="profilesettings-label">Date of Birth (Auto-updates Zodiac)</label>
-                <input 
-                  type="date" 
-                  className="form-control profilesettings-input" 
-                  value={formData.birthdate} 
-                  onChange={handleBirthdateChange} 
-                  required 
-                />
+                <label className="profilesettings-label" htmlFor="profile-birthdate-text">Date of Birth (MM/DD/YYYY; auto-updates Zodiac)</label>
+                <div className="profilesettings-birthdate-control">
+                  <input
+                    id="profile-birthdate-text"
+                    type="text"
+                    className="form-control profilesettings-input profilesettings-birthdate-text"
+                    placeholder="MM/DD/YYYY"
+                    aria-label="Date of birth (MM/DD/YYYY)"
+                    autoComplete="bday"
+                    inputMode="numeric"
+                    maxLength={10}
+                    pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}"
+                    title="Enter your date of birth as MM/DD/YYYY"
+                    value={birthdateText}
+                    onChange={handleBirthdateTextChange}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="profilesettings-date-picker-button"
+                    aria-label="Choose date of birth from calendar"
+                    onClick={openCalendarPicker}
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="3" y="5" width="18" height="16" rx="2" />
+                      <path d="M16 3v4M8 3v4M3 10h18M8 14h2M14 14h2M8 17h2" />
+                    </svg>
+                  </button>
+                  <input
+                    ref={calendarInputRef}
+                    className="profilesettings-native-date-picker"
+                    type="date"
+                    lang="en-US"
+                    aria-hidden="true"
+                    tabIndex={-1}
+                    value={formData.birthdate}
+                    max={maxBirthdate}
+                    onChange={handleBirthdateChange}
+                  />
+                </div>
               </div>
             </div>
 
