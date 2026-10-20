@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../../services/api';
 import '../../styles/Admin.css';
+import '../../styles/Login.css';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -29,19 +30,25 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="admin-body">
+    <div className="admin-body admin-login-page login-body">
       <div className="admin-bg-accent one"></div>
       <div className="admin-bg-accent two"></div>
-      <div className="admin-login-box">
-        <div style={{ fontWeight: 700, fontSize: '24px', textAlign: 'center', marginBottom: '5px' }}>
-          CELESTICARE <span style={{ background: '#6b5b95', color: 'white', padding: '4px 12px', borderRadius: '15px', fontSize: '0.75rem' }}>ADMIN</span>
+      <div className="admin-login-box login-box">
+        <div className="login-brand">
+          CELESTICARE <span className="admin-login-badge">ADMIN</span>
         </div>
-        <h2 style={{ fontSize: '20px', textAlign: 'center', marginBottom: '25px' }}>Admin Access</h2>
-        {error && <div style={{ background: '#dc3545', color: 'white', padding: '10px', borderRadius: '8px', marginBottom: '15px', textAlign: 'center' }}>{error}</div>}
+        <h2>Admin Access</h2>
+        {error && <div className="login-error" role="alert">{error}</div>}
         <form onSubmit={handleLogin}>
-          <input type="email" placeholder="Admin Email" autoComplete="username" required value={email} onChange={e => setEmail(e.target.value)} style={{ width: '100%', background: '#4b4b4b', border: 'none', color: '#fff', borderRadius: '30px', padding: '12px 20px', marginBottom: '15px' }} />
-          <input type="password" placeholder="Password" autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} style={{ width: '100%', background: '#4b4b4b', border: 'none', color: '#fff', borderRadius: '30px', padding: '12px 20px', marginBottom: '20px' }} />
-          <button type="submit" style={{ width: '100%', background: '#6b5b95', color: '#fff', border: 'none', borderRadius: '30px', padding: '10px 20px', cursor: 'pointer', fontWeight: 600 }}>Access Admin Panel</button>
+          <div className="login-field-group">
+            <label htmlFor="admin-email">Email Address</label>
+            <input id="admin-email" className="login-form-control" type="email" placeholder="Enter your admin email" autoComplete="username" required value={email} onChange={e => setEmail(e.target.value)} />
+          </div>
+          <div className="login-field-group">
+            <label htmlFor="admin-password">Password</label>
+            <input id="admin-password" className="login-form-control" type="password" placeholder="Enter your password" autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} />
+          </div>
+          <button type="submit" className="btn-login">Access Admin Panel</button>
         </form>
         <p style={{ textAlign: 'center', marginTop: '20px' }}><Link to="/login" style={{ color: '#cfcfcf' }}>← Back to User Login</Link></p>
       </div>

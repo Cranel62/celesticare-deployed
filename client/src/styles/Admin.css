@@ -39,6 +39,26 @@
 .admin-login-box input { box-sizing: border-box; background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.18) !important; }
 .admin-login-box input:focus { outline: 2px solid #c19bfa; outline-offset: 2px; }
 .admin-login-box button { background: linear-gradient(135deg, #c19bfa, #a628c5) !important; }
+.admin-body.admin-login-page {
+  align-items: flex-start;
+  display: flex;
+  justify-content: center;
+  min-height: calc(100dvh - var(--app-navbar-height, 76px));
+  padding: 0 14px 32px;
+}
+.admin-body.admin-login-page .admin-login-box { margin: 50px auto 0; max-width: 440px; }
+.admin-login-badge {
+  background: linear-gradient(135deg, #c19bfa, #a628c5);
+  border-radius: 999px;
+  color: #fff;
+  display: inline-block;
+  font-size: .65rem;
+  letter-spacing: .08em;
+  margin-left: 4px;
+  padding: 5px 10px;
+  vertical-align: middle;
+}
+.admin-login-footer { margin: 20px 0 0; text-align: center; }
 
 /* Header */
 .admin-header {
@@ -109,7 +129,7 @@
 @media (max-width: 700px) { .admin-feedback-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* Feedback Management */
-.admin-page-container { max-width: 1400px; margin: 50px auto 0; position: relative; z-index: 2; padding: 0 20px; }
+.admin-page-container { max-width: 1400px; margin: 80px auto 0; position: relative; z-index: 2; padding: 0 20px; }
 .admin-header-link { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); text-decoration: none; }
 @media (max-width: 700px) {
   .admin-header { gap: 20px; align-items: flex-start; flex-direction: column; }
