@@ -3,22 +3,22 @@
    ================================================= */
 
 body:has(.register-body) {
-  background: linear-gradient(to bottom, #090614 0%, #1e173d 35%, #422d6b 70%, #765a96 100%);
+  background: linear-gradient(to bottom, #090614 0%, #1e173d 35%, #422d6b 70%, #765a96 100%) fixed;
 }
 
 .register-body {
   margin: 0;
   min-height: calc(100vh - var(--app-navbar-height, 76px));
-  height: calc(100dvh - var(--app-navbar-height, 76px));
-  background: linear-gradient(to bottom, #090614 0%, #1e173d 35%, #422d6b 70%, #765a96 100%);
+  min-height: calc(100dvh - var(--app-navbar-height, 76px));
+  background: linear-gradient(to bottom, #090614 0%, #1e173d 35%, #422d6b 70%, #765a96 100%) fixed;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Poppins', sans-serif;
   padding: clamp(16px, 4vh, 40px) clamp(14px, 3vw, 32px);
   position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow-x: clip;
+  overflow-y: visible;
   isolation: isolate;
 }
 
@@ -387,14 +387,6 @@ body:has(.register-body) {
   .register-body { padding: 16px 14px; }
   .register-box { padding: 30px 22px; }
   .register-brand { font-size: 1.3rem; }
-}
-
-@media (min-width: 992px) {
-  .register-body {
-    min-height: 100dvh;
-    height: 100dvh;
-    margin-bottom: calc(-1 * var(--app-navbar-height, 76px));
-  }
 }
 
 @media (max-height: 760px) {
