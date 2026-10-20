@@ -5,7 +5,7 @@ const User = require('../models/User');
 const NATALCHART_API_KEY = String(process.env.NATALCHART_API_KEY || process.env.FREE_ASTRO_API_KEY || '').trim();
 const GEMINI_API_KEY = String(process.env.GEMINI_API_KEY || '').trim();
 const NATALCHART_API_URL = String(process.env.NATALCHART_API_URL || 'https://api.natalchart.ai/v1/chart/full').trim();
-const INSIGHT_VERSION = 5;
+const INSIGHT_VERSION = 6;
 
 const expandSign = (abbr) => {
   const map = { Ari: 'Aries', Tau: 'Taurus', Gem: 'Gemini', Can: 'Cancer', Leo: 'Leo', Vir: 'Virgo', Lib: 'Libra', Sco: 'Scorpio', Sag: 'Sagittarius', Cap: 'Capricorn', Aqu: 'Aquarius', Pis: 'Pisces' };
@@ -65,7 +65,7 @@ const getNumericPlacementValue = (entry, keys) => {
 
 const getPlacementDegree = (entry) => {
   const value = getNumericPlacementValue(entry, ['degreeInSign', 'pos', 'position', 'degree', 'longitude', 'cusp', 'cusp_degree', 'cuspDegree', 'value']);
-  if (value === null) return 0;
+  if (value === null) return null;
   // Some providers return absolute longitude for a cusp; convert it to the
   // degree within its zodiac sign before displaying it.
   return Math.floor(value >= 30 ? value % 30 : value);
@@ -75,7 +75,7 @@ const getPlacementMinutes = (entry) => {
   const value = getNumericPlacementValue(entry, ['degreeInSign', 'pos', 'position', 'degree', 'longitude']);
   const explicitMinutes = getNumericPlacementValue(entry, ['minute', 'minutes']);
   if (explicitMinutes !== null) return Math.round(explicitMinutes);
-  if (value === null || value >= 30) return 0;
+  if (value === null || value >= 30) return null;
   return Math.round((value % 1) * 60);
 };
 
@@ -95,7 +95,7 @@ const getChartBirthData = (user) => ({
 });
 
 const chartMatchesBirthData = (chart, birthData) => (
-  chart?.chart_version === 3
+  chart?.chart_version === 4
   && chart?.birth_data
   && chart.birth_data.date === birthData.date
   && chart.birth_data.time === birthData.time
@@ -234,13 +234,17 @@ exports.generateChart = async (req, res, next) => {
     res.status(200).json({
       success: true,
       chart: {
-        chart_version: 3,
+        chart_version: 4,
         birth_data: birthData,
         sun_sign: sunPlanet ? expandSign(sunPlanet.sign) : expandSign(user.zodiac_sign || 'Unknown'),
         moon_sign: moonPlanet ? expandSign(moonPlanet.sign) : 'Unknown',
         rising_sign: risingSign,
         rising_degrees: getPlacementDegree(risingAngle),
+        rising_minutes: getPlacementMinutes(risingAngle),
         sun_degrees: getPlacementDegree(sunPlanet),
+        sun_minutes: getPlacementMinutes(sunPlanet),
+        moon_degrees: getPlacementDegree(moonPlanet),
+        moon_minutes: getPlacementMinutes(moonPlanet),
         planets,
         houses,
         aspects

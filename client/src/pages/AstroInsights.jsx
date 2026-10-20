@@ -94,7 +94,7 @@ const SIGN_MEANINGS = {
 };
 const SIGN_ELEMENTS = { Aries: 'Fire', Leo: 'Fire', Sagittarius: 'Fire', Taurus: 'Earth', Virgo: 'Earth', Capricorn: 'Earth', Gemini: 'Air', Libra: 'Air', Aquarius: 'Air', Cancer: 'Water', Scorpio: 'Water', Pisces: 'Water' };
 const SIGN_MODALITIES = { Aries: 'Cardinal', Cancer: 'Cardinal', Libra: 'Cardinal', Capricorn: 'Cardinal', Taurus: 'Fixed', Leo: 'Fixed', Scorpio: 'Fixed', Aquarius: 'Fixed', Gemini: 'Mutable', Virgo: 'Mutable', Sagittarius: 'Mutable', Pisces: 'Mutable' };
-const INSIGHT_VERSION = 5;
+const INSIGHT_VERSION = 6;
 
 const getTriplicityDescription = (role, sign, fallback) => {
   const traits = SIGN_TRAITS[sign];
@@ -117,8 +117,8 @@ const getHouseDescription = (house) => {
 
 const formatPosition = (placement) => {
   if (!placement?.sign) return '';
-  const degrees = placement.degrees ?? 0;
-  return `${placement.sign} ${degrees}°${placement.minutes ? ` ${placement.minutes}'` : ''}`;
+  const degrees = Number.isFinite(placement.degrees) ? `${placement.degrees}°` : '—';
+  return `${placement.sign} ${degrees}${placement.minutes ? ` ${placement.minutes}'` : ''}`;
 };
 
 const getBalance = (planets, dictionary) => {
@@ -359,17 +359,17 @@ export default function AstroInsights() {
           <div className="ai-card ai-triplicity-card">
             <h3 className="ai-card-title">The Sun</h3>
             <ul className="ai-reading-list">{getTriplicityDescription('expresses your core identity and life direction.', chartData?.sun_sign, 'Your Sun reflects your identity, vitality, and the purpose you are growing into.').map((line) => <li key={line}>{line}</li>)}</ul>
-            <div className="ai-card-value">{chartData?.sun_sign} {chartData?.sun_degrees}°</div>
+            <div className="ai-card-value">{formatPosition({ sign: chartData?.sun_sign, degrees: chartData?.sun_degrees, minutes: chartData?.sun_minutes })}</div>
           </div>
           <div className="ai-card ai-triplicity-card">
             <h3 className="ai-card-title">The Moon</h3>
             <ul className="ai-reading-list">{getTriplicityDescription('describes your emotional needs and private inner world.', chartData?.moon_sign, 'Your Moon reflects your emotional needs, instincts, and private inner world.').map((line) => <li key={line}>{line}</li>)}</ul>
-            <div className="ai-card-value">{chartData?.moon_sign}</div>
+            <div className="ai-card-value">{formatPosition({ sign: chartData?.moon_sign, degrees: chartData?.moon_degrees, minutes: chartData?.moon_minutes })}</div>
           </div>
           <div className="ai-card ai-triplicity-card">
             <h3 className="ai-card-title">The Ascendant</h3>
             <ul className="ai-reading-list">{getTriplicityDescription('shapes your first impression and the way you approach new experiences.', chartData?.rising_sign, 'Your Ascendant shapes your first impression and the way you approach new experiences.').map((line) => <li key={line}>{line}</li>)}</ul>
-            <div className="ai-card-value">{chartData?.rising_sign} {chartData?.rising_degrees ?? 0}°</div>
+            <div className="ai-card-value">{formatPosition({ sign: chartData?.rising_sign, degrees: chartData?.rising_degrees, minutes: chartData?.rising_minutes })}</div>
           </div>
         </div>
 
@@ -405,7 +405,7 @@ export default function AstroInsights() {
               <div key={house.number} className="ai-card ai-flex-between">
                 <div className="ai-card-heading ai-house-card-heading">
                   <span className="ai-badge">House {house.number}</span>
-                  <h3 className="ai-card-title">{house.sign} <span className="ai-house-degree">{house.degrees}°</span></h3>
+                  <h3 className="ai-card-title">{formatPosition(house)}</h3>
                 </div>
                 <div className="ai-house-topic">{HOUSE_PROFILES[house.number]?.[0]}</div>
                 {(house.insight || house.sign) && (
