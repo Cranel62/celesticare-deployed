@@ -39,14 +39,23 @@
 .admin-login-box input { box-sizing: border-box; background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.18) !important; }
 .admin-login-box input:focus { outline: 2px solid #c19bfa; outline-offset: 2px; }
 .admin-login-box button { background: linear-gradient(135deg, #c19bfa, #a628c5) !important; }
+html:has(.admin-login-page),
+body:has(.admin-login-page),
+#root:has(.admin-login-page),
+.app-content:has(.admin-login-page) {
+  background: #211733 !important;
+}
 .admin-body.admin-login-page {
   align-items: flex-start;
+  background: #211733;
   display: flex;
   justify-content: center;
+  min-height: calc(100vh - var(--app-navbar-height, 76px));
   min-height: calc(100dvh - var(--app-navbar-height, 76px));
   padding: 0 14px 32px;
 }
-.admin-body.admin-login-page .admin-login-box { margin: 50px auto 0; max-width: 440px; }
+.admin-body.admin-login-page .admin-bg-accent { display: none; }
+.admin-body.admin-login-page .admin-login-box { margin: 80px auto 0; max-width: 440px; }
 .admin-login-badge {
   background: linear-gradient(135deg, #c19bfa, #a628c5);
   border-radius: 999px;
