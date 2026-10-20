@@ -143,6 +143,85 @@
   margin: 0 0 0.75rem;
 }
 
+.dashboard-undertone-highlight {
+  background: linear-gradient(135deg, rgba(193,155,250,0.16), rgba(166,40,197,0.1));
+  border: 1px solid rgba(193,155,250,0.34);
+  border-radius: 16px;
+  box-shadow: 0 0 22px rgba(193,155,250,0.1);
+  padding: 16px 18px;
+}
+
+.dashboard-undertone-result-title {
+  color: #fff;
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0 0 12px;
+  text-shadow: 0 0 14px rgba(193,155,250,0.36);
+}
+
+.dashboard-undertone-result-title span {
+  color: #e1c8ff;
+  text-transform: capitalize;
+  text-decoration: underline;
+  text-decoration-color: #c19bfa;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.dashboard-undertone-season {
+  align-items: center;
+  background: rgba(9,6,20,0.42);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 999px;
+  color: #d0cce6;
+  display: inline-flex;
+  gap: 8px;
+  padding: 7px 13px;
+}
+
+.dashboard-undertone-season strong {
+  color: #fff;
+  font-size: 0.95rem;
+  text-shadow: 0 0 10px rgba(193,155,250,0.42);
+}
+
+.dashboard-undertone-description-featured {
+  background: rgba(193,155,250,0.1);
+  border-left: 3px solid #c19bfa;
+  border-radius: 0 10px 10px 0;
+  color: #f0ecfc;
+  padding: 10px 12px;
+}
+
+:root[data-theme='light'] .dashboard-undertone-highlight {
+  background: linear-gradient(135deg, #e8d9f5, #f2e9f8);
+  border-color: rgba(112,72,143,0.32);
+  box-shadow: 0 8px 20px rgba(67,43,84,0.1);
+}
+
+:root[data-theme='light'] .dashboard-undertone-result-title,
+:root[data-theme='light'] .dashboard-undertone-season strong {
+  color: #342541;
+  text-shadow: none;
+}
+
+:root[data-theme='light'] .dashboard-undertone-result-title span {
+  color: #70488f;
+  text-decoration-color: #9a70b4;
+}
+
+:root[data-theme='light'] .dashboard-undertone-season {
+  background: rgba(255,255,255,0.66);
+  border-color: rgba(112,72,143,0.2);
+  color: #62536e;
+}
+
+:root[data-theme='light'] .dashboard-undertone-description-featured {
+  background: rgba(193,155,250,0.14);
+  color: #453550;
+}
+
 /* Buttons */
 .dashboard-btn-style {
   display: block;

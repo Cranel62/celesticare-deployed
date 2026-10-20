@@ -203,10 +203,14 @@ export default function Dashboard() {
               <div className="dashboard-section-title mb-3">Color Analysis</div>
               {hasUserUndertone ? (
                 <div className="dashboard-color-content">
-                  <div className="mb-3">
-                    <p className="mb-1"><strong>Zodiac:</strong> {savedZodiac || 'Not set'}</p>
-                    <p className="mb-1"><strong>Undertone:</strong> <span style={{ textTransform: 'capitalize' }}>{savedUndertone}</span></p>
-                    <p className="mb-1"><strong>Your Season:</strong> {savedSeason}</p>
+                  <div className="dashboard-undertone-highlight mb-3">
+                    <h3 className="dashboard-undertone-result-title">
+                      {savedZodiac} with a <span>{savedUndertone}</span> undertone
+                    </h3>
+                    <div className="dashboard-undertone-season">
+                      <span>Your Season</span>
+                      <strong>{savedSeason}</strong>
+                    </div>
                   </div>
                   <div className="dashboard-color-visual mb-3">
                     <img src={assetUrl(`/src/pages/undertone/assets/${savedUndertone}_wheel.png`)} alt={`${savedUndertone} undertone color wheel`} className="undertoneresult-wheel" />
@@ -216,7 +220,7 @@ export default function Dashboard() {
                       <div key={i} className="dashboard-color-swatch d-inline-block" style={{ background: color }}></div>
                     ))}
                   </div>
-                  <p className="dashboard-undertone-description">
+                  <p className="dashboard-undertone-description dashboard-undertone-description-featured">
                     {undertoneDescriptions[savedUndertone] || 'Discover your unique color palette!'}
                   </p>
                   <p className="dashboard-undertone-description">
