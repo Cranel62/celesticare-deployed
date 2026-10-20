@@ -388,7 +388,7 @@ body:has(.register-body) {
 }
 
 @media (min-width: 992px) {
-  .register-box { margin-top: 50px; }
+  .register-box { margin-top: 100px; }
 }
 
 @media (max-width: 520px) {
