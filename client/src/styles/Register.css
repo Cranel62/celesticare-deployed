@@ -387,6 +387,10 @@ body:has(.register-body) {
   width: 48px;
 }
 
+@media (min-width: 992px) {
+  .register-box { margin-top: 50px; }
+}
+
 @media (max-width: 520px) {
   .register-body { padding: 16px 14px; }
   .register-box { padding: 30px 22px; }

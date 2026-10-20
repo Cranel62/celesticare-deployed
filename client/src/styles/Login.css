@@ -155,6 +155,10 @@ html:has(.register-body) {
 .login-password-toggle:hover { color: #d8c7ff; }
 .login-password-toggle svg { fill: none; height: 19px; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; width: 19px; }
 
+@media (min-width: 992px) {
+  .login-box { margin-block: 50px; }
+}
+
 @media (max-height: 640px) {
   .login-body { align-items: flex-start; padding-block: 16px; }
   .login-box { padding-block: 20px; }
