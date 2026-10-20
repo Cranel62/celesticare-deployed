@@ -2,6 +2,11 @@
    CELESTICARE - LOGIN STYLESHEET
    ================================================= */
 
+body:has(.login-body),
+body:has(.register-body) {
+  background: linear-gradient(to bottom, #090614 0%, #1e173d 35%, #422d6b 70%, #765a96 100%);
+}
+
 .login-body {
   margin: 0;
   min-height: calc(100vh - var(--app-navbar-height, 76px));
