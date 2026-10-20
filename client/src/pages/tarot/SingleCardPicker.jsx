@@ -117,7 +117,7 @@ export default function SingleCardPicker() {
 
   return (
     <div className="tarot-body">
-      <Link to="/tarot" className="return-button" style={{ position: 'fixed', top: '1rem', left: '1rem', zIndex: 1000 }}>← Back</Link>
+      <Link to="/tarot" className="return-button picker-back-button">← Back</Link>
       <div className="stars" id="stars"></div>
       
       <div className="tarot-container" style={{ paddingTop: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

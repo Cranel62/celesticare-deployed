@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import API from '../../services/api';
 import '../../styles/Tarot.css';
 import '../../styles/TarotPickers.css';
@@ -85,7 +85,20 @@ export default function FourCardPicker() {
 
   return (
     <div className="tarot-body">
-      <Link to="/tarot" className="return-button" style={{ position: 'fixed', top: '1rem', left: '1rem', zIndex: 1000 }}>← Back</Link>
+      <button
+        type="button"
+        className="return-button picker-back-button"
+        aria-label={isFanOpen ? 'Close card selection and return to the spread' : 'Back to Mystic Arcana'}
+        onClick={() => {
+          if (isFanOpen) {
+            setIsFanOpen(false);
+            return;
+          }
+          navigate('/tarot');
+        }}
+      >
+        ← Back
+      </button>
       <div className="stars" id="stars"></div>
 
       <div className="tarot-container" style={{ paddingTop: '3rem' }}>
@@ -121,7 +134,6 @@ export default function FourCardPicker() {
 
       {isFanOpen && (
         <div className="fcp-fan-overlay active">
-          <button className="return-button" style={{ position: 'absolute', top: '2rem', right: '2rem' }} onClick={() => setIsFanOpen(false)}>✕ Close</button>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h2 style={{ fontFamily: 'Cinzel', color: '#c0a0c0' }}>Choose {POS_TITLES[POSITIONS[currentIndex]].title}</h2>
             <p style={{ color: '#d0b0d0' }}>Select the card that speaks to you</p>
