@@ -270,6 +270,7 @@
   filter: blur(120px);
   opacity: 0.3;
   z-index: 0;
+  pointer-events: none;
   animation: sqFloat 10s ease-in-out infinite alternate;
 }
 
@@ -296,3 +297,93 @@
 
 .sq-mb-3 { margin-bottom: 1rem; }
 .sq-mt-3 { margin-top: 1rem; }
+
+@media (max-width: 850px) {
+  .sq-container {
+    min-height: calc(100dvh - var(--app-navbar-height, 64px));
+    overflow-x: clip;
+    padding: 24px clamp(12px, 4vw, 24px) 48px;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sq-title {
+    font-size: clamp(1.7rem, 6vw, 2.2rem);
+    line-height: 1.2;
+    margin-bottom: 24px;
+  }
+
+  .sq-gender-label {
+    flex-wrap: wrap;
+    margin: 0 auto 24px;
+  }
+
+  .sq-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    width: 100%;
+  }
+
+  .sq-canvas-section {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .sq-canvas {
+    height: 800px;
+    max-width: 340px;
+    width: 100%;
+  }
+
+  .sq-canvas > img:not(.sq-mannequin) {
+    max-width: calc(100% - 20px);
+    width: calc(100% - 20px) !important;
+  }
+
+  .sq-layout > div:last-child {
+    margin-inline: auto;
+    max-width: 600px;
+    min-width: 0;
+    width: 100% !important;
+  }
+
+  .sq-clothing-container {
+    min-width: 0;
+    padding: clamp(16px, 4vw, 24px);
+    width: 100%;
+  }
+
+  .sq-clothing-container h2 { font-size: 1.3rem; }
+
+  .sq-category-toggle {
+    min-height: 48px;
+    touch-action: manipulation;
+  }
+
+  .sq-category-content { display: none; }
+
+  .sq-category-content.sq-open {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+    max-height: none;
+    overflow: visible;
+    padding: 12px 0 0;
+    touch-action: pan-y;
+  }
+
+  .sq-item {
+    min-width: 0;
+    min-height: 96px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(187, 166, 255, 0.25);
+  }
+
+  .sq-finish-btn { min-height: 48px; }
+  .sq-bg-accent { animation: none; filter: blur(80px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sq-bg-accent { animation: none; }
+  .sq-category-content { transition: none; }
+}
