@@ -3,8 +3,9 @@ import { Link, useParams } from 'react-router-dom';
 import API from '../../services/api';
 import '../../styles/Tarot.css';
 import { tarotCardSrc, TAROT_BACK } from '../../utils/tarotImages';
+import { TAROT_CARDS } from '../../data/tarotCards';
 
-const TAROT_CARDS = {
+const LEGACY_TAROT_CARDS = {
   9: {
     name: 'The Hermit',
     upright: 'Soul-searching, introspection, inner guidance.',
@@ -84,7 +85,11 @@ export default function SingleCardResult() {
   const { id } = useParams();
   const parsedCardId = Number.parseInt(id, 10);
   const cardId = Number.isInteger(parsedCardId) && parsedCardId >= 0 && parsedCardId <= 77 ? parsedCardId : 18;
-  const card = TAROT_CARDS[cardId] || { ...TAROT_CARDS[18], name: getCardName(cardId) };
+  const card = TAROT_CARDS[cardId] || TAROT_CARDS[18];
+  const colors = String(card.color_hexes || card.colors || '#8a6a9a, #5a3a6a, #3a2a4a, #2a1a3a')
+    .split(',')
+    .map(color => color.trim())
+    .filter(Boolean);
   const period = getPeriod();
   const timeMessage = card[period.key] || card.essence;
   const [showEntrance, setShowEntrance] = useState(true);
@@ -96,9 +101,9 @@ export default function SingleCardResult() {
     const timer2 = setTimeout(() => setShowEntrance(false), 2200);
     API.post('/tarot/save', {
       reading_type: 'single',
-      cards: [{ id: cardId, name: card.name, arcana: 'major', suit: 'major' }],
+      cards: [{ id: card.id, name: card.name, arcana: card.arcana, suit: card.suit || '' }],
       interpretation: card.upright,
-      spread_data: { time_message: timeMessage }
+      spread_data: { time_of_day: period.key, time_message: timeMessage }
     })
       .catch(err => console.error('Save reading error:', err));
     API.put('/tarot/single-card', { cardId })
@@ -195,7 +200,7 @@ export default function SingleCardResult() {
             <div className="single-palette">
               <h3><span aria-hidden="true">🎨</span>Color Palette</h3>
               <div className="single-color-swatches">
-                {card.colors.map(color => (
+                {colors.map(color => (
                   <span key={color} style={{ backgroundColor: color }} title={color} />
                 ))}
               </div>

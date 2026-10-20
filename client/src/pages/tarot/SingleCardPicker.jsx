@@ -3,7 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import '../../styles/Tarot.css';
 import '../../styles/TarotPickers.css';
 import { TAROT_BACK } from '../../utils/tarotImages';
+import { TAROT_CARDS } from '../../data/tarotCards';
 import API from '../../services/api';
+
+const CARD_COUNT = TAROT_CARDS.length;
 
 export default function SingleCardPicker() {
   const navigate = useNavigate();
@@ -33,6 +36,7 @@ export default function SingleCardPicker() {
   }, []);
 
   const startShuffle = () => {
+    if (shuffling) return;
     setShuffling(true);
     setTimeout(() => {
       createDeckAndAnimate();
@@ -102,8 +106,8 @@ export default function SingleCardPicker() {
       } else {
         cancelAnimationFrame(animFrameRef.current);
         setTimeout(() => {
-          const randomId = Math.floor(Math.random() * 78);
-          navigate(`/tarot/single-result/${randomId}`);
+          const selectedCard = TAROT_CARDS[Math.floor(Math.random() * CARD_COUNT)];
+          navigate(`/tarot/single-result/${selectedCard.id}`);
         }, 600);
       }
     };
