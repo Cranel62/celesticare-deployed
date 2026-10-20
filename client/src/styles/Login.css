@@ -7,6 +7,12 @@ body:has(.register-body) {
   background: linear-gradient(to bottom, #090614 0%, #1e173d 35%, #422d6b 70%, #765a96 100%) fixed;
 }
 
+html:has(.login-body),
+html:has(.register-body) {
+  scroll-padding-top: calc(var(--app-navbar-height, 76px) + 16px);
+  scroll-padding-bottom: 20px;
+}
+
 .login-body {
   margin: 0;
   min-height: calc(100vh - var(--app-navbar-height, 76px));
@@ -31,6 +37,7 @@ body:has(.register-body) {
   border-radius: 24px;
   width: 100%;
   max-width: 440px;
+  margin-block: auto;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(193, 155, 250, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.15);
   position: relative;
@@ -149,7 +156,7 @@ body:has(.register-body) {
 .login-password-toggle svg { fill: none; height: 19px; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; width: 19px; }
 
 @media (max-height: 640px) {
-  .login-body { padding-block: 12px; }
+  .login-body { align-items: flex-start; padding-block: 16px; }
   .login-box { padding-block: 20px; }
   .login-box h2 { margin-bottom: 16px; }
   .login-field-group { margin-bottom: 12px; }
