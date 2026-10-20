@@ -78,6 +78,20 @@ const HOUSE_PROFILES = {
   11: ['Friendships, community, and hopes', 'Networks, collaboration, future goals, and social belonging'],
   12: ['Spirituality, solitude, and hidden strengths', 'Rest, the subconscious, closure, and private renewal']
 };
+const SIGN_MEANINGS = {
+  Aries: 'Courage, initiative, and pioneering spirit',
+  Taurus: 'Stability, patience, and sensual pleasures',
+  Gemini: 'Curiosity, adaptability, and communication',
+  Cancer: 'Nurturing, emotional depth, and intuition',
+  Leo: 'Creativity, warmth, and natural leadership',
+  Virgo: 'Analysis, precision, and service',
+  Libra: 'Harmony, partnership, and beauty',
+  Scorpio: 'Intensity, transformation, and depth',
+  Sagittarius: 'Adventure, optimism, and wisdom',
+  Capricorn: 'Ambition, discipline, and mastery',
+  Aquarius: 'Innovation, humanity, and uniqueness',
+  Pisces: 'Compassion, artistry, and spirituality'
+};
 const SIGN_ELEMENTS = { Aries: 'Fire', Leo: 'Fire', Sagittarius: 'Fire', Taurus: 'Earth', Virgo: 'Earth', Capricorn: 'Earth', Gemini: 'Air', Libra: 'Air', Aquarius: 'Air', Cancer: 'Water', Scorpio: 'Water', Pisces: 'Water' };
 const SIGN_MODALITIES = { Aries: 'Cardinal', Cancer: 'Cardinal', Libra: 'Cardinal', Capricorn: 'Cardinal', Taurus: 'Fixed', Leo: 'Fixed', Scorpio: 'Fixed', Aquarius: 'Fixed', Gemini: 'Mutable', Virgo: 'Mutable', Sagittarius: 'Mutable', Pisces: 'Mutable' };
 const INSIGHT_VERSION = 4;
@@ -386,8 +400,8 @@ export default function AstroInsights() {
             <h3 className="ai-loader-heading">The Houses Are Aligning</h3>
           </div>
         ) : (
-          <div className="ai-grid-responsive">
-            {chartData?.houses?.map((house) => (
+          <div className="ai-grid-responsive ai-house-grid">
+            {[...(chartData?.houses || [])].sort((a, b) => Number(a.number) - Number(b.number)).map((house) => (
               <div key={house.number} className="ai-card ai-flex-between">
                 <div className="ai-row-between">
                   <span className="ai-badge">House {house.number}</span>
@@ -396,8 +410,7 @@ export default function AstroInsights() {
                 <div className="ai-house-topic">{HOUSE_PROFILES[house.number]?.[0]}</div>
                 {(house.insight || house.sign) && (
                   <div className="ai-insight-box">
-                    <strong>{HOUSE_PROFILES[house.number]?.[1]}</strong>
-                    <p>{getHouseDescription(house)}</p>
+                    <strong>{SIGN_MEANINGS[house.sign] || HOUSE_PROFILES[house.number]?.[1]}</strong>
                     {house.insight && <small className="ai-ai-note">AI context: {house.insight}</small>}
                   </div>
                 )}
