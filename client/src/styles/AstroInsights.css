@@ -219,11 +219,19 @@
   order: 1;
 }
 
+.ai-triplicity-card .ai-card-title {
+  order: 1;
+}
+
 .ai-triplicity-card .ai-card-value {
   order: 2;
 }
 
 .ai-triplicity-card .ai-insight-box {
+  order: 3;
+}
+
+.ai-triplicity-card .ai-reading-list {
   order: 3;
 }
 
@@ -342,6 +350,58 @@
   margin-bottom: 12px;
   text-transform: uppercase;
   font-weight: 700;
+}
+
+.ai-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.ai-card-title {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.12rem;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.ai-card-title::after {
+  content: '';
+  display: block;
+  width: 34px;
+  height: 2px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: #c19bfa;
+}
+
+.ai-planet-symbol {
+  display: inline-block;
+  margin-right: 8px;
+  color: #d9c8ff;
+  font-size: 1.25rem;
+}
+
+.ai-house-card-heading {
+  align-items: center;
+}
+
+.ai-house-card-heading .ai-card-title {
+  text-align: right;
+}
+
+.ai-house-card-heading .ai-card-title::after {
+  margin-left: auto;
+}
+
+.ai-house-degree {
+  color: #eadfff;
+  font-weight: 600;
 }
 
 .ai-card-value {

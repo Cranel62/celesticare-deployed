@@ -357,17 +357,17 @@ export default function AstroInsights() {
         <p className="ai-section-description">Your Sun, Moon, and Ascendant reveal your core identity, emotional world, and the energy you bring into the world.</p>
         <div className="ai-grid-3">
           <div className="ai-card ai-triplicity-card">
-            <div className="ai-card-subtitle">The Sun</div>
+            <h3 className="ai-card-title">The Sun</h3>
             <ul className="ai-reading-list">{getTriplicityDescription('expresses your core identity and life direction.', chartData?.sun_sign, 'Your Sun reflects your identity, vitality, and the purpose you are growing into.').map((line) => <li key={line}>{line}</li>)}</ul>
             <div className="ai-card-value">{chartData?.sun_sign} {chartData?.sun_degrees}°</div>
           </div>
           <div className="ai-card ai-triplicity-card">
-            <div className="ai-card-subtitle">The Moon</div>
+            <h3 className="ai-card-title">The Moon</h3>
             <ul className="ai-reading-list">{getTriplicityDescription('describes your emotional needs and private inner world.', chartData?.moon_sign, 'Your Moon reflects your emotional needs, instincts, and private inner world.').map((line) => <li key={line}>{line}</li>)}</ul>
             <div className="ai-card-value">{chartData?.moon_sign}</div>
           </div>
           <div className="ai-card ai-triplicity-card">
-            <div className="ai-card-subtitle">The Ascendant</div>
+            <h3 className="ai-card-title">The Ascendant</h3>
             <ul className="ai-reading-list">{getTriplicityDescription('shapes your first impression and the way you approach new experiences.', chartData?.rising_sign, 'Your Ascendant shapes your first impression and the way you approach new experiences.').map((line) => <li key={line}>{line}</li>)}</ul>
             <div className="ai-card-value">{chartData?.rising_sign} {chartData?.rising_degrees ?? 0}°</div>
           </div>
@@ -379,8 +379,8 @@ export default function AstroInsights() {
         <div className="ai-grid-responsive">
           {chartData?.planets?.map((planet, index) => (
             <div key={index} className="ai-card ai-flex-between">
-              <div className="ai-row-between">
-                <span className="ai-planet-name">{planet.symbol} {planet.name}</span>
+              <div className="ai-card-heading">
+                <h3 className="ai-card-title"><span className="ai-planet-symbol">{planet.symbol}</span>{planet.name}</h3>
                 <span className="ai-badge">House {planet.house}</span>
               </div>
               <div className="ai-planet-pos">{formatPosition(planet)}</div>
@@ -403,9 +403,9 @@ export default function AstroInsights() {
           <div className="ai-grid-responsive ai-house-grid">
             {[...(chartData?.houses || [])].sort((a, b) => Number(a.number) - Number(b.number)).map((house) => (
               <div key={house.number} className="ai-card ai-flex-between">
-                <div className="ai-row-between">
+                <div className="ai-card-heading ai-house-card-heading">
                   <span className="ai-badge">House {house.number}</span>
-                  <span className="ai-house-pos">{formatPosition(house)}</span>
+                  <h3 className="ai-card-title">{house.sign} <span className="ai-house-degree">{house.degrees}°</span></h3>
                 </div>
                 <div className="ai-house-topic">{HOUSE_PROFILES[house.number]?.[0]}</div>
                 {(house.insight || house.sign) && (
