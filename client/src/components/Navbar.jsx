@@ -46,9 +46,18 @@ export default function Navbar() {
         setMenuOpen(false);
       }
     };
+    const closeOnMobileScroll = () => {
+      if (window.matchMedia('(max-width: 991.98px)').matches) {
+        setMenuOpen(false);
+      }
+    };
 
     document.addEventListener('click', closeOnOutsideClick);
-    return () => document.removeEventListener('click', closeOnOutsideClick);
+    window.addEventListener('scroll', closeOnMobileScroll, { passive: true });
+    return () => {
+      document.removeEventListener('click', closeOnOutsideClick);
+      window.removeEventListener('scroll', closeOnMobileScroll);
+    };
   }, [menuOpen]);
 
   const handleLogout = () => {
