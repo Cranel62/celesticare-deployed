@@ -96,9 +96,14 @@ html:has(.security-settings-body) {
   background: rgba(255, 255, 255, 0.035);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  margin-bottom: 16px;
-  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin-bottom: 20px;
+  padding: 18px;
 }
+
+.security-settings-field .security-settings-label { margin-bottom: 0; }
 
 .security-settings-label,
 .security-delete-label {
@@ -206,6 +211,8 @@ select.security-settings-input { cursor: pointer; }
   background: rgba(255, 107, 107, 0.07);
   border: 1px solid rgba(255, 107, 107, 0.25);
   border-radius: 16px;
+  display: grid;
+  gap: 12px;
   padding: 18px;
 }
 
@@ -221,7 +228,7 @@ select.security-settings-input { cursor: pointer; }
 @media (max-width: 600px) {
   .security-settings-body { align-items: flex-start; padding: 16px 14px 28px; }
   .security-settings-card { border-radius: 20px; padding: 24px 18px; }
-  .security-settings-field { padding: 13px; }
+  .security-settings-field { gap: 11px; padding: 14px; }
   .security-settings-actions,
   .security-delete-actions { grid-template-columns: minmax(0, 1fr); }
 }

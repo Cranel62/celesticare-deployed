@@ -31,6 +31,15 @@
   filter: invert(1) brightness(1.6);
 }
 
+:root[data-theme='dark'] .navbar .navbar-toggler {
+  border-color: rgba(193, 155, 250, 0.75) !important;
+  box-shadow: 0 0 0 1px rgba(193, 155, 250, 0.12) !important;
+}
+
+:root[data-theme='dark'] .navbar .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23f3edf8' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
 .navbar-inner {
   height: 100%;
 }
