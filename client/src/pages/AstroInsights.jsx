@@ -137,7 +137,11 @@ export default function AstroInsights() {
       setChartData(res.data.chart);
       setIsLoading(false);
       if (res.data.cached) {
-        setHousesLoading(false);
+        if (res.data.chart.enhancement_version === INSIGHT_VERSION) {
+          setHousesLoading(false);
+        } else {
+          await enhanceWithGemini(res.data.chart);
+        }
         return;
       }
       try {
@@ -164,17 +168,7 @@ export default function AstroInsights() {
       setBirthProvince(savedPlaceParts.join(',').trim());
       setBirthPlace(currentUser.birth_place || '');
 
-      if (currentUser.astro_insights) {
-        const savedChart = currentUser.astro_insights;
-        setChartData(savedChart);
-        setShowForm(false);
-        setIsLoading(false);
-        if (savedChart.enhancement_version === INSIGHT_VERSION) {
-          setHousesLoading(false);
-        } else {
-          enhanceWithGemini(savedChart);
-        }
-      } else if (currentUser.birthdate && currentUser.birth_time && currentUser.birth_place) {
+      if (currentUser.birthdate && currentUser.birth_time && currentUser.birth_place) {
         setShowForm(false);
         generateAIChat();
       } else {

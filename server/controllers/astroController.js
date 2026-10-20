@@ -39,6 +39,28 @@ exports.saveBirthDetails = async (req, res, next) => {
 
 const normalizeLocationPart = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
+const getBirthDateString = (birthdate) => {
+  if (!birthdate) return '';
+  const date = new Date(birthdate);
+  if (Number.isNaN(date.getTime())) return '';
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
+};
+
+const getChartBirthData = (user) => ({
+  date: getBirthDateString(user.birthdate),
+  time: String(user.birth_time || '').trim(),
+  place: String(user.birth_place || '').trim(),
+  timezone: 'Asia/Manila',
+});
+
+const chartMatchesBirthData = (chart, birthData) => (
+  chart?.birth_data
+  && chart.birth_data.date === birthData.date
+  && chart.birth_data.time === birthData.time
+  && chart.birth_data.place === birthData.place
+  && chart.birth_data.timezone === birthData.timezone
+);
+
 const geocodeBirthPlace = async (birthPlace) => {
   const placeParts = String(birthPlace || '').split(',');
   const city = placeParts.shift()?.trim() || '';
@@ -70,20 +92,21 @@ const geocodeBirthPlace = async (birthPlace) => {
 
 exports.generateChart = async (req, res, next) => {
   try {
-    const savedUser = await User.findById(req.user.id).select('astro_insights');
-    if (savedUser?.astro_insights) {
-      return res.status(200).json({ success: true, chart: savedUser.astro_insights, cached: true });
-    }
-    if (!NATALCHART_API_KEY) {
-      return res.status(503).json({ success: false, message: 'Astrology service is not configured.' });
-    }
-
     const user = req.user;
     const dateObj = new Date(user.birthdate);
     const timeMatch = String(user.birth_time || '').match(/^([01]\d|2[0-3]):([0-5]\d)$/);
     const birthPlace = String(user.birth_place || '').trim();
     if (Number.isNaN(dateObj.getTime()) || !timeMatch || !birthPlace) {
       return res.status(400).json({ success: false, message: 'Save your birth date, time, and birthplace before generating your chart.' });
+    }
+
+    const birthData = getChartBirthData(user);
+    const savedChart = user.astro_insights;
+    if (chartMatchesBirthData(savedChart, birthData)) {
+      return res.status(200).json({ success: true, chart: savedChart, cached: true });
+    }
+    if (!NATALCHART_API_KEY) {
+      return res.status(503).json({ success: false, message: 'Astrology service is not configured.' });
     }
 
     const location = await geocodeBirthPlace(birthPlace);
@@ -95,6 +118,8 @@ exports.generateChart = async (req, res, next) => {
         time: `${timeMatch[1]}:${timeMatch[2]}`,
         latitude: location.latitude,
         longitude: location.longitude,
+        timezone: birthData.timezone,
+        utc_offset: 8,
       },
     };
 
@@ -153,6 +178,7 @@ exports.generateChart = async (req, res, next) => {
     res.status(200).json({
       success: true,
       chart: {
+        birth_data: birthData,
         sun_sign: sunPlanet ? expandSign(sunPlanet.sign) : expandSign(user.zodiac_sign || 'Unknown'),
         moon_sign: moonPlanet ? expandSign(moonPlanet.sign) : 'Unknown',
         rising_sign: risingSign,

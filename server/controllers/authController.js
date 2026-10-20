@@ -219,6 +219,12 @@ exports.updateProfile = async (req, res, next) => {
       }
     }
 
+    // A chart is tied to the complete birth profile. Clear it when the date
+    // changes so Astro Insights cannot display another person's placements.
+    if (user.isModified('birthdate')) {
+      user.astro_insights = null;
+    }
+
     if (req.body.new_password) {
       if (!req.body.current_password || !(await user.matchPassword(req.body.current_password))) {
         return res.status(400).json({ success: false, message: 'Current password is incorrect.' });

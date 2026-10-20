@@ -20,7 +20,7 @@
 }
 
 .ai-container {
-  max-width: 1400px;
+  max-width: 1180px;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -197,14 +197,16 @@
   text-shadow: 0 0 15px rgba(193, 155, 250, 0.4);
   margin-bottom: 25px;
   letter-spacing: -0.5px;
+  text-align: center;
 }
 
 .ai-section-description {
-  max-width: 900px;
-  margin: -12px 0 22px;
+  max-width: 760px;
+  margin: -12px auto 22px;
   color: #d0cce6;
   font-size: 0.95rem;
   line-height: 1.6;
+  text-align: center;
 }
 
 .ai-triplicity-card {
@@ -274,6 +276,7 @@
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 25px;
   margin-bottom: 40px;
+  align-items: stretch;
 }
 
 .ai-grid-2 {
@@ -288,6 +291,19 @@
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
   margin-bottom: 40px;
+}
+
+.ai-grid-responsive .ai-card {
+  text-align: center;
+}
+
+.ai-grid-responsive .ai-row-between {
+  justify-content: center;
+  gap: 12px;
+}
+
+.ai-grid-responsive .ai-insight-box {
+  text-align: center;
 }
 
 .ai-card-subtitle {
