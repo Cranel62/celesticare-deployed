@@ -61,7 +61,7 @@ export default function ManageUsers() {
     <div className="admin-body">
       <div className="admin-bg-accent one"></div>
       <div className="admin-bg-accent two"></div>
-      <div className="container" style={{ maxWidth: '1400px', margin: '0 auto', position: 'relative', zIndex: 2, padding: '0 20px' }}>
+      <div className="admin-page-container">
         
         <div className="admin-header">
           <div><h1 style={{ margin: 0, fontWeight: 700, letterSpacing: '2px' }}>CELESTICARE</h1><p style={{ margin: 0, opacity: 0.75 }}>Admin Panel - User Management</p></div>
