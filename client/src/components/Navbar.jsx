@@ -1,5 +1,5 @@
 // client/src/components/Navbar.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
 
@@ -15,6 +15,7 @@ export default function Navbar() {
     return user.role === 'admin' || user.is_admin === true;
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const navbarRef = useRef(null);
   const [theme, setTheme] = useState(() => localStorage.getItem('celesticare_theme') === 'dark' ? 'dark' : 'light');
 
   useEffect(() => {
@@ -36,6 +37,20 @@ export default function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+
+    const closeOnOutsideClick = (event) => {
+      const isMobileLayout = window.matchMedia('(max-width: 991.98px)').matches;
+      if (isMobileLayout && !navbarRef.current?.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('click', closeOnOutsideClick);
+    return () => document.removeEventListener('click', closeOnOutsideClick);
+  }, [menuOpen]);
+
   const handleLogout = () => {
     if (!window.confirm('Are you sure you want to log out?')) return;
     localStorage.removeItem('celesticare_token');
@@ -48,7 +63,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+    <nav ref={navbarRef} className="navbar navbar-expand-lg navbar-light bg-white fixed-top">
       <div className="container-fluid navbar-inner">
         
         <Link className="navbar-brand" to="/" onClick={() => setMenuOpen(false)} aria-label="Go to CelestiCare home">
