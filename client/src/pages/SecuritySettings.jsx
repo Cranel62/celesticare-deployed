@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
+import '../styles/SecuritySettings.css';
 
 const SECURITY_QUESTIONS = [
   "What was your first pet's name?",
@@ -86,50 +87,35 @@ export default function SecuritySettings() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #d3bff5 0%, #3c3b7d 100%)',
-      fontFamily: "'Poppins', sans-serif",
-      padding: '100px 20px 40px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center'
-    }}>
-      <div style={{
-        background: '#2e2e2e',
-        borderRadius: '20px',
-        padding: '40px',
-        color: 'white',
-        boxShadow: '0 8px 25px rgba(0,0,0,0.2)',
-        width: '100%',
-        maxWidth: '700px'
-      }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <i className="fas fa-shield-alt" style={{ marginRight: '10px' }}></i>
+    <main className="security-settings-body">
+      <section className="security-settings-card">
+        <h1 className="security-settings-title">
+          <i className="fas fa-shield-alt" aria-hidden="true"></i>
           Secure Your Account
-        </h2>
+        </h1>
         
-        <div style={{ background: 'rgba(107, 91, 149, 0.2)', borderLeft: '4px solid #6b5b95', padding: '15px', borderRadius: '10px', marginBottom: '30px' }}>
-          <i className="fas fa-info-circle" style={{ color: '#6b5b95', marginRight: '10px' }}></i>
+        <div className="security-settings-notice">
+          <i className="fas fa-info-circle" aria-hidden="true"></i>
           Set up security questions to protect your account. You'll need these if you forget your password.
         </div>
-        <p style={{ color: '#cfcfcf', fontSize: '0.9rem', marginBottom: '24px' }}>
+        <p className="security-settings-description">
           Passwords and security-question answers are stored as one-way hashes, not readable text. Choose recovery answers that are difficult to guess and do not reuse your password.
         </p>
 
-        {message && <div style={{ background: '#d1fae5', color: '#065f46', padding: '12px', borderRadius: '8px', marginBottom: '20px', textAlign: 'center' }}>{message}</div>}
-        {error && <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px', borderRadius: '8px', marginBottom: '20px', textAlign: 'center' }}>{error}</div>}
+        {message && <div className="security-settings-success" role="status">{message}</div>}
+        {error && <div className="security-settings-error" role="alert">{error}</div>}
 
-        <form onSubmit={handleSaveQuestions}>
+        <form onSubmit={handleSaveQuestions} className="security-settings-form">
           {[1, 2, 3].map((num) => (
-            <div key={num} style={{ marginBottom: '25px' }}>
-              <label style={{ display: 'block', marginBottom: '10px' }}>Security Question {num}</label>
+            <div key={num} className="security-settings-field">
+              <label className="security-settings-label" htmlFor={`security-question-${num}`}>Security Question {num}</label>
               <select 
+                id={`security-question-${num}`}
                 name={`question${num}`} 
                 value={qData[`question${num}`]} 
                 onChange={handleQuestionChange} 
                 required
-                style={{ width: '100%', backgroundColor: '#4b4b4b', border: 'none', color: 'white', borderRadius: '30px', padding: '12px 20px', marginBottom: '10px', outline: 'none' }}
+                className="security-settings-input"
               >
                 <option value="">Select a question</option>
                 {SECURITY_QUESTIONS.map((q, i) => <option key={i} value={q}>{q}</option>)}
@@ -141,54 +127,57 @@ export default function SecuritySettings() {
                 onChange={handleQuestionChange} 
                 placeholder="Your answer" 
                 required
-                style={{ width: '100%', backgroundColor: '#4b4b4b', border: 'none', color: 'white', borderRadius: '30px', padding: '12px 20px', outline: 'none' }}
+                className="security-settings-input"
+                autoComplete="off"
               />
             </div>
           ))}
 
-          <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
-            <Link to="/dashboard" style={{ flex: 1, textAlign: 'center', backgroundColor: 'transparent', color: '#cfcfcf', border: '1px solid #cfcfcf', borderRadius: '30px', padding: '12px 20px', textDecoration: 'none', transition: '0.3s' }}>
+          <div className="security-settings-actions">
+            <Link to="/dashboard" className="security-settings-remind">
               Remind Me Later
             </Link>
-            <button type="submit" style={{ flex: 1, backgroundColor: '#6b5b95', color: 'white', border: 'none', borderRadius: '30px', padding: '12px 20px', cursor: 'pointer', fontWeight: 'bold' }}>
+            <button type="submit" className="security-settings-submit">
               Save Questions
             </button>
           </div>
         </form>
 
         {/* Danger Zone: Delete Account */}
-        <div style={{ marginTop: '50px', paddingTop: '30px', borderTop: '1px solid #4b4b4b' }}>
-          <h3 style={{ color: '#ff6b6b', marginBottom: '15px' }}>Danger Zone</h3>
-          <p style={{ color: '#cfcfcf', fontSize: '0.9rem', marginBottom: '20px' }}>
+        <div className="security-danger-zone">
+          <h2 className="security-danger-title">Danger Zone</h2>
+          <p className="security-danger-description">
             Once you delete your account, all your data (outfits, feedback, quizzes, and profile) will be permanently removed. This action cannot be undone.
           </p>
 
           {!showDeleteConfirm ? (
             <button 
               onClick={() => setShowDeleteConfirm(true)} 
-              style={{ backgroundColor: 'transparent', color: '#ff6b6b', border: '1px solid #ff6b6b', borderRadius: '30px', padding: '10px 20px', cursor: 'pointer', width: '100%' }}
+              className="security-delete-trigger"
             >
               Delete Account
             </button>
           ) : (
-            <form onSubmit={handleDeleteAccount} style={{ background: 'rgba(255, 107, 107, 0.1)', padding: '20px', borderRadius: '15px', border: '1px solid rgba(255, 107, 107, 0.3)' }}>
-              {deleteError && <div style={{ color: '#ff6b6b', marginBottom: '15px', fontSize: '0.9rem', textAlign: 'center' }}>{deleteError}</div>}
-              <label style={{ display: 'block', marginBottom: '10px', color: '#ff6b6b' }}>Enter password to confirm deletion:</label>
+            <form onSubmit={handleDeleteAccount} className="security-delete-form">
+              {deleteError && <div className="security-delete-error" role="alert">{deleteError}</div>}
+              <label className="security-delete-label" htmlFor="delete-account-password">Enter password to confirm deletion:</label>
               <input 
+                id="delete-account-password"
                 type="password" 
                 value={deletePassword} 
                 onChange={(e) => setDeletePassword(e.target.value)} 
                 required
-                style={{ width: '100%', backgroundColor: '#4b4b4b', border: 'none', color: 'white', borderRadius: '30px', padding: '12px 20px', marginBottom: '15px', outline: 'none' }}
+                className="security-settings-input"
+                autoComplete="current-password"
               />
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button type="button" onClick={() => { setShowDeleteConfirm(false); setDeleteError(''); }} style={{ flex: 1, backgroundColor: '#4b4b4b', color: 'white', border: 'none', borderRadius: '30px', padding: '10px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ flex: 1, backgroundColor: '#ff6b6b', color: 'white', border: 'none', borderRadius: '30px', padding: '10px', cursor: 'pointer', fontWeight: 'bold' }}>Confirm Delete</button>
+              <div className="security-delete-actions">
+                <button type="button" onClick={() => { setShowDeleteConfirm(false); setDeleteError(''); }} className="security-delete-cancel">Cancel</button>
+                <button type="submit" className="security-delete-confirm">Confirm Delete</button>
               </div>
             </form>
           )}
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
