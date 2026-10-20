@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../services/api';
 import '../styles/Dashboard.css';
+import { determineSeason, getUndertonePalette, undertoneDescriptions } from '../data/undertoneAnalysis';
 
 // Importing local quiz asset images for aesthetics
 import acadImg from './quizzes/assets/acad1.jpg';
@@ -39,12 +40,6 @@ const aesthetics = {
   luxurious: { title: "The Luxe Visionary", side1: glamImg, color: "#faca72" }
 };
 
-const palettes = {
-  warm: ["#E69A5B", "#F5C16C", "#D76A03", "#C25B02", "#FFD27F"],
-  cool: ["#5B7BE6", "#A3C1F7", "#7089E3", "#4059C2", "#9EB8FF"],
-  neutral: ["#D7BFAE", "#C1B3A4", "#A8988B", "#8B7C6F", "#BFA98B"]
-};
-
 const styleInfo = {
   minimalist: { name: 'Minimalist Elegance', color: '#c19bfa', text_color: '#ffffff' },
   businesswear: { name: 'Professional Businesswear', color: '#1e3a8a', text_color: '#ffffff' },
@@ -69,43 +64,52 @@ export default function Dashboard() {
   const [saveError, setSaveError] = useState('');
 
   useEffect(() => {
+    let active = true;
     const onboardingData = JSON.parse(localStorage.getItem('celesticare_onboarding') || '{}');
     const token = localStorage.getItem('celesticare_token');
 
-    if (token && onboardingData.zodiac_sign) {
-      API.put('/auth/profile', {
-        name: onboardingData.name || initialUser.current.name,
-        gender: onboardingData.gender || initialUser.current.gender,
-        birthdate: onboardingData.birthdate || initialUser.current.birthdate,
-        zodiac_sign: onboardingData.zodiac_sign,
-        undertone: onboardingData.undertone || initialUser.current.undertone
-      }).then(({ data }) => {
-        const updatedUser = data.user;
-        localStorage.setItem('celesticare_user', JSON.stringify(updatedUser));
-        setUser(updatedUser);
-        localStorage.removeItem('celesticare_onboarding');
-      }).catch((error) => {
-        setSaveError(error.response?.data?.message || 'Unable to save your onboarding profile details.');
-      });
-    }
+    const loadProfile = async () => {
+      if (token && onboardingData.zodiac_sign) {
+        try {
+          const { data } = await API.put('/auth/profile', {
+            name: onboardingData.name || initialUser.current.name,
+            gender: onboardingData.gender || initialUser.current.gender,
+            birthdate: onboardingData.birthdate || initialUser.current.birthdate,
+            zodiac_sign: onboardingData.zodiac_sign,
+            undertone: onboardingData.undertone || initialUser.current.undertone
+          });
+          const updatedUser = data.user;
+          localStorage.setItem('celesticare_user', JSON.stringify(updatedUser));
+          if (active) setUser(updatedUser);
+          localStorage.removeItem('celesticare_onboarding');
+        } catch (error) {
+          if (active) setSaveError(error.response?.data?.message || 'Unable to save your onboarding profile details.');
+        }
+      }
 
-    API.get('/auth/me').then(({ data }) => {
-      const currentUser = data.user;
-      localStorage.setItem('celesticare_user', JSON.stringify(currentUser));
-      setUser(currentUser);
-    }).catch((error) => {
-      setSaveError(error.response?.data?.message || 'Unable to load your profile from the database.');
-    });
+      try {
+        const { data } = await API.get('/auth/me');
+        const currentUser = data.user;
+        localStorage.setItem('celesticare_user', JSON.stringify(currentUser));
+        if (active) setUser(currentUser);
+      } catch (error) {
+        if (active) setSaveError(error.response?.data?.message || 'Unable to load your profile from the database.');
+      }
+    };
+
+    loadProfile();
 
     API.get('/outfits/latest').then(({ data }) => {
-      if (data.success && data.outfit && data.outfit.outfit_data) {
+      if (active && data.success && data.outfit && data.outfit.outfit_data) {
         setLatestOutfitItems(data.outfit.outfit_data);
       }
     }).catch((error) => {
-      if (error.response?.status !== 404) {
+      if (active && error.response?.status !== 404) {
         setSaveError(error.response?.data?.message || 'Unable to load your latest outfit.');
       }
     });
+
+    return () => { active = false; };
   }, []);
 
   const zData = zodiacDetails[user.zodiac_sign] || {
@@ -117,9 +121,11 @@ export default function Dashboard() {
   const hasMissingProfileDetails = !user.name || !user.gender || !user.birthdate || !user.zodiac_sign;
 
   // Robust check: Inspect both user database record and temporary onboarding local storage for an undertone choice
-  const savedUndertone = user.undertone && user.undertone !== 'Not set' ? user.undertone : '';
+  const savedUndertone = user.undertone && user.undertone !== 'Not set' ? String(user.undertone).toLowerCase() : '';
   const savedZodiac = user.zodiac_sign || '';
   const hasUserUndertone = Boolean(savedUndertone);
+  const savedPalette = getUndertonePalette(savedZodiac, savedUndertone);
+  const savedSeason = determineSeason(savedZodiac, savedUndertone);
   const undertoneLinkTarget = hasUserUndertone ? '/undertone-result' : '/undertone-test';
 
   return (
@@ -199,16 +205,23 @@ export default function Dashboard() {
                 <div className="dashboard-color-content">
                   <div className="mb-3">
                     <p className="mb-1"><strong>Zodiac:</strong> {savedZodiac || 'Not set'}</p>
-                    <p className="mb-1"><strong>Undertone:</strong> {savedUndertone}</p>
+                    <p className="mb-1"><strong>Undertone:</strong> <span style={{ textTransform: 'capitalize' }}>{savedUndertone}</span></p>
+                    <p className="mb-1"><strong>Your Season:</strong> {savedSeason}</p>
                   </div>
                   <div className="dashboard-color-visual mb-3">
-                    <img src={assetUrl(`/src/pages/undertone/assets/${savedUndertone.toLowerCase()}_wheel.png`)} alt="Undertone wheel" className="undertoneresult-wheel" />
+                    <img src={assetUrl(`/src/pages/undertone/assets/${savedUndertone}_wheel.png`)} alt={`${savedUndertone} undertone color wheel`} className="undertoneresult-wheel" />
                   </div>
                   <div className="dashboard-color-palette mb-3">
-                    {(palettes[savedUndertone] || []).map((color, i) => (
+                    {savedPalette.map((color, i) => (
                       <div key={i} className="dashboard-color-swatch d-inline-block" style={{ background: color }}></div>
                     ))}
                   </div>
+                  <p className="dashboard-undertone-description">
+                    {undertoneDescriptions[savedUndertone] || 'Discover your unique color palette!'}
+                  </p>
+                  <p className="dashboard-undertone-description">
+                    These colors complement your undertone perfectly and can enhance your natural glow.
+                  </p>
                   <Link to={undertoneLinkTarget} className="dashboard-btn-style">View Full Analysis</Link>
                 </div>
               ) : (

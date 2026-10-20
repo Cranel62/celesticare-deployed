@@ -9,17 +9,26 @@ export default function UndertoneTest() {
   const [loading, setLoading] = useState(false);
 
   const handleSelection = async (tone) => {
-    setLoading(true);
-    
-    // Retrieve existing onboarding or user data from localStorage
     const onboardingData = JSON.parse(localStorage.getItem('celesticare_onboarding') || '{}');
+    const currentUser = JSON.parse(localStorage.getItem('celesticare_user') || '{}');
+    const zodiacSign = onboardingData.zodiac_sign || currentUser.zodiac_sign;
+
+    // The original flow requires a zodiac sign before saving color analysis.
+    if (!zodiacSign) {
+      navigate('/zodiac-result');
+      return;
+    }
+
+    if (!['cool', 'neutral', 'warm'].includes(tone)) return;
+    setLoading(true);
+    onboardingData.zodiac_sign = zodiacSign;
     onboardingData.undertone = tone;
     localStorage.setItem('celesticare_onboarding', JSON.stringify(onboardingData));
 
     // Also update current user object in localStorage if present so data is complete instantly
-    const currentUser = JSON.parse(localStorage.getItem('celesticare_user') || '{}');
     if (currentUser && Object.keys(currentUser).length > 0) {
       currentUser.undertone = tone;
+      currentUser.zodiac_sign = zodiacSign;
       localStorage.setItem('celesticare_user', JSON.stringify(currentUser));
     }
 
@@ -27,7 +36,7 @@ export default function UndertoneTest() {
       if (localStorage.getItem('celesticare_token')) {
         const { data: response } = await API.put('/auth/update-undertone', {
           undertone: tone,
-          zodiac_sign: onboardingData.zodiac_sign || currentUser.zodiac_sign
+          zodiac_sign: zodiacSign
         });
         localStorage.setItem('celesticare_user', JSON.stringify(response.user));
       }
