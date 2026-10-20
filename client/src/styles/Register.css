@@ -4,8 +4,8 @@
 
 .register-body {
   margin: 0;
-  min-height: calc(100svh - var(--app-navbar-height, 76px));
-  height: calc(100svh - var(--app-navbar-height, 76px));
+  min-height: calc(100vh - var(--app-navbar-height, 76px));
+  height: calc(100dvh - var(--app-navbar-height, 76px));
   background: linear-gradient(to bottom, #090614 0%, #1e173d 35%, #422d6b 70%, #765a96 100%);
   display: flex;
   align-items: center;
