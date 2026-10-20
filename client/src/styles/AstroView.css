@@ -204,8 +204,97 @@
 .astroview-cta:hover { transform: translateY(-1px); opacity: 0.9; color: #fff; }
 
 @media (max-width: 768px) {
-  .astroview-arrow { display: none; }
-  .astroview-main h2 { margin-bottom: 30px; font-size: 2rem; }
-  .astroview-sign-card { padding: 30px; }
-  .astroview-sign-title { font-size: 42px; }
+  .astroview-body {
+    background-attachment: scroll;
+    min-height: calc(100dvh - var(--app-navbar-height, 64px));
+    overflow-x: clip;
+  }
+
+  .astroview-page-overlay { min-height: calc(100dvh - var(--app-navbar-height, 64px)); }
+
+  .astroview-main {
+    align-content: center;
+    column-gap: 8px;
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) 38px;
+    margin-top: 0;
+    min-height: calc(100dvh - var(--app-navbar-height, 64px));
+    padding: 24px 12px 32px;
+    row-gap: 20px;
+  }
+
+  .astroview-main h2 {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    grid-column: 1 / -1;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .astroview-arrow {
+    align-self: center;
+    display: flex;
+    font-size: 28px;
+    height: 38px;
+    justify-self: center;
+    position: static;
+    transform: none;
+    width: 38px;
+  }
+
+  .astroview-arrow.astroview-left { grid-column: 1; grid-row: 2; }
+  .astroview-arrow.astroview-right { grid-column: 3; grid-row: 2; }
+  .astroview-arrow:hover { transform: scale(1.05); }
+
+  .astroview-diamond-container {
+    align-items: stretch;
+    display: grid;
+    gap: clamp(4px, 1.5vw, 10px);
+    grid-column: 2;
+    grid-row: 2;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-width: 0;
+    width: 100%;
+  }
+
+  .astroview-diamond-wrapper { min-width: 0; }
+  .astroview-diamond-images {
+    height: clamp(150px, 42vw, 230px);
+    width: 100%;
+  }
+
+  .astroview-zodiac-icon {
+    height: 100%;
+    opacity: 0.78;
+    width: 100%;
+  }
+
+  .astroview-sign-name {
+    font-size: clamp(0.62rem, 2.6vw, 0.82rem);
+    letter-spacing: 0.02em;
+    opacity: 1;
+    overflow-wrap: anywhere;
+    padding: 0 2px;
+  }
+
+  .astroview-sign-page {
+    align-items: flex-start;
+    min-height: calc(100dvh - var(--app-navbar-height, 64px));
+    padding: 24px 14px 32px;
+  }
+
+  .astroview-sign-card {
+    border-radius: 22px;
+    max-width: 620px;
+    padding: clamp(20px, 5vw, 30px);
+    width: 100%;
+  }
+
+  .astroview-sign-title { font-size: clamp(2.2rem, 11vw, 3rem); }
+  .astroview-sign-tagline { font-size: clamp(1.05rem, 5vw, 1.35rem); }
+  .astroview-sign-dates { font-size: 0.95rem; margin-bottom: 20px; }
+  .astroview-sign-section { margin: 18px 0; }
+  .astroview-sign-section h3 { font-size: 1.2rem; }
+  .astroview-sign-section p { font-size: 0.98rem; line-height: 1.6; }
+  .astroview-sign-actions { margin-top: 24px; }
+  .astroview-cta { box-sizing: border-box; padding: 13px 18px; text-align: center; width: 100%; }
 }
