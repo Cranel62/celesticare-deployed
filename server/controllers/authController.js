@@ -390,9 +390,8 @@ exports.resetPasswordWithSecurityQuestions = async (req, res, next) => {
 exports.requestPasswordResetCode = async (req, res, next) => {
   try {
     const accountEmail = String(req.body.accountEmail || req.body.email || '').trim().toLowerCase();
-    const deliveryEmail = String(req.body.deliveryEmail || accountEmail).trim().toLowerCase();
-    if (!/^\S+@\S+\.\S+$/.test(accountEmail) || !/^\S+@\S+\.\S+$/.test(deliveryEmail)) {
-      return res.status(400).json({ success: false, message: 'Enter valid account and delivery email addresses.' });
+    if (!/^\S+@\S+\.\S+$/.test(accountEmail)) {
+      return res.status(400).json({ success: false, message: 'Enter a valid account email address.' });
     }
     const user = await User.findOne({ email: accountEmail });
     if (!user || !user.isVerified) {
@@ -403,7 +402,7 @@ exports.requestPasswordResetCode = async (req, res, next) => {
     user.passwordResetTokenExpires = Date.now() + 15 * 60 * 1000;
     await user.save({ validateBeforeSave: false });
     await sendEmail({
-      email: deliveryEmail,
+      email: accountEmail,
       subject: 'CelestiCare Password Reset Code',
       html: `<h3>Password reset request</h3><p>Your CelestiCare verification code is:</p><h2>${code}</h2><p>This code expires in 15 minutes. If you did not request this, ignore this email.</p>`,
       text: `Your CelestiCare password reset code is ${code}. It expires in 15 minutes.`,

@@ -5,24 +5,27 @@ import '../styles/ForgotPassword.css';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
-  const [deliveryEmail, setDeliveryEmail] = useState('');
-  const [useAlternativeEmail, setUseAlternativeEmail] = useState(false);
   const [resetCode, setResetCode] = useState('');
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [showAlternativeEmail, setShowAlternativeEmail] = useState(false);
+  const [canUseEmailRecovery, setCanUseEmailRecovery] = useState(false);
   const passwordRule = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 
   const handleLookup = async (event) => {
     event.preventDefault();
     setError('');
     setMessage('');
+    setCanUseEmailRecovery(false);
+    setShowAlternativeEmail(false);
     setLoading(true);
 
     try {
@@ -31,9 +34,9 @@ export default function ForgotPassword() {
       setAnswers((data.questions || []).map(() => ''));
       setShowAlternativeEmail(false);
       setIsVerified(true);
-    } catch (requestError) {
-      setError(requestError.response?.data?.message || 'Unable to start password recovery. Please try again.');
-      setShowAlternativeEmail(true);
+    } catch {
+      setError('Security questions may not be set up for this account, or the email may not be verified. Try email verification instead.');
+      setCanUseEmailRecovery(true);
     } finally {
       setLoading(false);
     }
@@ -47,12 +50,12 @@ export default function ForgotPassword() {
     try {
       const { data } = await API.post('/auth/forgot-password/request-code', {
         accountEmail: email,
-        deliveryEmail: useAlternativeEmail ? deliveryEmail : email,
       });
       setQuestions([]);
       setAnswers([]);
       setResetCode('');
       setShowAlternativeEmail(false);
+      setCanUseEmailRecovery(false);
       setIsVerified(true);
       setMessage(data.message || 'A verification code was sent to your email.');
     } catch (requestError) {
@@ -92,6 +95,7 @@ export default function ForgotPassword() {
       setConfirmPassword('');
       setResetCode('');
       setShowAlternativeEmail(false);
+      setCanUseEmailRecovery(false);
       setIsVerified(false);
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Unable to reset your password. Check your answers and try again.');
@@ -100,12 +104,26 @@ export default function ForgotPassword() {
     }
   };
 
+  const emailRecoveryPanel = showAlternativeEmail && (
+    <div className="forgot-password-alternative">
+      <p className="forgot-password-alternative-title">Send a reset code to your registered account email:</p>
+      <p className="forgot-password-registered-email">{email}</p>
+      <p className="forgot-password-code-note">The six-digit code expires after 15 minutes.</p>
+      <button className="forgot-password-submit" type="button" onClick={handleRequestCode} disabled={loading}>
+        {loading ? 'Sending verification code...' : 'Send verification code'}
+      </button>
+      <button className="forgot-password-back" type="button" onClick={() => setShowAlternativeEmail(false)}>
+        Back
+      </button>
+    </div>
+  );
+
   return (
     <main className="forgot-password-body">
       <section className="forgot-password-card">
         <h1><i className="fas fa-shield-alt" aria-hidden="true"></i> Reset Your Password</h1>
         <div className="forgot-password-notice">
-          Verify your account with a Brevo email verification code. The code expires after 15 minutes.
+          Recover your account with your security answers or a verification code sent to your registered email.
         </div>
 
         {message && <div className="forgot-password-success" role="status">{message}</div>}
@@ -120,30 +138,24 @@ export default function ForgotPassword() {
               type="email"
               autoComplete="email"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setCanUseEmailRecovery(false);
+                setShowAlternativeEmail(false);
+                setError('');
+              }}
               placeholder="Enter the email on your account"
               required
             />
             <button className="forgot-password-submit" type="submit" disabled={loading}>
               {loading ? 'Loading security questions...' : 'Answer security questions'}
             </button>
-            {showAlternativeEmail && (
-              <div className="forgot-password-alternative">
-                <p className="forgot-password-alternative-title">Forgot your security answers?</p>
-                <label className="forgot-password-label" htmlFor="delivery-email">Gmail or email to receive the verification code</label>
-                <input id="delivery-email" className="forgot-password-input" type="email" value={deliveryEmail} onChange={(event) => setDeliveryEmail(event.target.value)} placeholder={email} required={showAlternativeEmail} />
-                <button className="forgot-password-back" type="button" onClick={() => setUseAlternativeEmail((value) => {
-                  const nextValue = !value;
-                  if (nextValue) setDeliveryEmail(email);
-                  return nextValue;
-                })}>
-                  {useAlternativeEmail ? 'Use account email' : 'Use a different email address'}
-                </button>
-                <button className="forgot-password-submit" type="button" onClick={handleRequestCode} disabled={loading}>
-                  {loading ? 'Sending verification...' : 'Send verification'}
-                </button>
-              </div>
+            {canUseEmailRecovery && !showAlternativeEmail && (
+              <button className="forgot-password-back" type="button" onClick={() => setShowAlternativeEmail(true)}>
+                Try another way
+              </button>
             )}
+            {emailRecoveryPanel}
           </form>
         ) : (
           <form onSubmit={handleReset}>
@@ -171,31 +183,47 @@ export default function ForgotPassword() {
                 />
               </div>
             ))}
+            {questions.length > 0 && !showAlternativeEmail && (
+              <button className="forgot-password-back" type="button" onClick={() => setShowAlternativeEmail(true)}>
+                Try another way
+              </button>
+            )}
+            {emailRecoveryPanel}
             <div className="forgot-password-field">
               <label className="forgot-password-label" htmlFor="new-password">New password</label>
-              <input
-                id="new-password"
-                className="forgot-password-input"
-                type="password"
-                autoComplete="new-password"
-                minLength={8}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-              />
+              <div className="forgot-password-password-control">
+                <input
+                  id="new-password"
+                  className="forgot-password-input"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  minLength={8}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
+                />
+                <button className="forgot-password-password-toggle" type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide new password' : 'Show new password'}>
+                  <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true"></i>
+                </button>
+              </div>
             </div>
             <div className="forgot-password-field">
               <label className="forgot-password-label" htmlFor="confirm-new-password">Confirm new password</label>
-              <input
-                id="confirm-new-password"
-                className="forgot-password-input"
-                type="password"
-                autoComplete="new-password"
-                minLength={8}
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                required
-              />
+              <div className="forgot-password-password-control">
+                <input
+                  id="confirm-new-password"
+                  className="forgot-password-input"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  minLength={8}
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  required
+                />
+                <button className="forgot-password-password-toggle" type="button" onClick={() => setShowConfirmPassword((visible) => !visible)} aria-label={showConfirmPassword ? 'Hide confirmation password' : 'Show confirmation password'}>
+                  <i className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true"></i>
+                </button>
+              </div>
               {confirmPassword && <small>{password === confirmPassword ? 'Passwords match.' : 'Passwords do not match.'}</small>}
             </div>
             <button className="forgot-password-submit" type="submit" disabled={loading}>
@@ -205,30 +233,11 @@ export default function ForgotPassword() {
               className="forgot-password-back"
               type="button"
               onClick={() => {
-                setDeliveryEmail(email);
-                setShowAlternativeEmail((value) => !value);
-              }}
-            >
-              {showAlternativeEmail ? 'Hide email verification' : 'Try another way'}
-            </button>
-            {showAlternativeEmail && (
-              <div className="forgot-password-alternative">
-                <p className="forgot-password-alternative-title">Forgot the security answers you set up?</p>
-                <label className="forgot-password-label" htmlFor="delivery-email">Gmail or email to receive the verification code</label>
-                <input id="delivery-email" className="forgot-password-input" type="email" value={deliveryEmail} onChange={(event) => setDeliveryEmail(event.target.value)} placeholder={email} required />
-                <button className="forgot-password-submit" type="button" onClick={handleRequestCode} disabled={loading}>
-                  {loading ? 'Sending verification...' : 'Send verification'}
-                </button>
-              </div>
-            )}
-            <button
-              className="forgot-password-back"
-              type="button"
-              onClick={() => {
                 setIsVerified(false);
                 setQuestions([]);
                 setAnswers([]);
                 setShowAlternativeEmail(false);
+                setCanUseEmailRecovery(false);
                 setError('');
               }}
             >
