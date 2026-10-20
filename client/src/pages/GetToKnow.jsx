@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/GetToKnow.css';
 
 export default function GetToKnow() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: '', birthdate: '', gender: '' });
+  const birthdateInputRef = useRef(null);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -22,9 +23,36 @@ export default function GetToKnow() {
     setFormData({ name: '', birthdate: '', gender: '' });
   }, [navigate]);
 
-  const calculateZodiac = (dateStr) => {
-    const d = new Date(dateStr);
-    const m = d.getMonth() + 1, day = d.getDate();
+  const formatBirthdateInput = (value) => {
+    const digits = value.replace(/\D/g, '').slice(0, 8);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+  };
+
+  const parseBirthdate = (value) => {
+    const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+    if (!match) return null;
+
+    const month = Number(match[1]);
+    const day = Number(match[2]);
+    const year = Number(match[3]);
+    const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const today = new Date();
+
+    if (year < 1 || month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) return null;
+    if (year > today.getFullYear() || (year === today.getFullYear() && (month > today.getMonth() + 1 || (month === today.getMonth() + 1 && day > today.getDate())))) return null;
+
+    return {
+      month,
+      day,
+      isoDate: `${match[3]}-${match[1]}-${match[2]}`
+    };
+  };
+
+  const calculateZodiac = (month, day) => {
+    const m = month;
     if ((m === 3 && day >= 21) || (m === 4 && day <= 19)) return 'Aries';
     if ((m === 4 && day >= 20) || (m === 5 && day <= 20)) return 'Taurus';
     if ((m === 5 && day >= 21) || (m === 6 && day <= 20)) return 'Gemini';
@@ -41,8 +69,15 @@ export default function GetToKnow() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const sign = calculateZodiac(formData.birthdate);
-    localStorage.setItem('celesticare_onboarding', JSON.stringify({ ...formData, zodiac_sign: sign }));
+    const parsedBirthdate = parseBirthdate(formData.birthdate);
+    if (!parsedBirthdate) {
+      birthdateInputRef.current?.setCustomValidity('Enter a valid date in MM/DD/YYYY format.');
+      birthdateInputRef.current?.reportValidity();
+      return;
+    }
+
+    const sign = calculateZodiac(parsedBirthdate.month, parsedBirthdate.day);
+    localStorage.setItem('celesticare_onboarding', JSON.stringify({ ...formData, birthdate: parsedBirthdate.isoDate, zodiac_sign: sign }));
     navigate('/zodiac-result');
   };
 
@@ -62,11 +97,22 @@ export default function GetToKnow() {
             onChange={e => setFormData({...formData, name: e.target.value})} 
           />
           <input 
-            type="date" 
+            ref={birthdateInputRef}
+            type="text"
             className="form-control gettoknow-input" 
+            placeholder="MM/DD/YYYY"
+            aria-label="Birth date (MM/DD/YYYY)"
+            autoComplete="bday"
+            inputMode="numeric"
+            maxLength={10}
+            pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}"
+            title="Enter your birth date as MM/DD/YYYY"
             value={formData.birthdate}
             required 
-            onChange={e => setFormData({...formData, birthdate: e.target.value})} 
+            onChange={e => {
+              birthdateInputRef.current?.setCustomValidity('');
+              setFormData({ ...formData, birthdate: formatBirthdateInput(e.target.value) });
+            }}
           />
           <select 
             className="form-control gettoknow-input" 
