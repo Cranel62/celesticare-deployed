@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
 import '../styles/SecuritySettings.css';
@@ -33,6 +33,8 @@ export default function SecuritySettings() {
   const [deletePassword, setDeletePassword] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+  const [deletePending, setDeletePending] = useState(false);
+  const [deleteCountdown, setDeleteCountdown] = useState(0);
 
   useEffect(() => {
     API.get('/auth/me').then(({ data }) => {
@@ -65,7 +67,36 @@ export default function SecuritySettings() {
     }
   };
 
-  const handleDeleteAccount = async (e) => {
+  const finalizeDeleteAccount = useCallback(async () => {
+    try {
+      const res = await API.post('/auth/delete-account', { password: deletePassword });
+
+      if (res.data.success) {
+        localStorage.removeItem('celesticare_token');
+        localStorage.removeItem('celesticare_user');
+        window.dispatchEvent(new Event('celesticare-auth-changed'));
+        navigate('/', { replace: true });
+      }
+    } catch (err) {
+      setDeletePending(false);
+      setDeleteCountdown(0);
+      setDeleteError(err.response?.data?.message || 'Password is incorrect or an error occurred.');
+    }
+  }, [deletePassword, navigate]);
+
+  useEffect(() => {
+    if (!deletePending) return undefined;
+
+    if (deleteCountdown === 0) {
+      const timer = window.setTimeout(finalizeDeleteAccount, 0);
+      return () => window.clearTimeout(timer);
+    }
+
+    const timer = window.setTimeout(() => setDeleteCountdown((countdown) => countdown - 1), 1000);
+    return () => window.clearTimeout(timer);
+  }, [deletePending, deleteCountdown, finalizeDeleteAccount]);
+
+  const handleDeleteAccount = (e) => {
     e.preventDefault();
     setDeleteError('');
 
@@ -74,16 +105,15 @@ export default function SecuritySettings() {
       return;
     }
 
-    try {
-      const res = await API.post('/auth/delete-account', { password: deletePassword });
+    setDeletePending(true);
+    setDeleteCountdown(10);
+  };
 
-      if (res.data.success) {
-        localStorage.clear(); // Clears session mirroring logout.php & check_session.php
-        navigate('/');
-      }
-    } catch (err) {
-      setDeleteError(err.response?.data?.message || 'Password is incorrect or an error occurred.');
-    }
+  const handleCancelDeletion = () => {
+    setDeletePending(false);
+    setDeleteCountdown(0);
+    setDeletePassword('');
+    setDeleteError('Account deletion cancelled.');
   };
 
   return (
@@ -157,6 +187,15 @@ export default function SecuritySettings() {
             >
               Delete Account
             </button>
+          ) : deletePending ? (
+            <div className="security-delete-form" role="alert" aria-live="assertive">
+              <p className="security-delete-countdown">
+                Your account will be permanently deleted in <strong>{deleteCountdown} seconds</strong>.
+              </p>
+              <button type="button" onClick={handleCancelDeletion} className="security-delete-cancel">
+                Cancel Deletion
+              </button>
+            </div>
           ) : (
             <form onSubmit={handleDeleteAccount} className="security-delete-form">
               {deleteError && <div className="security-delete-error" role="alert">{deleteError}</div>}

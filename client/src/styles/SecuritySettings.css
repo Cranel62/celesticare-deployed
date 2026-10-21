@@ -220,6 +220,7 @@ select.security-settings-input { cursor: pointer; }
 .security-delete-actions { margin-top: 14px; }
 .security-delete-cancel { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); color: #eee7f5; }
 .security-delete-confirm { background: linear-gradient(135deg, #dc3545, #a91f31); border: 0; color: #ffffff; }
+.security-delete-countdown { color: #ffd7d7; line-height: 1.6; margin: 0; text-align: center; }
 
 @media (min-width: 992px) {
   .security-settings-card { margin-block: 100px; }
