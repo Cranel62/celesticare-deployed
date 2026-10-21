@@ -17,16 +17,6 @@ export default function EditUser() {
       });
   }, [id, navigate]);
 
-  const handleResetPassword = async () => {
-    if (!window.confirm(`Generate a temporary password for ${user.username}?`)) return;
-    try {
-      const res = await API.post(`/admin/users/${id}/reset-password`);
-      alert(`Temporary password: ${res.data.temporaryPassword}`);
-    } catch {
-      alert('Failed to reset password.');
-    }
-  };
-
   if (!user) return <div className="admin-body">Loading...</div>;
 
   return (
@@ -53,7 +43,6 @@ export default function EditUser() {
                 <div className="admin-view-field">{user.email}</div>
               </div>
             </div>
-            <button className="admin-btn admin-btn-warning" style={{ width: '100%', marginTop: '20px', padding: '12px' }} onClick={handleResetPassword}>Generate Temporary Password</button>
           </div>
 
           <div>

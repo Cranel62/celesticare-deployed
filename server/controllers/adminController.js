@@ -1,6 +1,6 @@
-const crypto = require('crypto');
 const User = require('../models/User');
 const UserFeedback = require('../models/UserFeedback');
+const sendEmail = require('../utils/sendEmail');
 
 const findManagedUser = (id) => User.findOne({
   _id: id,
@@ -85,35 +85,51 @@ exports.restoreUser = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   try {
-    const user = await User.findOneAndDelete({
+    const user = await User.findOne({
       _id: req.params.id,
       role: { $ne: 'admin' },
       is_admin: { $ne: true },
       deletedAt: { $ne: null },
-    });
+    }).select('email isVerified');
 
     if (!user) {
       return res.status(404).json({ success: false, message: 'Archived user not found.' });
     }
 
-    res.status(200).json({ success: true, message: 'User permanently deleted.' });
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.resetUserPassword = async (req, res, next) => {
-  try {
-    const user = await findManagedUser(req.params.id);
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found.' });
+    if (!user.isVerified || !user.email) {
+      return res.status(400).json({
+        success: false,
+        message: 'This user does not have a verified email address, so the account was not deleted.',
+      });
     }
 
-    const temporaryPassword = crypto.randomBytes(12).toString('base64url');
-    user.password = temporaryPassword;
-    user.isVerified = true;
-    await user.save();
-    res.status(200).json({ success: true, temporaryPassword });
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'Your CelestiCare account has been deleted',
+        html: '<p>Your CelestiCare account has been permanently deleted by an administrator.</p>',
+        text: 'Your CelestiCare account has been permanently deleted by an administrator.',
+      });
+    } catch (emailError) {
+      console.error('[Admin] Failed to send account deletion email:', emailError);
+      return res.status(502).json({
+        success: false,
+        message: 'The deletion notice could not be sent, so the user was not deleted. Please try again.',
+      });
+    }
+
+    const deletedUser = await User.findOneAndDelete({
+      _id: user._id,
+      role: { $ne: 'admin' },
+      is_admin: { $ne: true },
+      deletedAt: { $ne: null },
+    });
+
+    if (!deletedUser) {
+      return res.status(404).json({ success: false, message: 'Archived user not found.' });
+    }
+
+    res.status(200).json({ success: true, message: 'User permanently deleted.' });
   } catch (error) {
     next(error);
   }
