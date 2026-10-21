@@ -4,6 +4,7 @@ import API from '../../services/api';
 import '../../styles/StyleQuiz.css';
 import { CLOTHING_SETS, getOutfitAnalysis } from '../../data/clothingSets';
 import { assetUrl } from '../../utils/assetUrls';
+import AppModal from '../../components/AppModal';
 
 const LIMITS = { tops: 2, bottoms: 2, shoes: 1, accessories: 4, dresses: 1 };
 
@@ -52,6 +53,7 @@ export default function StyleQuiz() {
   const [droppedItems, setDroppedItems] = useState([]);
   const [expandedCategory, setExpandedCategory] = useState('tops');
   const [itemToRemove, setItemToRemove] = useState(null);
+  const [alertMessage, setAlertMessage] = useState('');
   const nextItemId = useRef(0);
 
   const handleDragStart = (e, item, category) => {
@@ -83,7 +85,7 @@ export default function StyleQuiz() {
     const categoryCount = droppedItems.filter(i => i.category === data.category).length;
     
     if (categoryCount >= LIMITS[data.category]) {
-      alert(`You can only add ${LIMITS[data.category]} ${data.category}`);
+      setAlertMessage(`You can only add ${LIMITS[data.category]} ${data.category}`);
       return;
     }
 
@@ -93,7 +95,7 @@ export default function StyleQuiz() {
   const handleItemClick = (item, category) => {
     const categoryCount = droppedItems.filter(i => i.category === category).length;
     if (categoryCount >= LIMITS[category]) {
-      alert(`You can only add ${LIMITS[category]} ${category}`);
+      setAlertMessage(`You can only add ${LIMITS[category]} ${category}`);
       return;
     }
 
@@ -119,7 +121,10 @@ export default function StyleQuiz() {
   };
 
   const finishQuiz = async () => {
-    if (droppedItems.length === 0) return alert("Try dressing your mannequin first!");
+    if (droppedItems.length === 0) {
+      setAlertMessage('Try dressing your mannequin first!');
+      return;
+    }
 
     const analysis = getOutfitAnalysis(droppedItems);
     const topStyle = analysis.style;
@@ -138,7 +143,7 @@ export default function StyleQuiz() {
       navigate(`/style-result`);
     } catch (error) {
       console.error("Save failed:", error);
-      alert("Failed to save outfit.");
+      setAlertMessage('Failed to save outfit.');
     }
   };
 
@@ -244,6 +249,13 @@ export default function StyleQuiz() {
             </div>
           </div>
         </div>
+      )}
+      {alertMessage && (
+        <AppModal
+          title="Style quiz"
+          message={alertMessage}
+          onClose={() => setAlertMessage('')}
+        />
       )}
     </div>
   );

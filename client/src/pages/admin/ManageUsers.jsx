@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../../services/api';
+import AppModal from '../../components/AppModal';
 import '../../styles/Admin.css';
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState('active');
+  const [pendingAction, setPendingAction] = useState(null);
+  const [modal, setModal] = useState(null);
   const adminEmail = JSON.parse(localStorage.getItem('celesticare_user') || '{}').email;
 
   const fetchUsers = async () => {
@@ -25,14 +28,11 @@ export default function ManageUsers() {
     return () => { active = false; };
   }, []);
 
-  const handleAction = async (action, userId, username) => {
-    const messages = {
-      archive: `Archive ${username}? They can be restored later.`,
-      restore: `Restore ${username}? They will be able to log in again.`,
-      delete: `Permanently delete ${username}? This CANNOT be undone!`
-    };
-    if (!window.confirm(messages[action])) return;
-
+  const handleAction = async () => {
+    if (!pendingAction) return;
+    const { action, userId } = pendingAction;
+    setModal(null);
+    setPendingAction(null);
     try {
       if (action === 'delete') {
         await API.delete(`/admin/users/${userId}`);
@@ -41,8 +41,29 @@ export default function ManageUsers() {
       }
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.message || `Failed to ${action} user`);
+      setModal({
+        title: 'Action failed',
+        message: err.response?.data?.message || `Failed to ${action} user`,
+        isDanger: true,
+      });
     }
+  };
+
+  const requestAction = (action, userId, username) => {
+    const messages = {
+      archive: `Archive ${username}? They can be restored later.`,
+      restore: `Restore ${username}? They will be able to log in again.`,
+      delete: `Permanently delete ${username}? This CANNOT be undone!`,
+    };
+    const label = action[0].toUpperCase() + action.slice(1);
+    setPendingAction({ action, userId });
+    setModal({
+      title: action === 'delete' ? 'Delete user permanently?' : `${label} user?`,
+      message: messages[action],
+      confirmLabel: action === 'delete' ? 'Delete permanently' : label,
+      isDanger: action === 'delete',
+      onConfirm: true,
+    });
   };
 
   const activeCount = users.filter(u => !u.deletedAt).length;
@@ -100,14 +121,14 @@ export default function ManageUsers() {
                     {user.deletedAt ? (
                       <>
                         {user.feedbackCount > 0 && <Link to={`/admin/user/${user._id}`} className="admin-btn admin-btn-info" style={{ textDecoration: 'none' }}>Feedback</Link>}
-                        <button className="admin-btn admin-btn-success" onClick={() => handleAction('restore', user._id, user.username)}>Restore</button>
-                        {user.role !== 'admin' && <button className="admin-btn admin-btn-danger" onClick={() => handleAction('delete', user._id, user.username)}>Delete</button>}
+                        <button className="admin-btn admin-btn-success" onClick={() => requestAction('restore', user._id, user.username)}>Restore</button>
+                        {user.role !== 'admin' && <button className="admin-btn admin-btn-danger" onClick={() => requestAction('delete', user._id, user.username)}>Delete</button>}
                       </>
                     ) : (
                       <>
                         {user.role !== 'admin' && <Link to={`/admin/user/${user._id}`} className="admin-btn admin-btn-warning" style={{ textDecoration: 'none' }}>View</Link>}
                         {user.feedbackCount > 0 && <Link to={`/admin/user/${user._id}`} className="admin-btn admin-btn-info" style={{ textDecoration: 'none' }}>Feedback</Link>}
-                        {user.role !== 'admin' && <button className="admin-btn admin-btn-danger" onClick={() => handleAction('archive', user._id, user.username)}>Archive</button>}
+                        {user.role !== 'admin' && <button className="admin-btn admin-btn-danger" onClick={() => requestAction('archive', user._id, user.username)}>Archive</button>}
                       </>
                     )}
                   </td>
@@ -118,6 +139,19 @@ export default function ManageUsers() {
         </div>
 
       </div>
+      {modal && (
+        <AppModal
+          title={modal.title}
+          message={modal.message}
+          confirmLabel={modal.confirmLabel}
+          isDanger={modal.isDanger}
+          onConfirm={modal.onConfirm ? handleAction : undefined}
+          onClose={() => {
+            setModal(null);
+            setPendingAction(null);
+          }}
+        />
+      )}
     </div>
   );
 }

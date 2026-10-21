@@ -1,23 +1,37 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import API from '../../services/api'; // Changed from ../../../
+import AppModal from '../../components/AppModal';
 import '../../styles/Admin.css';       // Changed from ../../../
 
 export default function EditUser() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [userLoadFailed, setUserLoadFailed] = useState(false);
 
   useEffect(() => {
     API.get(`/admin/users/${id}`)
       .then(res => setUser(res.data.data))
       .catch(() => {
-        alert('User not found or is an admin.');
-        navigate('/admin/dashboard');
+        setUserLoadFailed(true);
       });
   }, [id, navigate]);
 
-  if (!user) return <div className="admin-body">Loading...</div>;
+  if (!user) {
+    return (
+      <>
+        <div className="admin-body">{userLoadFailed ? 'Unable to load user.' : 'Loading...'}</div>
+        {userLoadFailed && (
+          <AppModal
+            title="Unable to view user"
+            message="User not found or is an admin."
+            onClose={() => navigate('/admin/dashboard')}
+          />
+        )}
+      </>
+    );
+  }
 
   return (
     <div className="admin-body">

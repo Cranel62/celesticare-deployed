@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import { assetUrl } from '../utils/assetUrls';
+import AppModal from '../components/AppModal';
 import '../styles/Undertone.css';
 
 export default function UndertoneTest() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSelection = async (tone) => {
     const onboardingData = JSON.parse(localStorage.getItem('celesticare_onboarding') || '{}');
@@ -49,7 +51,7 @@ export default function UndertoneTest() {
 
     } catch (error) {
       setLoading(false);
-      alert(error.response?.data?.message || 'Unable to save your color analysis. Please try again.');
+      setErrorMessage(error.response?.data?.message || 'Unable to save your color analysis. Please try again.');
     }
   };
 
@@ -87,6 +89,13 @@ export default function UndertoneTest() {
             <p>Analyzing your undertone and finalizing your results...</p>
           </div>
         </div>
+      )}
+      {errorMessage && (
+        <AppModal
+          title="Unable to save"
+          message={errorMessage}
+          onClose={() => setErrorMessage('')}
+        />
       )}
     </div>
   );

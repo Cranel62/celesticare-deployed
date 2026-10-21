@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import API from '../../services/api';
 import '../../styles/StyleResult.css';
 import { getOutfitAnalysis } from '../../data/clothingSets';
+import AppModal from '../../components/AppModal';
 
 export default function StyleResult() {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ export default function StyleResult() {
   const [outfitDescription, setOutfitDescription] = useState('');
   const [outfitPieces, setOutfitPieces] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     const fetchOutfit = async () => {
@@ -34,7 +37,7 @@ export default function StyleResult() {
   }, [navigate]);
 
   const handleDeleteOutfit = async () => {
-    if (!window.confirm("Are you sure you want to delete your existing outfit? This will reset your style result.")) return;
+    setShowDeleteConfirm(false);
     setIsDeleting(true);
     try {
       await API.delete('/outfits/latest');
@@ -51,7 +54,7 @@ export default function StyleResult() {
       }
     } catch (err) {
       console.error('Failed to delete outfit:', err);
-      alert('Unable to delete your outfit. Please try again.');
+      setDeleteError('Unable to delete your outfit. Please try again.');
       setIsDeleting(false);
     }
   };
@@ -61,6 +64,7 @@ export default function StyleResult() {
   const description = outfitDescription || analysis.description;
 
   return (
+    <>
     <div style={{ padding: '100px 0 60px' }}>
     <div className="sr-container">
       {/* Redesigned Grid Display Panel */}
@@ -117,12 +121,30 @@ export default function StyleResult() {
         <div className="sr-buttons">
           <Link to="/dashboard" className="sr-btn" style={{ background: '#8B5FBF' }}>Dashboard</Link>
           <Link to="/moodboard" className="sr-btn" style={{ background: '#2475ee' }}>Moodboard</Link>
-          <button onClick={handleDeleteOutfit} disabled={isDeleting} className="sr-btn" style={{ background: '#EF4444', border: 'none', cursor: 'pointer' }}>
+          <button onClick={() => setShowDeleteConfirm(true)} disabled={isDeleting} className="sr-btn" style={{ background: '#EF4444', border: 'none', cursor: 'pointer' }}>
             {isDeleting ? 'Deleting...' : 'Delete Outfit'}
           </button>
         </div>
       </div>
     </div>
     </div>
+    {showDeleteConfirm && (
+      <AppModal
+        title="Delete outfit?"
+        message="Are you sure you want to delete your existing outfit? This will reset your style result."
+        confirmLabel="Delete outfit"
+        isDanger
+        onConfirm={handleDeleteOutfit}
+        onClose={() => setShowDeleteConfirm(false)}
+      />
+    )}
+    {deleteError && (
+      <AppModal
+        title="Unable to delete outfit"
+        message={deleteError}
+        onClose={() => setDeleteError('')}
+      />
+    )}
+    </>
   );
 }
