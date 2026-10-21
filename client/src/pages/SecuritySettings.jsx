@@ -35,6 +35,7 @@ export default function SecuritySettings() {
   const [deleteError, setDeleteError] = useState('');
   const [deletePending, setDeletePending] = useState(false);
   const [deleteCountdown, setDeleteCountdown] = useState(0);
+  const [showDeletePassword, setShowDeletePassword] = useState(false);
 
   useEffect(() => {
     API.get('/auth/me').then(({ data }) => {
@@ -187,28 +188,30 @@ export default function SecuritySettings() {
             >
               Delete Account
             </button>
-          ) : deletePending ? (
-            <div className="security-delete-form" role="alert" aria-live="assertive">
-              <p className="security-delete-countdown">
-                Your account will be permanently deleted in <strong>{deleteCountdown} seconds</strong>.
-              </p>
-              <button type="button" onClick={handleCancelDeletion} className="security-delete-cancel">
-                Cancel Deletion
-              </button>
-            </div>
           ) : (
             <form onSubmit={handleDeleteAccount} className="security-delete-form">
               {deleteError && <div className="security-delete-error" role="alert">{deleteError}</div>}
               <label className="security-delete-label" htmlFor="delete-account-password">Enter password to confirm deletion:</label>
-              <input 
-                id="delete-account-password"
-                type="password" 
-                value={deletePassword} 
-                onChange={(e) => setDeletePassword(e.target.value)} 
-                required
-                className="security-settings-input"
-                autoComplete="current-password"
-              />
+              <div className="security-password-input-wrap">
+                <input
+                  id="delete-account-password"
+                  type={showDeletePassword ? 'text' : 'password'}
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  required
+                  className="security-settings-input"
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="security-password-toggle"
+                  onClick={() => setShowDeletePassword((visible) => !visible)}
+                  aria-label={showDeletePassword ? 'Hide password' : 'Show password'}
+                  title={showDeletePassword ? 'Hide password' : 'Show password'}
+                >
+                  <i className={`fas ${showDeletePassword ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true"></i>
+                </button>
+              </div>
               <div className="security-delete-actions">
                 <button type="button" onClick={() => { setShowDeleteConfirm(false); setDeleteError(''); }} className="security-delete-cancel">Cancel</button>
                 <button type="submit" className="security-delete-confirm">Confirm Delete</button>
@@ -217,6 +220,19 @@ export default function SecuritySettings() {
           )}
         </div>
       </section>
+
+      {deletePending && (
+        <div className="security-delete-modal-backdrop" role="presentation">
+          <section className="security-delete-modal" role="alertdialog" aria-modal="true" aria-labelledby="delete-countdown-title">
+            <div className="security-delete-modal-icon"><i className="fas fa-hourglass-half" aria-hidden="true"></i></div>
+            <h2 id="delete-countdown-title">Account deletion scheduled</h2>
+            <p>Your account will be permanently deleted in <strong>{deleteCountdown} seconds</strong>.</p>
+            <button type="button" onClick={handleCancelDeletion} className="security-delete-cancel">
+              Cancel Deletion
+            </button>
+          </section>
+        </div>
+      )}
     </main>
   );
 }
