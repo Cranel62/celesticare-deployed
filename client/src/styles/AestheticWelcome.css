@@ -1,0 +1,106 @@
+.aestheticwelcome-body {
+  margin: 0;
+  min-height: calc(100vh - var(--app-navbar-height, 76px));
+  min-height: calc(100dvh - var(--app-navbar-height, 76px));
+  background: linear-gradient(to bottom, #090614 0%, #1e173d 35%, #422d6b 70%, #765a96 100%) fixed;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: clip;
+  overflow-y: visible;
+  position: relative;
+  transition: filter 0.6s ease, opacity 0.6s ease;
+}
+
+body:has(.aestheticwelcome-body) {
+  background: linear-gradient(to bottom, #090614 0%, #1e173d 35%, #422d6b 70%, #765a96 100%) fixed;
+}
+
+html:has(.aestheticwelcome-body) {
+  scroll-padding-top: calc(var(--app-navbar-height, 76px) + 16px);
+  scroll-padding-bottom: 20px;
+}
+
+.aestheticwelcome-body.fade-blur-out { opacity: 0; filter: blur(25px); }
+
+.aestheticwelcome-container {
+  min-height: calc(100vh - var(--app-navbar-height, 76px));
+  min-height: calc(100dvh - var(--app-navbar-height, 76px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow-x: clip;
+  overflow-y: visible;
+  padding: clamp(16px, 4vh, 40px) clamp(14px, 3vw, 32px);
+}
+
+.aestheticwelcome-bg-accent {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+  animation: aestheticwelcomeFloat 10s ease-in-out infinite alternate;
+}
+
+.aestheticwelcome-bg-accent.aestheticwelcome-one { background: #bba6ff; width: 400px; height: 400px; top: -80px; left: -80px; }
+.aestheticwelcome-bg-accent.aestheticwelcome-two { background: #d2b0ff; width: 500px; height: 500px; bottom: -100px; right: -100px; }
+
+@keyframes aestheticwelcomeFloat {
+  from { transform: translateY(0); }
+  to { transform: translateY(25px); }
+}
+
+.aestheticwelcome-box {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(193, 155, 250, 0.15);
+  color: #ffffff;
+  margin-block: auto;
+  padding: clamp(26px, 5vh, 42px) clamp(22px, 3vw, 35px);
+  text-align: center;
+  max-width: 440px;
+  width: 100%;
+}
+
+.aestheticwelcome-brand-title { font-weight: 800; font-size: 1.5rem; letter-spacing: 2px; margin-bottom: 8px; color: #ffffff; text-shadow: 0 0 15px rgba(193, 155, 250, 0.5); }
+.aestheticwelcome-box h2 { font-size: 1.35rem; font-weight: 700; color: #f0ecfc; line-height: 1.35; margin: 0 0 16px; }
+.aestheticwelcome-box p { font-size: 0.95rem; color: #d0cce6; margin: 0 auto 24px; line-height: 1.65; max-width: 42rem; }
+
+.aestheticwelcome-btn-start {
+  background: linear-gradient(135deg, #c19bfa, #a628c5);
+  color: #ffffff;
+  border: 0;
+  border-radius: 30px;
+  box-shadow: 0 6px 20px rgba(166, 40, 197, 0.4);
+  box-sizing: border-box;
+  min-height: 50px;
+  padding: 14px 20px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+  width: 100%;
+}
+
+.aestheticwelcome-btn-start:hover { box-shadow: 0 10px 25px rgba(166, 40, 197, 0.6); filter: brightness(1.08); transform: translateY(-2px); }
+
+@media (min-width: 992px) { .aestheticwelcome-box { margin-block: 100px; } }
+@media (max-width: 520px) {
+  .aestheticwelcome-container { padding-inline: 14px; }
+  .aestheticwelcome-box { border-radius: 20px; padding: 26px 22px; }
+  .aestheticwelcome-brand-title { font-size: 1.3rem; }
+  .aestheticwelcome-bg-accent { animation: none; filter: blur(80px); }
+}
+@media (max-height: 640px) {
+  .aestheticwelcome-container { align-items: flex-start; padding-block: 16px; }
+  .aestheticwelcome-box { padding-block: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aestheticwelcome-bg-accent, .aestheticwelcome-body { animation: none; transition-duration: 0.01ms; }
+}
