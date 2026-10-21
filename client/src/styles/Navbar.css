@@ -217,6 +217,111 @@ button.nav-link {
   padding: 6px 9px !important;
 }
 
+.logout-modal-backdrop {
+  align-items: center;
+  background: rgba(17, 13, 25, 0.68);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 2000;
+}
+
+.logout-modal {
+  background: #fff;
+  border: 1px solid rgba(152, 78, 181, 0.18);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+  color: #352b3d;
+  font-family: 'Poppins', sans-serif;
+  max-width: 440px;
+  padding: 30px;
+  text-align: center;
+  width: 100%;
+}
+
+.logout-modal-icon {
+  align-items: center;
+  background: rgba(152, 78, 181, 0.1);
+  border-radius: 50%;
+  color: #984eb5;
+  display: flex;
+  font-size: 1.3rem;
+  height: 54px;
+  justify-content: center;
+  margin: 0 auto 16px;
+  width: 54px;
+}
+
+.logout-modal h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+
+.logout-modal p {
+  color: #665d6e;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.logout-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.logout-modal-actions button {
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 10px 16px;
+}
+
+.logout-modal-secure {
+  background: #984eb5;
+  color: #fff;
+}
+
+.logout-modal-confirm {
+  background: #d9534f;
+  color: #fff;
+}
+
+.logout-modal-secondary {
+  background: #fff;
+  border-color: #ded6e3 !important;
+  color: #514859;
+}
+
+.logout-modal-actions button:focus-visible {
+  outline: 3px solid rgba(152, 78, 181, 0.35);
+  outline-offset: 2px;
+}
+
+:root[data-theme='dark'] .logout-modal {
+  background: #211d2b;
+  border-color: rgba(193, 155, 250, 0.3);
+  color: #f3edf8;
+}
+
+:root[data-theme='dark'] .logout-modal p {
+  color: #d0c6d9;
+}
+
+:root[data-theme='dark'] .logout-modal-secondary {
+  background: #302a3a;
+  border-color: rgba(243, 237, 248, 0.2) !important;
+  color: #f3edf8;
+}
+
 /* 8. Mobile Responsiveness */
 @media (max-width: 991.98px) {
   :root {
@@ -281,5 +386,19 @@ button.nav-link {
   .nav-icon, .nav-fa-icon, .mystic-icon { 
     margin-bottom: 0 !important; 
     margin-right: 15px !important; 
+  }
+}
+
+@media (max-width: 480px) {
+  .logout-modal {
+    padding: 24px 20px;
+  }
+
+  .logout-modal-actions {
+    flex-direction: column;
+  }
+
+  .logout-modal-actions button {
+    width: 100%;
   }
 }

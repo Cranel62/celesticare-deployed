@@ -15,8 +15,15 @@ export default function Navbar() {
     return user.role === 'admin' || user.is_admin === true;
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navbarRef = useRef(null);
+  const logoutButtonRef = useRef(null);
+  const modalActionRef = useRef(null);
   const [theme, setTheme] = useState(() => localStorage.getItem('celesticare_theme') === 'dark' ? 'dark' : 'light');
+  const [securitySetupComplete, setSecuritySetupComplete] = useState(() => {
+    const user = JSON.parse(localStorage.getItem('celesticare_user') || '{}');
+    return user.security_setup_complete === true;
+  });
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -28,6 +35,7 @@ export default function Navbar() {
       const user = JSON.parse(localStorage.getItem('celesticare_user') || '{}');
       setIsAuthenticated(Boolean(localStorage.getItem('celesticare_token')));
       setIsAdmin(user.role === 'admin' || user.is_admin === true);
+      setSecuritySetupComplete(user.security_setup_complete === true);
     };
     window.addEventListener('celesticare-auth-changed', syncAuth);
     window.addEventListener('storage', syncAuth);
@@ -60,15 +68,44 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
+  useEffect(() => {
+    if (!showLogoutModal) return undefined;
+
+    modalActionRef.current?.focus();
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setShowLogoutModal(false);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [showLogoutModal]);
+
   const handleLogout = () => {
-    if (!window.confirm('Are you sure you want to log out?')) return;
+    const user = JSON.parse(localStorage.getItem('celesticare_user') || '{}');
+    setSecuritySetupComplete(user.security_setup_complete === true);
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
     localStorage.removeItem('celesticare_token');
     localStorage.removeItem('celesticare_user');
     setIsAuthenticated(false);
     setIsAdmin(false);
+    setSecuritySetupComplete(false);
+    setShowLogoutModal(false);
     window.dispatchEvent(new Event('celesticare-auth-changed'));
     setMenuOpen(false);
     navigate('/', { replace: true });
+  };
+
+  const closeLogoutModal = () => {
+    setShowLogoutModal(false);
+    logoutButtonRef.current?.focus();
+  };
+
+  const goToSecuritySettings = () => {
+    setShowLogoutModal(false);
+    setMenuOpen(false);
+    navigate('/security');
   };
 
   return (
@@ -141,7 +178,7 @@ export default function Navbar() {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <button className="nav-link text-danger" onClick={handleLogout}>
+                  <button ref={logoutButtonRef} className="nav-link text-danger" type="button" onClick={handleLogout}>
                     <i className="fas fa-sign-out-alt nav-fa-icon"></i>
                     <span>Logout</span>
                   </button>
@@ -187,6 +224,59 @@ export default function Navbar() {
           </ul>
         </div>
       </div>
+      {showLogoutModal && (
+        <div
+          className="logout-modal-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeLogoutModal();
+          }}
+        >
+          <section
+            className="logout-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="logout-modal-title"
+            aria-describedby="logout-modal-description"
+          >
+            <div className="logout-modal-icon" aria-hidden="true">
+              <i className={`fas ${securitySetupComplete ? 'fa-sign-out-alt' : 'fa-shield-alt'}`}></i>
+            </div>
+            <h2 id="logout-modal-title">
+              {securitySetupComplete ? 'Log out of CelestiCare?' : 'Secure your account first'}
+            </h2>
+            <p id="logout-modal-description">
+              {securitySetupComplete
+                ? 'Are you sure you want to log out?'
+                : 'You haven’t set up your security questions yet. Secure your account so you can recover it if you forget your password.'}
+            </p>
+            <div className="logout-modal-actions">
+              {securitySetupComplete ? (
+                <>
+                  <button ref={modalActionRef} type="button" className="logout-modal-secondary" onClick={closeLogoutModal}>
+                    Stay logged in
+                  </button>
+                  <button type="button" className="logout-modal-confirm" onClick={confirmLogout}>
+                    Log out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button ref={modalActionRef} type="button" className="logout-modal-secure" onClick={goToSecuritySettings}>
+                    Secure my account
+                  </button>
+                  <button type="button" className="logout-modal-secondary" onClick={closeLogoutModal}>
+                    Stay logged in
+                  </button>
+                  <button type="button" className="logout-modal-confirm" onClick={confirmLogout}>
+                    Log out anyway
+                  </button>
+                </>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
     </nav>
   );
 }
